@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tripistry · Tropical Resort System v4.0</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="public/css/style.css">
+
+</head>
+<body>
+
+<div class="ambient-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<nav class="sg-nav">
+  <div class="sg-nav-logo"><span class="logo-dot"></span> TRIPISTRY</div>
+  <ul class="sg-nav-links">
+    <li><a href="#palette">Palette & Type</a></li>
+    <li><a href="#glass">Liquid Glass</a></li>
+    <li><a href="#components">Components</a></li>
+    <li><a href="#animations">Animations</a></li>
+    <li><a href="#screens">Screens</a></li>
+  </ul>
+  <span class="sg-nav-pill">v4.0 Resort</span>
+</nav>
+
+<div class="content">
+<div class="sg-page">
+
+  <section class="sg-hero">
+    <div class="sg-hero-badge"><span class="badge-dot"></span>Member 5 · Style Guide</div>
+    <h1>Tropical Resort<br><span>Liquid Glass</span></h1>
+    <p>A comprehensive, bright UI framework blending immersive frosted glass panels, vibrant ocean accents, and the soft, elegant editorial feel of the Fraunces typeface.</p>
+    <div class="sg-hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('palette').scrollIntoView({behavior:'smooth'})">Explore Components</button>
+      <button class="btn-secondary">Download CSS</button>
+    </div>
+    <div class="sg-hero-scroll">
+      <div class="hero-scroll-line"></div>
+      Scroll to explore
+    </div>
+  </section>
+
+  <div class="sg-sticky" id="palette">
+    <span class="sg-sticky-num">01</span>
+    <span class="sg-sticky-name">Colour & Typography</span>
+    <div class="sg-sticky-tags">
+      <span class="sg-sticky-tag">Sea Foam</span>
+      <span class="sg-sticky-tag">Ocean Teal</span>
+      <span class="sg-sticky-tag">Fraunces Serif</span>
+    </div>
+  </div>
+
+  <section class="sg-section">
+    <p class="sg-section-label">Design Tokens</p>
+    <h2 class="sg-section-title">Colour Palette</h2>
+    <p class="sg-section-sub">A bright, daylight resort aesthetic built on soft mints and deep teals to evoke clear tropical waters and airy spaces.</p>
+
+    <div class="palette-grid">
+      <div class="pal-card"><div class="pal-swatch" style="background:var(--bg-main);"></div><div class="pal-info"><div class="pal-name">Sea Foam</div><div class="pal-hex">--bg-main · #dff8f4</div></div></div>
+      <div class="pal-card"><div class="pal-swatch" style="background:var(--ocean);"></div><div class="pal-info"><div class="pal-name">Ocean Blue</div><div class="pal-hex">--ocean · #00a6c7</div></div></div>
+      <div class="pal-card"><div class="pal-swatch" style="background:var(--teal);"></div><div class="pal-info"><div class="pal-name">Tropical Teal</div><div class="pal-hex">--teal · #19c2b3</div></div></div>
+      <div class="pal-card"><div class="pal-swatch" style="background:var(--mint);"></div><div class="pal-info"><div class="pal-name">Mint Lagoon</div><div class="pal-hex">--mint · #72e0b8</div></div></div>
+      <div class="pal-card"><div class="pal-swatch" style="background:var(--sky);"></div><div class="pal-info"><div class="pal-name">Sky Water</div><div class="pal-hex">--sky · #7fd8ff</div></div></div>
+    </div>
+
+    <h2 class="sg-section-title" style="margin-top:4rem;">Typography: Fraunces</h2>
+    <p class="sg-section-sub">Swapping out bold geometric fonts for Fraunces (Light 300, Italic). This serif brings immediate elegance, warmth, and an editorial magazine feel perfectly suited for luxury resort travel.</p>
+
+    <div class="type-specimens">
+      <div class="type-row">
+        <div class="type-label">Display / Hero</div>
+        <div style="font-family:var(--font-display);font-size:2.8rem;font-weight:300;font-style:italic;line-height:1;">Experience Paradise</div>
+        <div class="type-meta">Fraunces Italic 300</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">H2 Section</div>
+        <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:300;font-style:italic;">Top Destinations</div>
+        <div class="type-meta">Fraunces Italic 300</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">Body Regular</div>
+        <div style="font-family:var(--font-body);font-size:1rem;color:var(--text-soft);max-width:400px;">Plan your next escape with trusted travel agencies.</div>
+        <div class="type-meta">Inter 400</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">Label / Status</div>
+        <div style="font-family:var(--font-body);font-size:0.8rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--ocean);">Featured Trip</div>
+        <div class="type-meta">Inter 600 Caps</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sg-sticky" id="glass">
+    <span class="sg-sticky-num">02</span>
+    <span class="sg-sticky-name">Liquid Glass UI</span>
+  </div>
+
+  <section class="sg-section">
+    <p class="sg-section-label">Materials</p>
+    <h2 class="sg-section-title">Bright Glass Elements</h2>
+    <p class="sg-section-sub">Using high-opacity white backgrounds with strong blur layers to create frosted, tactile surfaces over the tropical background orbs.</p>
+
+    <div class="demo-grid" style="position:relative;z-index:1;">
+      <div class="demo-cell glass-frosted">
+        <div class="demo-cell-label">Style A</div>
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;font-style:italic;margin-bottom:0.5rem;color:var(--text-main);">Frosted Glass</div>
+        <p style="font-size:0.95rem;color:var(--text-soft);margin-bottom:1rem;">Moderate blur and solid white tint. Used for primary package cards and sidebars.</p>
+        <div class="code-block" style="padding:1rem;">blur(22px)<br>bg: rgba(255,255,255,0.35)</div>
+      </div>
+      <div class="demo-cell glass-clear">
+        <div class="demo-cell-label">Style B</div>
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;font-style:italic;margin-bottom:0.5rem;color:var(--text-main);">Clear Glass</div>
+        <p style="font-size:0.95rem;color:var(--text-soft);margin-bottom:1rem;">Higher transparency with minimal blur. Perfect for secondary UI rows and hover states.</p>
+        <div class="code-block" style="padding:1rem;">blur(12px)<br>bg: rgba(255,255,255,0.15)</div>
+      </div>
+      <div class="demo-cell glass-heavy">
+        <div class="demo-cell-label">Style C</div>
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;font-style:italic;margin-bottom:0.5rem;color:var(--ocean);">Heavy Blur</div>
+        <p style="font-size:0.95rem;color:var(--text-soft);margin-bottom:1rem;">Opaque base for Navbars and prominent Modals, ensuring text legibility over any background.</p>
+        <div class="code-block" style="padding:1rem;">blur(40px)<br>bg: rgba(255,255,255,0.85)</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sg-sticky" id="components">
+    <span class="sg-sticky-num">03</span>
+    <span class="sg-sticky-name">Components</span>
+  </div>
+
+  <section class="sg-section">
+    <p class="sg-section-label">Component Library</p>
+    <h2 class="sg-section-title">Detailed UI Elements</h2>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:2rem;margin-bottom:3rem;" class="reveal">
+      <div>
+        <div class="demo-cell-label">Navbar (Heavy Blur)</div>
+        <div class="navbar-demo">
+          <div class="navbar-inner">
+            <div class="nb-logo"><span class="logo-dot"></span> TRIPISTRY</div>
+            <ul class="nb-links">
+              <li><a href="#" class="active">Discover</a></li>
+              <li><a href="#">Packages</a></li>
+            </ul>
+            <div class="nb-icon-btn">👤</div>
+          </div>
+        </div>
+
+        <div class="demo-cell-label" style="margin-top:3rem;">Filter Bar</div>
+        <div class="filter-bar">
+          <div class="filter-search">
+            <span style="color:var(--text-muted);">🔍</span>
+            <input placeholder="Search paradise..." />
+          </div>
+          <div class="filter-divider"></div>
+          <div class="filter-chip active">All</div>
+          <div class="filter-chip">Beach</div>
+          <div class="filter-chip">Resort</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="demo-cell-label">Side Menu (Dashboard)</div>
+        <div class="sidemenu-demo">
+          <div class="sm-section-label">Main</div>
+          <div class="sm-item active">📊 Overview</div>
+          <div class="sm-item">🧳 Packages <span class="sm-badge">12</span></div>
+          <div class="sm-item">✈️ Bookings</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-cell reveal">
+      <div class="demo-cell-label">Buttons & Inputs</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;">
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+          <div class="btn-group">
+            <button class="btn-primary">Book Journey</button>
+            <button class="btn-secondary">View Details</button>
+          </div>
+          <div class="btn-group">
+            <button class="btn-ghost">Save Draft</button>
+            <button class="btn-danger">Cancel</button>
+          </div>
+          <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+            <span class="badge badge-blue">Featured</span>
+            <span class="badge badge-green">Available</span>
+            <span class="status-pill"><span class="status-dot"></span> Active</span>
+          </div>
+        </div>
+        
+        <div class="input-stack">
+          <div class="input-group">
+            <label class="input-label">Destination</label>
+            <input class="input-field" type="text" placeholder="e.g. Maldives" />
+          </div>
+          <div class="input-group">
+            <label class="input-label">Email (Success)</label>
+            <input class="input-field success" type="email" value="user@tripistry.com" />
+            <div class="input-hint" style="color:var(--success);">Verified address</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-bottom:3rem;">
+      <div class="demo-cell-label">Package Cards (Frosted Glass)</div>
+      <div class="card-grid">
+        <div class="pkg-card">
+          <div class="pkg-card-img">
+            🌊 <span class="pkg-card-badge">HOT</span>
+          </div>
+          <div class="pkg-card-body">
+            <div class="pkg-card-dest">Indonesia</div>
+            <div class="pkg-card-name">Bali Jungle Retreat</div>
+            <div class="pkg-card-meta"><span>🗓 7 nights</span><span>⭐ 4.9</span></div>
+            <div class="pkg-card-footer">
+              <div class="pkg-card-price">R 18,500 <span>pp</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="pkg-card">
+          <div class="pkg-card-img alt1">
+            🏔️
+          </div>
+          <div class="pkg-card-body">
+            <div class="pkg-card-dest">Switzerland</div>
+            <div class="pkg-card-name">Alpine Spa Resort</div>
+            <div class="pkg-card-meta"><span>🗓 10 nights</span><span>⭐ 4.8</span></div>
+            <div class="pkg-card-footer">
+              <div class="pkg-card-price">R 42,000 <span>pp</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="pkg-card">
+          <div class="pkg-card-img alt2">
+            🦁 <span class="pkg-card-badge">NEW</span>
+          </div>
+          <div class="pkg-card-body">
+            <div class="pkg-card-dest">Kenya</div>
+            <div class="pkg-card-name">Maasai Mara Safari</div>
+            <div class="pkg-card-meta"><span>🗓 8 nights</span><span>⭐ 5.0</span></div>
+            <div class="pkg-card-footer">
+              <div class="pkg-card-price">R 38,000 <span>pp</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-bottom:3rem;">
+      <div class="demo-cell-label">Agency Stats</div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-val">1,248</div><div class="stat-change">↑ 12% this month</div></div>
+        <div class="stat-card"><div class="stat-label">Revenue</div><div class="stat-val">R 284k</div><div class="stat-change">↑ 8% this week</div></div>
+        <div class="stat-card"><div class="stat-label">Rating</div><div class="stat-val">4.9★</div><div class="stat-change" style="color:var(--text-muted);">From 800 reviews</div></div>
+        <div class="stat-card"><div class="stat-label">Active Packages</div><div class="stat-val">84</div></div>
+      </div>
+    </div>
+
+    <div class="demo-cell reveal">
+      <div class="demo-cell-label">Modals, Toasts & Loading</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;">
+        
+        <div>
+          <div class="modal-demo" style="margin-bottom:2.5rem;">
+            <div class="modal-icon">✈️</div>
+            <div class="modal-title">Confirm Booking</div>
+            <p style="font-size:1rem;color:var(--text-soft);margin-bottom:2rem;">Finalize your itinerary for the Bali Jungle Retreat.</p>
+            <div style="display:flex;gap:1rem;justify-content:center;">
+              <button class="btn-primary">Confirm</button>
+              <button class="btn-secondary">Cancel</button>
+            </div>
+          </div>
+
+          <div class="toast-stack">
+            <div class="toast">
+              <span style="font-size:1.4rem;">✅</span>
+              <div><div class="toast-title">Booking Confirmed</div><div class="toast-msg">Your receipt has been emailed.</div></div>
+            </div>
+            <div class="toast">
+              <span style="font-size:1.4rem;">⚠️</span>
+              <div><div class="toast-title">Limited Availability</div><div class="toast-msg">Only 2 spots left for these dates.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:3.5rem;">
+          <div style="display:flex;gap:2rem;align-items:center;">
+            <div class="spinner-ring"></div>
+            <div style="font-size:0.9rem;color:var(--text-muted);">Processing...</div>
+          </div>
+          <div>
+            <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;">Skeleton Shimmer</div>
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="skeleton" style="height:120px;"></div>
+              <div class="skeleton" style="height:20px;width:70%;"></div>
+              <div class="skeleton" style="height:20px;width:40%;"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="sg-sticky" id="animations">
+    <span class="sg-sticky-num">04</span>
+    <span class="sg-sticky-name">Animations</span>
+  </div>
+
+  <section class="sg-section">
+    <p class="sg-section-label">Motion Design</p>
+    <h2 class="sg-section-title">Interaction & Ambient</h2>
+
+    <div class="demo-grid">
+      <div class="demo-cell">
+        <div class="demo-cell-label">Float Element</div>
+        <div style="padding:2rem 0;text-align:center;"><span class="anim-float" style="display:inline-block;font-size:3rem;">✈️</span></div>
+      </div>
+      <div class="demo-cell" style="grid-column:span 2;">
+        <div class="demo-cell-label">Ticker (from Gen-Z Neon, adapted for Resort)</div>
+        <div class="neon-ticker">
+          <div class="neon-ticker-inner">
+            <div class="neon-tick-item">✈ Bali · <span>R 11,200</span></div>
+            <div class="neon-tick-item">✈ Lisbon · <span>R 19,800</span></div>
+            <div class="neon-tick-item">✈ Maldives · <span>R 32,000</span></div>
+            <div class="neon-tick-item">✈ Zanzibar · <span>R 8,400</span></div>
+            <div class="neon-tick-item">✈ Bali · <span>R 11,200</span></div>
+            <div class="neon-tick-item">✈ Lisbon · <span>R 19,800</span></div>
+            <div class="neon-tick-item">✈ Maldives · <span>R 32,000</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sg-sticky" id="screens">
+    <span class="sg-sticky-num">05</span>
+    <span class="sg-sticky-name">Layout Previews</span>
+  </div>
+
+  <section class="sg-section">
+    <p class="sg-section-label">Architecture</p>
+    <h2 class="sg-section-title">Screen Mockups</h2>
+    <p class="sg-section-sub">Translating the rough sketches into the bright, airy, Fraunces-led Resort UI.</p>
+
+    <div class="lp-preview reveal">
+      
+      <div class="lp-hero">
+        <div class="lp-hero-nav">
+          <div class="lp-logo">TRIPISTRY</div>
+          <div style="display:flex;gap:2rem;font-size:0.95rem;color:rgba(255,255,255,0.9);"><span>Discover</span><span>Agencies</span></div>
+          <button class="btn-primary btn-sm">Sign In</button>
+        </div>
+        <div class="lp-mountain">TROPICAL RESORT UI</div>
+        <div class="lp-hero-h1">Your journey begins here.</div>
+        <button class="btn-primary" style="margin-top:1rem;">View Packages</button>
+      </div>
+
+      <div class="lp-packages">
+        <h3 style="font-family:var(--font-display);font-size:1.8rem;font-weight:300;font-style:italic;margin-bottom:1rem;color:var(--text-main);">Top-Rated Packages</h3>
+        <div class="lp-card-row">
+          <div class="lp-mini-card"><div class="lp-mini-img">🌊</div><div class="lp-mini-name">Bali Retreat</div><div class="lp-mini-price">R 18,500</div></div>
+          <div class="lp-mini-card"><div class="lp-mini-img">🏔️</div><div class="lp-mini-name">Alpine Spa</div><div class="lp-mini-price">R 42,000</div></div>
+          <div class="lp-mini-card"><div class="lp-mini-img">🦁</div><div class="lp-mini-name">Safari</div><div class="lp-mini-price">R 38,000</div></div>
+        </div>
+      </div>
+
+      <div class="lp-search-page">
+        <div class="filter-panel" style="width:260px;">
+          <div class="fp-title">Filters</div>
+          <div class="fp-group">
+            <div class="fp-group-label">Destinations</div>
+            <div class="fp-option"><div class="fp-checkbox checked"></div> Beach</div>
+            <div class="fp-option"><div class="fp-checkbox"></div> Safari</div>
+          </div>
+          <div class="fp-group">
+            <div class="fp-group-label">Budget</div>
+            <div class="fp-range-track"><div class="fp-range-fill"></div><div class="fp-range-thumb"></div></div>
+          </div>
+          <button class="btn-primary" style="width:100%;">Apply</button>
+        </div>
+        <div style="flex:1;">
+          <div class="filter-bar" style="margin-bottom:2rem;"><span style="color:var(--ocean);">🔍</span><input placeholder="Search paradise..." style="border:none;background:transparent;outline:none;font-family:var(--font-body);width:100%;" /></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+            <div class="lp-mini-card"><div class="lp-mini-img">🌴</div><div class="lp-mini-name">Zanzibar</div><div class="lp-mini-price">R 8,400</div></div>
+            <div class="lp-mini-card"><div class="lp-mini-img">🏛️</div><div class="lp-mini-name">Santorini</div><div class="lp-mini-price">R 19,600</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lp-dashboard">
+        <h3 style="font-family:var(--font-display);font-size:1.8rem;font-weight:300;font-style:italic;margin-bottom:1rem;color:var(--text-main);">Agency Dashboard</h3>
+        <div class="lp-dash-grid">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+            <div class="stat-card" style="padding:1.5rem;"><div class="stat-val" style="font-size:2rem;">1,248</div><div class="stat-label">Bookings</div></div>
+            <div class="stat-card" style="padding:1.5rem;"><div class="stat-val" style="font-size:2rem;">R 284k</div><div class="stat-label">Revenue</div></div>
+            <div class="stat-card" style="padding:1.5rem;"><div class="stat-val" style="font-size:2rem;">4.9★</div><div class="stat-label">Rating</div></div>
+            <div class="stat-card" style="padding:1.5rem;"><div class="stat-val" style="font-size:2rem;">98%</div><div class="stat-label">Completion</div></div>
+          </div>
+          <div class="lp-dash-chart">
+            <div class="bar" style="height:40%;"></div>
+            <div class="bar" style="height:60%;"></div>
+            <div class="bar hi" style="height:90%;"></div>
+            <div class="bar" style="height:75%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pkg-builder">
+        <h3 style="font-family:var(--font-display);font-size:1.8rem;font-weight:300;font-style:italic;margin-bottom:1rem;color:var(--text-main);">Package Builder</h3>
+        <div class="pb-grid">
+          <div class="pb-item">🌊 Beach Resort</div>
+          <div class="pb-item selected">✈️ Flights (Selected)</div>
+          <div class="pb-item">🚌 Transfer</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="sg-footer">
+    <div style="font-family:var(--font-display);font-style:italic;font-size:1.6rem;font-weight:300;color:var(--ocean);margin-bottom:0.5rem;">TRIPISTRY</div>
+    <p>Style Guide v4.0 · Tropical Resort with Fraunces</p>
+  </footer>
+
+</div>
+</div>
+
+<script>
+// Scroll reveal logic
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      revealObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => revealObserver.observe(el));
+
+// Simple toggles for interactivity in mockups
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.fp-checkbox').forEach(box => {
+  box.addEventListener('click', () => {
+    box.classList.toggle('checked');
+  });
+});
+</script>
+</body>
+</html>
