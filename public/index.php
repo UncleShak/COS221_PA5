@@ -21,7 +21,12 @@ switch($route){
         break;
     
     case '/register':
+        $title = 'Register · Tripistry';
+        ob_start();
         require_once '../src/Views/auth/register.php';
+        $content = ob_get_clean();
+        require_once '../src/Views/layout.php';
+        break;
 
     case '/traveller/dashboard':
         //Aeron's logic
@@ -40,10 +45,15 @@ switch($route){
 
     default:
         http_response_code(404);
-        echo "<div style='text-align:center; padding: 5rem; font-family: sans-serif;'>";
-        echo "<h1 style='color: #00a6c7;'>404 - Off the Map</h1>";
-        echo "<p>The destination you are looking for does not exist.</p>";
-        echo "</div>";
+        $title = '404 Not Found';
+        $content = "
+            <div style='text-align:center; padding: 10rem 2rem;'>
+                <h1 style='font-family: var(--font-display); font-size: 4rem; color: var(--ocean);'>404</h1>
+                <p style='color: var(--text-soft); font-size: 1.2rem;'>The destination you are looking for does not exist.</p>
+                <a href='/login' class='btn-primary' style='display:inline-block; margin-top:2rem; text-decoration:none;'>Return to Base</a>
+            </div>
+        ";
+        require_once '../src/Views/layout.php';
         break;
 
 }
