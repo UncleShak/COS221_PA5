@@ -7,7 +7,9 @@
     
     <link rel="stylesheet" href="/css/StyleGuide.css">
     
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Molle:ital@1&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="orb orb-1"></div>
@@ -29,7 +31,7 @@
                 
                 <div class="nb-actions">
                     <div class="nb-icon-btn" style="background: rgba(255,255,255,0.4); color: var(--ocean);">
-                        👤
+                        [account]
                     </div>
                 </div>
                 

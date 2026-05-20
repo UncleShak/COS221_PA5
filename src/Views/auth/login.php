@@ -2,10 +2,9 @@
 // src/Views/auth/login.php
 // Note: No <html>, <head>, or background orbs here. layout.php handles that.
 ?>
-<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;padding-top: 120px;">
     
     <div class="modal-demo glass-heavy" style="width: 100%; max-width: 420px;">
-        <div class="modal-icon">🌴</div>
         <h2 class="modal-title">Welcome to Tripistry</h2>
         <p style="font-size: 0.95rem; color: var(--text-soft); margin-bottom: 2.5rem;">
             Sign in to continue your journey.

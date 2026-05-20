@@ -9,7 +9,7 @@
           <img src="" alt="Main Package Image" style="width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; opacity: 0.4;" />
           
           <div style="position: absolute; bottom: 1.5rem; right: 1.5rem; display: flex; gap: 0.5rem;">
-            <div class="glass-clear" style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; color:#fff;">📷 +5</div>
+            <div class="glass-clear" style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; color:#fff;">+5</div>
           </div>
         </div>
 
@@ -75,7 +75,7 @@
           <div class="toast-stack" style="max-width: 100%;">
             
             <div class="toast t-success" style="background: var(--glass-bg-hi);">
-              <div style="width: 45px; height: 45px; border-radius: 50%; background: var(--bg-secondary); display:flex; align-items:center; justify-content:center; font-size: 1.2rem;">👩🏽</div>
+              <div style="width: 45px; height: 45px; border-radius: 50%; background: var(--bg-secondary); display:flex; align-items:center; justify-content:center; font-size: 1.2rem;"></div>
               <div style="flex: 1;">
                 <div class="toast-title" style="display: flex; justify-content: space-between;">
                   Sarah Jenkins <span style="color: var(--warning);">★★★★★</span>
@@ -85,7 +85,7 @@
             </div>
             
             <div class="toast" style="background: var(--glass-bg-hi);">
-              <div style="width: 45px; height: 45px; border-radius: 50%; background: var(--bg-secondary); display:flex; align-items:center; justify-content:center; font-size: 1.2rem;">👨🏻</div>
+              <div style="width: 45px; height: 45px; border-radius: 50%; background: var(--bg-secondary); display:flex; align-items:center; justify-content:center; font-size: 1.2rem;"></div>
               <div style="flex: 1;">
                 <div class="toast-title" style="display: flex; justify-content: space-between;">
                   Michael Chen <span style="color: var(--warning);">★★★★☆</span>

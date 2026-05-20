@@ -45,7 +45,7 @@
           <div class="pkg-card-body" style="flex: 1; display: flex; flex-direction: column;">
             <div class="pkg-card-dest">Sahara Dawn</div>
             <div class="pkg-card-name">Bali Jungle Retreat</div>
-            <div class="pkg-card-meta"><span>🗓 7 nights</span><span>⭐ 4.9</span></div>
+            <div class="pkg-card-meta"><span>🗓 7 nights</span><span>4.9</span></div>
             <div class="pkg-card-footer" style="margin-top: auto; padding-top: 1rem;">
               <div class="pkg-card-price">R 18,500 <span>pp</span></div>
             </div>
@@ -61,7 +61,7 @@
           <div class="pkg-card-body" style="flex: 1; display: flex; flex-direction: column;">
             <div class="pkg-card-dest">Oasis Mirage</div>
             <div class="pkg-card-name">Maasai Mara Safari</div>
-            <div class="pkg-card-meta"><span>🗓 8 nights</span><span>⭐ 5.0</span></div>
+            <div class="pkg-card-meta"><span>🗓 8 nights</span><span>5.0</span></div>
             <div class="pkg-card-footer" style="margin-top: auto; padding-top: 1rem;">
               <div class="pkg-card-price">R 38,000 <span>pp</span></div>
             </div>
@@ -77,7 +77,7 @@
           <div class="pkg-card-body" style="flex: 1; display: flex; flex-direction: column;">
             <div class="pkg-card-dest">Crimson Dunes</div>
             <div class="pkg-card-name">Alpine Spa Resort</div>
-            <div class="pkg-card-meta"><span>🗓 10 nights</span><span>⭐ 4.8</span></div>
+            <div class="pkg-card-meta"><span>🗓 10 nights</span><span>4.8</span></div>
             <div class="pkg-card-footer" style="margin-top: auto; padding-top: 1rem;">
               <div class="pkg-card-price">R 42,000 <span>pp</span></div>
             </div>
