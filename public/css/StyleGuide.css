@@ -55,7 +55,7 @@
   --ease:          cubic-bezier(0.22, 1, 0.36, 1);
   
   /* TYPOGRAPHY TOKENS */
-  --font-display:  'Molle', cursive;
+  --font-display:  'Roboto', sans-serif;
   --font-body:     'Inter', sans-serif;
   --font-code:     'DM Mono', monospace;
 }
