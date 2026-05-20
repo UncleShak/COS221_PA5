@@ -1,6 +1,8 @@
 <?php
 // public/index.php
 session_start();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 // 1. BYPASS FOR STATIC FILES (CSS, Images, etc.)
 // If the requested file actually exists in the public folder, serve it directly.
@@ -9,14 +11,13 @@ if (is_file($filePath)) {
     return false; 
 }
 
-// 2. Get the current URL path and handle subdirectories properly
-$baseDir = dirname($_SERVER['SCRIPT_NAME']);
-$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-$route = str_replace($baseDir, '', $requestUri);
+// 2. Get the clean URL path
+// Removed the brittle $baseDir string replacement which was stripping the leading '/'
+$route = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$route = rtrim($route, '/') ?: '/'; // Normalizes URL by removing trailing slashes
 
 // Default routing to login if root is accessed
-if(empty($route) || $route === '/'){
+if($route === '/'){
     $route = '/login';
 }
 
@@ -25,12 +26,9 @@ switch($route){
     
     // --- Auth Routes ---
     case '/login':
-        // call controller to load the view
-        // require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        // $auth = new AuthController();
-        // $auth->showLogin();
-
-        // MVP scramble Bypass (will remove after finishing authcont.)
+        // MVP scramble Bypass
+        // NOTE: If your teammate's login.php doesn't include the <html> and <head> tags natively, 
+        // you will need to wrap this in ob_start() and layout.php just like the /register route below!
         require_once __DIR__ . '/../src/Views/auth/login.php';
         break;
     
@@ -59,7 +57,10 @@ switch($route){
     // --- Agency Routes ---
     case '/agency/dashboard':
         // Prince's logic
-        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        //require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        // You will likely need to instantiate the controller here eventually:
+        // $controller = new AgencyController();
+        // $controller->dashboard();
         break;
     
     // --- System Routes ---
