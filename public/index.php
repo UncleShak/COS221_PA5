@@ -26,10 +26,18 @@ switch($route){
     
     // --- Auth Routes ---
     case '/login':
+        $title = "Login: Tripistry";
+        
+        ob_start();
         // MVP scramble Bypass
         // NOTE: If your teammate's login.php doesn't include the <html> and <head> tags natively, 
         // you will need to wrap this in ob_start() and layout.php just like the /register route below!
         require_once __DIR__ . '/../src/Views/auth/login.php';
+
+        $content= ob_get_clean();
+
+        require_once __DIR__ . '/../src/Views/layout.php';
+
         break;
     
     case '/register':
