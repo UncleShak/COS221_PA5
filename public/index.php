@@ -26,7 +26,7 @@ switch($route){
     
     // --- Auth Routes ---
     case '/login':
-        require_once '../src/Controllers/AuthController.php';
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
         $auth= new AuthController();
 
         if($_SERVER['REQUEST_METHOD']==='POST'){
