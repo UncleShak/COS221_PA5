@@ -7,37 +7,22 @@
     
     <link rel="stylesheet" href="/css/StyleGuide.css">
     
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Krona+One&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="ambient-bg"></div>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
 
-<div style="position: fixed; top: 2rem; left: 50%; transform: translateX(-50%); z-index: 999; width: 90%; max-width: 1700px;">
-        <nav class="navbar-demo glass-clear" style="border-radius: var(--r-pill); padding: 0.5rem 1rem;">
-            <div class="navbar-inner" style="padding: 0.5rem 1rem;">
-                
-                <div class="nb-logo" style="color: var(--text-main);">
-                  TRIPISTRY
-                </div>
-                
-                <ul class="nb-links" style="margin: 0; padding: 0;">
-                    <li><a href="/traveller/dashboard" style="color: var(--ocean); font-weight: 600;">Dashboard</a></li>
-                    <li><a href="/traveller/details">Packages</a></li>
-                </ul>
-                
-                <div class="nb-actions">
-                    <div class="nb-icon-btn" style="background: rgba(255,255,255,0.4); color: var(--ocean);">
-                        [account]
-                    </div>
-                </div>
-                
-            </div>
-        </nav>
-    </div>
+    <nav class="sg-nav">
+      <div class="sg-nav-logo"><span class="logo-dot"></span> TRIPISTRY</div>
+      <ul class="sg-nav-links">
+        <li><a href="/traveller/dashboard">Dashboard</a></li>
+        <li><a href="/traveller/details">Packages</a></li>
+      </ul>
+      <span class="sg-nav-pill">Traveller View</span>
+    </nav>
 
     <div class="content">
         <?= $content ?>
