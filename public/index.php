@@ -51,9 +51,11 @@ switch($route){
 
     // --- Traveller Routes ---
     case '/traveller/dashboard':
-        // Aeron's logic
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController();
+        $controller = new TravellerController($pdo); 
         $controller->dashboard();
         break;
 
@@ -61,6 +63,15 @@ switch($route){
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController();
         $controller->details();
+        break;
+    case '/traveller/submit-review':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo);
+        $controller->submitReview();
         break;
 
     // --- Agency Routes ---
