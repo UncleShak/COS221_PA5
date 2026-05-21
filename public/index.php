@@ -14,6 +14,11 @@ if (is_file($filePath)) {
 // 2. Get the clean URL path
 // Removed the brittle $baseDir string replacement which was stripping the leading '/'
 $route = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// NEW: Strip out your local subfolders so the router only sees the end of the URL
+$baseDir = '/COS221/COS221_PA5/public';
+if (strpos($route, $baseDir) === 0) {
+    $route = substr($route, strlen($baseDir));
+}
 $route = rtrim($route, '/') ?: '/'; // Normalizes URL by removing trailing slashes
 
 // Default routing to login if root is accessed
@@ -26,7 +31,7 @@ switch($route){
     
     // --- Auth Routes ---
     case '/login':
-        require_once '../src/Controllers/AuthController.php';
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
         $auth= new AuthController();
 
         if($_SERVER['REQUEST_METHOD']==='POST'){
@@ -73,25 +78,25 @@ switch($route){
         require_once __DIR__ . '/../src/Controllers/DataController.php';
         break;
 
-    case 'traveller/checkout':
+    case '/traveller/checkout':
         $title = 'Checkout - Tripistry';
 
         ob_start();
-        require_once __DIR__ . '/../src/Views/travller/checkout.php';
+        require_once __DIR__ . '/../src/Views/traveller/checkout.php';
         $content = ob_get_clean();
         require_once __DIR__ . '/../src/Views/layout.php';
         break;
 
-
-    case 'traveller/checkout':
-        $title = 'Checkout - Tripistry';
-
-        ob_start();
-        require_once __DIR__ . '/../src/Views/travller/checkout.php';
-        $content = ob_get_clean();
-        require_once __DIR__ . '/../src/Views/layout.php';
+    case '/traveller/process_booking':
+        // NEW: The route to handle your form submission
+        require_once __DIR__ . '/../src/Controllers/BookingController.php';
+        // Pass your database connection ($pdo) here when you hook up the DB
+        // $controller = new BookingController($pdo); 
+        // $controller->processBooking();
+        
+        // Temporary placeholder so it doesn't crash before the DB is connected:
+        echo "Route hit! Ready to process booking."; 
         break;
-
 
     // --- Fallback ---
     default:
