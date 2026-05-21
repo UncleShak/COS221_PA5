@@ -32,5 +32,12 @@ class AuthController{
             echo "</div>";
         }
     }
+
+    public static function checkAuth(){
+        if(!isset($_SESSION['user_id'])){
+            header("Location: /login?error=auth_required");
+            exit;
+        }
+    }
 }
 ?>
