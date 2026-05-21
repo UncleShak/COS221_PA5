@@ -8,7 +8,7 @@
         <h2 class="sg-section-title" style="font-size: 2.5rem; margin-bottom: 2rem;">Finalize Journey</h2>
         
         <form action="/traveller/process_booking" method="POST" id="validate-me" class="input-stack">
-          <input type="hidden" name="package_id" value="">
+          <input type="hidden" name="package_id" value="1">
 
           <div class="demo-cell glass-clear" style="padding: 2rem; margin-bottom: 1.5rem;">
             <h3 style="font-family: var(--font-display); font-style: italic; margin-bottom: 1.5rem; color: var(--ocean);">1. Travel Details</h3>

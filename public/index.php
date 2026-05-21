@@ -80,7 +80,6 @@ switch($route){
 
     case '/traveller/checkout':
         $title = 'Checkout - Tripistry';
-
         ob_start();
         require_once __DIR__ . '/../src/Views/traveller/checkout.php';
         $content = ob_get_clean();
@@ -88,14 +87,17 @@ switch($route){
         break;
 
     case '/traveller/process_booking':
-        // NEW: The route to handle your form submission
+        // 1. Establish the Database Connection
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+
+        // 2. Pass connection to your Controller
         require_once __DIR__ . '/../src/Controllers/BookingController.php';
-        // Pass your database connection ($pdo) here when you hook up the DB
-        // $controller = new BookingController($pdo); 
-        // $controller->processBooking();
+        $controller = new BookingController($pdo); 
         
-        // Temporary placeholder so it doesn't crash before the DB is connected:
-        echo "Route hit! Ready to process booking."; 
+        // 3. Execute the process (which includes the Trapdoor)
+        $controller->processBooking();
         break;
 
     // --- Fallback ---
