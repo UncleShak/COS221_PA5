@@ -755,6 +755,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `user_id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_type` enum('traveller','agency') COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -771,7 +772,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'sarah@email.com','$2y$10$hashedpassword1','traveller','2026-05-13 10:18:11',1),(2,'john@email.com','$2y$10$hashedpassword2','traveller','2026-05-13 10:18:11',1),(3,'globaltravel@agency.com','$2y$10$hashedpassword3','agency','2026-05-13 10:18:11',1),(4,'adventuretours@agency.com','$2y$10$hashedpassword4','agency','2026-05-13 10:18:11',1);
+INSERT INTO `users` VALUES (1,'sarah@email.com',NULL,'$2y$10$hashedpassword1','traveller','2026-05-13 10:18:11',1),(2,'john@email.com',NULL,'$2y$10$hashedpassword2','traveller','2026-05-13 10:18:11',1),(3,'globaltravel@agency.com',NULL,'$2y$10$hashedpassword3','agency','2026-05-13 10:18:11',1),(4,'adventuretours@agency.com',NULL,'$2y$10$hashedpassword4','agency','2026-05-13 10:18:11',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -784,4 +785,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-13 15:57:43
+-- Dump completed on 2026-05-20 10:25:19
