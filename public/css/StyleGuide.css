@@ -55,7 +55,7 @@
   --ease:          cubic-bezier(0.22, 1, 0.36, 1);
   
   /* TYPOGRAPHY TOKENS */
-  --font-display:  'Fraunces', serif;
+  --font-display:  'Roboto', sans-serif;
   --font-body:     'Inter', sans-serif;
   --font-code:     'DM Mono', monospace;
 }
@@ -197,7 +197,7 @@ body {
 }
 .sg-hero h1 {
   font-family: var(--font-display); font-size: clamp(4rem, 9vw, 7.5rem);
-  font-weight: 300; font-style: italic; line-height: 1.0; margin-bottom: 1.5rem;
+  font-weight: 1000; font-style: italic; line-height: 1.0; margin-bottom: 1.5rem;
   animation: fadeUp 0.9s 0.1s var(--ease) both; color: var(--text-main);
 }
 .sg-hero h1 span {
@@ -497,7 +497,7 @@ body {
 .lp-hero-nav { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); }
 .lp-logo { font-family: var(--font-display); font-weight: 300; font-style: italic; font-size: 1.3rem; color: #fff; }
 .lp-mountain { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-bottom: 1rem; }
-.lp-hero-h1 { font-family: var(--font-display); font-size: 3.5rem; font-weight: 300; font-style: italic; line-height: 1.1; margin-bottom: 1.5rem; }
+.lp-hero-h1 { font-family: var(--font-display); font-size: 3.5rem; font-weight: 1000; font-style: italic; line-height: 1.1; margin-bottom: 1.5rem; }
 
 .lp-packages { padding: 3rem 2.5rem; background: rgba(255,255,255,0.4); }
 .lp-card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2rem 0; }
