@@ -26,18 +26,14 @@ switch($route){
     
     // --- Auth Routes ---
     case '/login':
-        $title = "Login: Tripistry";
-        
-        ob_start();
-        // MVP scramble Bypass
-        // NOTE: If your teammate's login.php doesn't include the <html> and <head> tags natively, 
-        // you will need to wrap this in ob_start() and layout.php just like the /register route below!
-        require_once __DIR__ . '/../src/Views/auth/login.php';
+        require_once '../src/Controllers/AuthController.php';
+        $auth= new AuthController();
 
-        $content= ob_get_clean();
-
-        require_once __DIR__ . '/../src/Views/layout.php';
-
+        if($_SERVER['REQUEST_METHOD']==='POST'){
+            $auth->login();
+        }else {
+            $auth->showLogin();
+        }
         break;
     
     case '/register':
@@ -76,6 +72,16 @@ switch($route){
         // raw data manager gateway
         require_once __DIR__ . '/../src/Controllers/DataController.php';
         break;
+
+    case 'traveller/checkout':
+        $title = 'Checkout - Tripistry';
+
+        ob_start();
+        require_once __DIR__ . '/../src/Views/travller/checkout.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../src/Views/layout.php';
+        break;
+
 
     // --- Fallback ---
     default:

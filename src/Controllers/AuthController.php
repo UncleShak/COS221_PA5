@@ -12,9 +12,25 @@ class AuthController{
     }
 
     public function login(){
-        session_start();
+        if($_SERVER["REQUEST_METHOD"]== "POST"){
+            $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
 
-        
+            $password = trim($_POST['password']);
+
+            if(empty($email) || empty($password)){
+                header("Location: /login?error=empty_fields");
+                exit;
+            }
+
+            $database = new Database();
+            $db= $database->getConnection();
+
+            echo "<div style='padding: 2rem; text-align: center; font-family: sans-serif;'>";
+            echo "<h2 style='color: #10b981;'>Tactical Link Established!</h2>";
+            echo "<p>Email captured: " . htmlspecialchars($email) . "</p>";
+            echo "<p>Ready to hand off to UserModel tomorrow.</p>";
+            echo "</div>";
+        }
     }
 }
 ?>
