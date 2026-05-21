@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../config/database.example.php';
-// require_once '../src/Models/UserModel.php'; 
+require_once __DIR__ . '/../../config/database.php';
+
 
 class AuthController{
     public function showLogin(){ // self explanatory
