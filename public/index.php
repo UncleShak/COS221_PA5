@@ -83,6 +83,16 @@ switch($route){
         break;
 
 
+    case 'traveller/checkout':
+        $title = 'Checkout - Tripistry';
+
+        ob_start();
+        require_once __DIR__ . '/../src/Views/travller/checkout.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../src/Views/layout.php';
+        break;
+
+
     // --- Fallback ---
     default:
         http_response_code(404);

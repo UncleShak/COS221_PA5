@@ -10,7 +10,7 @@
             Sign in to continue your journey.
         </p>
         
-        <form action="/traveller/dashboard" method="GET">
+        <form action="/traveller/dashboard" method="POST">
             <div class="input-stack" style="text-align: left;">
                 
                 <div class="input-group">
