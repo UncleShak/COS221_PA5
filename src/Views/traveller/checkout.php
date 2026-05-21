@@ -88,7 +88,7 @@
             </div>
             
             <div style="margin-top: 1.5rem; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
-              🔒 Secure 256-bit SSL Encryption
+              Secure 256-bit SSL Encryption
             </div>
           </div>
         </div>
