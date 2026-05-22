@@ -1,219 +1,263 @@
 <?php
+// src/Views/traveller/dashboard.php
+// Owner: Aeron - Traveller browsing and filtering interface
 
+$page_title = 'Discover Travel Packages - Tripistry';
 ?>
-
-<div class="sg-page" style="min-height: 100vh; padding: 100px 2rem 4rem; width: 100%; max-width: 1800px; margin: 0 auto;">
-
-    <?php if (isset($_GET['status']) && $_GET['status'] === 'booking_confirmed'): ?>
-    <div class="glass-heavy" style="border-left: 4px solid var(--success); padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem;">
-        <div class="status-dot"></div>
-        <div style="color: var(--text-main);">
-            <strong style="color: var(--success);">Booking Confirmed:</strong> Your tropical getaway has been secured.
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <div style="margin-bottom: 3rem;">
-        <p class="sg-section-label">Traveller Hub</p>
-        <h2 class="sg-section-title">Your Itinerary.</h2>
-    </div>
-
-    <div style="display: flex; gap: 2rem; align-items: stretch; width: 100%; flex-wrap: wrap;">
-
-        <div class="glass-frosted" style="flex: 1; min-width: 300px; padding: 3rem 2rem; display: flex; flex-direction: column; text-align: center;">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($page_title); ?></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <?php require_once __DIR__ . '/../layout.php'; ?>
+    
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Discover Your Next Adventure</h1>
+            <p>Explore thousands of travel packages from trusted agencies worldwide</p>
             
-            <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--gradient-main); margin: 0 auto 1.5rem; padding: 4px; box-shadow: var(--glass-shadow-hi);">
-                <div style="width: 100%; height: 100%; border-radius: 50%; background: var(--glass-bg-hi); display: flex; align-items: center; justify-content: center; font-size: 3rem;">
-                    🌴
-                </div>
-            </div>
-            
-            <h2 style="font-family: var(--font-display); font-weight: 300; font-style: italic; font-size: 2.2rem; color: var(--text-main); margin-bottom: 0.2rem;">Shakir</h2>
-            <p style="color: var(--ocean); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Lead Explorer</p>
-
-            <div style="margin-top: 3rem; text-align: left; border-top: 1px dashed var(--glass-border); padding-top: 2rem;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 1.2rem;">
-                    <span class="input-label">Total Expeditions</span>
-                    <strong style="color: var(--teal); font-size: 1.2rem;"><?= $totalExpeditions ?></strong>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
-                    <span class="input-label">Account Status</span>
-                    <span class="status-pill"><div class="status-dot"></div> Active</span>
-                </div>
-                <button class="btn-secondary" style="width: 100%;">
-                    Edit Profile
-                </button>
-            </div>
-        </div>
-
-
-        <div style="flex: 1; min-width: 350px; display: flex; flex-direction: column;">
-            <p class="sg-section-label" style="margin-bottom: 1.5rem;">The adventure that awaits...</p>
-            
-            <?php if (empty($upcomingTrips)): ?>
-                <div class="glass-clear" style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                    No upcoming journeys scheduled. Head to the packages page to book your next adventure.
-                </div>
-            <?php else: ?>
+            <form id="search-form" class="hero-search" method="GET" action="index.php">
+                <input type="hidden" name="route" value="traveller/dashboard">
+                <input type="text" 
+                       name="search" 
+                       id="search-input" 
+                       placeholder="Where do you want to go? (e.g., Paris, Tokyo, New York)" 
+                       value="<?php echo htmlspecialchars($currentFilters['search'] ?? ''); ?>">
+                <button type="submit" class="btn-primary">Search</button>
+            </form>
+        </section>
+        
+        <div class="dashboard-layout">
+            <!-- Sidebar Filters -->
+            <aside class="filters-sidebar">
+                <h3>Filter Packages</h3>
                 
-                <div style="display: flex; flex-direction: column; gap: 2rem;">
-                <?php foreach ($upcomingTrips as $trip): ?>
-                
-                <div class="glass-active" style="display: flex; flex-direction: column;">
-                    <div style="padding: 2.5rem; border-bottom: 2px dashed rgba(0, 166, 199, 0.2);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                            <span class="badge badge-green">CONFIRMED</span>
-                            <span style="font-family: var(--font-code); color: var(--text-muted); font-size: 0.9rem;">REF: <?= htmlspecialchars($trip['payment_reference'] ?? 'PENDING') ?></span>
-                        </div>
-                        
-                        <h3 style="font-family: var(--font-display); font-size: 2.8rem; font-weight: 300; font-style: italic; color: var(--text-main); line-height: 1.1; margin-bottom: 0.5rem;">
-                            <?= htmlspecialchars($trip['package_name']) ?>
-                        </h3>
-                        <p style="color: var(--text-soft); font-size: 1.1rem;"><?= htmlspecialchars($trip['duration_days']) ?> Days of Exploration</p>
-                    </div>
-
-                    <div style="padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                        <div>
-                            <div class="input-label" style="margin-bottom: 0.4rem;">DEPARTURE DATE</div>
-                            <div style="font-size: 1.3rem; font-weight: 500; color: var(--text-main);"><?= htmlspecialchars($trip['travel_date']) ?></div>
-                        </div>
-                        <div>
-                            <div class="input-label" style="margin-bottom: 0.4rem;">PARTY SIZE</div>
-                            <div style="font-size: 1.3rem; font-weight: 500; color: var(--text-main);"><?= htmlspecialchars($trip['num_travellers']) ?> Travellers</div>
-                        </div>
-                    </div>
-
-                    <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg);">
-                        
-                        <div style="font-family: var(--font-code); font-size: 1.8rem; color: var(--text-muted); letter-spacing: 4px; opacity: 0.5; overflow: hidden; white-space: nowrap; flex: 1;">
-                            ||||||||||||||||
-                        </div>
-                        
-                        <form action="/traveller/cancel-booking" method="POST" 
-                            style="margin: 0; display: flex; align-items: center; flex-shrink: 0; margin-left: 1.5rem;"
-                            onsubmit="return confirm('Are you sure you want to cancel your booking? This action cannot be undone.');">
-                            
-                            <input type="hidden" name="booking_id" value="<?= htmlspecialchars($trip['booking_id']) ?>">
-                            
-                            <button type="submit" class="btn-danger" style="white-space: nowrap; margin: 0; padding: 0.7rem 1.8rem;">
-                                Cancel Booking
-                            </button>
-                        </form>
-
-                    </div>
-                </div>
-
-                <?php endforeach; ?>
-                </div>
-
-            <?php endif; ?>
-        </div>
-
-
-        <?php if ($hasPastTrips): ?>
-        <div style="flex: 1; min-width: 350px; display: flex; flex-direction: column;">
-            <p class="sg-section-label" style="margin-bottom: 1.5rem; color: var(--text-muted);">Past adventures</p>
-            
-            <div class="input-stack" style="overflow-y: auto; max-height: 700px; padding-right: 0.5rem;">
-                
-                <?php foreach ($pastTrips as $pastTrip): ?>
-                <div class="glass-clear" style="padding: 1.8rem; transition: all 0.3s var(--ease);">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-                        <div>
-                            <div style="font-family: var(--font-code); font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">
-                                <?= htmlspecialchars($pastTrip['travel_date']) ?>
-                            </div>
-                            <div style="font-family: var(--font-display); font-size: 1.5rem; font-style: italic; color: var(--text-main);">
-                                <?= htmlspecialchars($pastTrip['package_name']) ?>
-                            </div>
-                        </div>
-                        <span class="badge badge-blue">COMPLETED</span>
+                <form id="filter-form" method="GET" action="index.php">
+                    <input type="hidden" name="route" value="traveller/dashboard">
+                    
+                    <!-- Destination Filter -->
+                    <div class="filter-group">
+                        <label for="destination">Destination</label>
+                        <select name="destination" id="destination">
+                            <option value="">All Destinations</option>
+                            <?php foreach ($filterOptions['destinations'] as $dest): ?>
+                                <option value="<?php echo htmlspecialchars($dest); ?>" 
+                                    <?php echo (isset($currentFilters['destination']) && $currentFilters['destination'] == $dest) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($dest); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     
-                    <?php if (!empty($pastTrip['rating'])): ?>
-                        <div style="background: rgba(255,255,255,0.3); padding: 1rem 1.2rem; border-radius: var(--r-md); border-left: 3px solid var(--ocean);">
-                            <div style="color: #fbbf24; font-size: 1.2rem; margin-bottom: 0.5rem; letter-spacing: 2px;">
-                                <?php 
-                                    // Generate the exact number of stars based on the rating
-                                    for ($i = 1; $i <= 5; $i++) {
-                                        echo $i <= $pastTrip['rating'] ? '★' : '<span style="color: rgba(0,0,0,0.1);">★</span>';
-                                    }
-                                ?>
-                            </div>
-                            <p style="font-size: 0.9rem; color: var(--text-soft); font-style: italic; line-height: 1.5; margin: 0;">
-                                "<?= htmlspecialchars($pastTrip['review_comment']) ?>"
-                            </p>
+                    <!-- Price Range -->
+                    <div class="filter-group">
+                        <label>Price Range (USD)</label>
+                        <div class="price-range-inputs">
+                            <input type="number" 
+                                   name="min_price" 
+                                   id="min_price" 
+                                   placeholder="Min" 
+                                   value="<?php echo $currentFilters['min_price'] ?? ''; ?>"
+                                   min="<?php echo $filterOptions['min_price']; ?>"
+                                   max="<?php echo $filterOptions['max_price']; ?>">
+                            <span>to</span>
+                            <input type="number" 
+                                   name="max_price" 
+                                   id="max_price" 
+                                   placeholder="Max" 
+                                   value="<?php echo $currentFilters['max_price'] ?? ''; ?>"
+                                   min="<?php echo $filterOptions['min_price']; ?>"
+                                   max="<?php echo $filterOptions['max_price']; ?>">
+                        </div>
+                    </div>
+                    
+                    <!-- Duration Filter -->
+                    <div class="filter-group">
+                        <label for="duration">Duration (Days)</label>
+                        <select name="duration" id="duration">
+                            <option value="">Any</option>
+                            <?php foreach ($filterOptions['durations'] as $days): ?>
+                                <option value="<?php echo $days; ?>"
+                                    <?php echo (isset($currentFilters['duration']) && $currentFilters['duration'] == $days) ? 'selected' : ''; ?>>
+                                    <?php echo $days; ?> days
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <!-- Rating Filter -->
+                    <div class="filter-group">
+                        <label for="min_rating">Minimum Rating</label>
+                        <select name="min_rating" id="min_rating">
+                            <option value="">Any rating</option>
+                            <option value="4.5" <?php echo (isset($currentFilters['min_rating']) && $currentFilters['min_rating'] == 4.5) ? 'selected' : ''; ?>>4.5+ ★★★★★</option>
+                            <option value="4.0" <?php echo (isset($currentFilters['min_rating']) && $currentFilters['min_rating'] == 4.0) ? 'selected' : ''; ?>>4.0+ ★★★★☆</option>
+                            <option value="3.5" <?php echo (isset($currentFilters['min_rating']) && $currentFilters['min_rating'] == 3.5) ? 'selected' : ''; ?>>3.5+ ★★★☆☆</option>
+                            <option value="3.0" <?php echo (isset($currentFilters['min_rating']) && $currentFilters['min_rating'] == 3.0) ? 'selected' : ''; ?>>3.0+ ★★★☆☆</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Sort Options -->
+                    <div class="filter-group">
+                        <label for="sort">Sort By</label>
+                        <select name="sort" id="sort">
+                            <option value="price_asc" <?php echo ($currentSort == 'price_asc') ? 'selected' : ''; ?>>Price: Low to High</option>
+                            <option value="price_desc" <?php echo ($currentSort == 'price_desc') ? 'selected' : ''; ?>>Price: High to Low</option>
+                            <option value="rating_desc" <?php echo ($currentSort == 'rating_desc') ? 'selected' : ''; ?>>Rating: High to Low</option>
+                            <option value="duration_asc" <?php echo ($currentSort == 'duration_asc') ? 'selected' : ''; ?>>Duration: Shortest</option>
+                            <option value="duration_desc" <?php echo ($currentSort == 'duration_desc') ? 'selected' : ''; ?>>Duration: Longest</option>
+                            <option value="newest" <?php echo ($currentSort == 'newest') ? 'selected' : ''; ?>>Newest First</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-block">Apply Filters</button>
+                    <a href="index.php?route=traveller/dashboard" class="btn-secondary btn-block">Reset All</a>
+                </form>
+            </aside>
+            
+            <!-- Main Content -->
+            <div class="packages-main">
+                <div class="results-header">
+                    <h2>Available Packages</h2>
+                    <p id="results-count"><?php echo $totalPackages; ?> packages found</p>
+                </div>
+                
+                <!-- Loading Spinner -->
+                <div id="loading-spinner" class="spinner hidden">
+                    <div class="loader"></div>
+                    <p>Loading packages...</p>
+                </div>
+                
+                <!-- Packages Grid -->
+                <div id="packages-grid" class="grid-3col">
+                    <?php if (empty($packages)): ?>
+                        <div class="no-results">
+                            <p>No packages match your filters. Try adjusting your search criteria!</p>
                         </div>
                     <?php else: ?>
-                        <button class="btn-primary" style="width: 100%;" 
-                                data-booking="<?= htmlspecialchars($pastTrip['booking_id']) ?>" 
-                                data-package="<?= htmlspecialchars($pastTrip['package_id']) ?>"
-                                data-name="<?= htmlspecialchars($pastTrip['package_name']) ?>"
-                                onclick="openReviewModal(this)">
-                            Submit Review
-                        </button>
+                        <?php foreach ($packages as $package): ?>
+                            <div class="package-card" data-package-id="<?php echo $package['id']; ?>">
+                                <div class="package-image">
+                                    <img src="<?php echo htmlspecialchars($package['image_url'] ?? '/images/placeholder.jpg'); ?>" 
+                                         alt="<?php echo htmlspecialchars($package['title']); ?>"
+                                         loading="lazy"
+                                         onerror="this.src='/images/placeholder.jpg'">
+                                    <?php if ($package['avg_rating'] > 0): ?>
+                                        <span class="rating-badge">
+                                            ★ <?php echo number_format($package['avg_rating'], 1); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="package-info">
+                                    <h3><?php echo htmlspecialchars($package['title']); ?></h3>
+                                    <p class="destination">
+                                        📍 <?php echo htmlspecialchars($package['destination']); ?>
+                                    </p>
+                                    <div class="package-meta">
+                                        <span class="duration">🗓️ <?php echo $package['duration_days']; ?> days</span>
+                                        <span class="agency">🏢 <?php echo htmlspecialchars($package['agency_name']); ?></span>
+                                    </div>
+                                    <p class="price">
+                                        $<?php echo number_format($package['price']); ?>
+                                        <span class="per-person">per person</span>
+                                    </p>
+                                    <?php if ($package['review_count'] > 0): ?>
+                                        <p class="reviews">
+                                            <?php echo $package['review_count']; ?> review<?php echo $package['review_count'] != 1 ? 's' : ''; ?>
+                                        </p>
+                                    <?php endif; ?>
+                                    <div class="card-actions">
+                                        <a href="index.php?route=traveller/details&id=<?php echo $package['id']; ?>" 
+                                           class="btn-primary">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
-
                 </div>
-                <?php endforeach; ?>
-
+                
+                <!-- Pagination -->
+                <?php if ($totalPages > 1): ?>
+                    <div class="pagination">
+                        <?php if ($currentPage > 1): ?>
+                            <a href="?route=traveller/dashboard&page=<?php echo $currentPage - 1; ?>&<?php echo http_build_query(array_filter($currentFilters)); ?>&sort=<?php echo urlencode($currentSort); ?>" class="page-link">← Previous</a>
+                        <?php endif; ?>
+                        
+                        <?php for ($i = 1; $i <= min(5, $totalPages); $i++): ?>
+                            <a href="?route=traveller/dashboard&page=<?php echo $i; ?>&<?php echo http_build_query(array_filter($currentFilters)); ?>&sort=<?php echo urlencode($currentSort); ?>" 
+                               class="page-link <?php echo ($currentPage == $i) ? 'active' : ''; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+                        
+                        <?php if ($currentPage < $totalPages): ?>
+                            <a href="?route=traveller/dashboard&page=<?php echo $currentPage + 1; ?>&<?php echo http_build_query(array_filter($currentFilters)); ?>&sort=<?php echo urlencode($currentSort); ?>" class="page-link">Next →</a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
-        <?php endif; ?>
-    </div>
-  <div id="reviewModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(11, 43, 51, 0.6); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
         
-        <div class="glass-heavy" style="padding: 3rem 2.5rem; border-radius: var(--r-xl); width: 100%; max-width: 500px; position: relative; animation: fadeUp 0.3s ease-out forwards;">
-            
-            <button onclick="closeReviewModal()" style="position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
-            
-            <h3 style="font-family: var(--font-display); font-size: 2rem; font-style: italic; font-weight: 300; color: var(--text-main); margin-bottom: 0.5rem;">Mission Log</h3>
-            <p style="color: var(--text-soft); font-size: 0.95rem; margin-bottom: 2rem;">Submitting telemetry for <strong id="modalTripName" style="color: var(--ocean);">[Trip]</strong></p>
-
-            <form action="/traveller/submit-review" method="POST" class="input-stack">
-                <input type="hidden" name="booking_id" id="modalBookingId">
-                <input type="hidden" name="package_id" id="modalPackageId">
-
-                <div class="input-group">
-                    <label class="input-label">Rating (1-5)</label>
-                    <select name="rating" class="input-field" required>
-                        <option value="5">5 - Flawless Execution</option>
-                        <option value="4">4 - Minor Anomalies</option>
-                        <option value="3">3 - Acceptable</option>
-                        <option value="2">2 - Suboptimal</option>
-                        <option value="1">1 - Critical Failure</option>
-                    </select>
-                </div>
-
-                <div class="input-group" style="margin-bottom: 1.5rem;">
-                    <label class="input-label">Expedition Notes</label>
-                    <textarea name="comment" class="input-field" rows="4" placeholder="Detail your experience..." required></textarea>
-                </div>
-
-                <button type="submit" class="btn-primary" style="width: 100%;">Transmit Log</button>
-            </form>
-
-        </div>
-    </div>
-
+        <!-- For You Section (Bonus Task) -->
+        <section class="for-you-section">
+            <div class="section-header">
+                <h2>🌟 For You</h2>
+                <p>Personalized recommendations based on your travel history</p>
+            </div>
+            <div id="for-you-grid" class="grid-4col">
+                <div class="loading-placeholder">Loading recommendations...</div>
+            </div>
+        </section>
+    </main>
+    
+    <script src="/js/validation.js"></script>
     <script>
-        function openReviewModal(button) {
-            // 1. Extract data from the clicked button
-            const bookingId = button.getAttribute('data-booking');
-            const packageId = button.getAttribute('data-package');
-            const tripName = button.getAttribute('data-name');
-
-            // 2. Inject data into the hidden modal form
-            document.getElementById('modalBookingId').value = bookingId;
-            document.getElementById('modalPackageId').value = packageId;
-            document.getElementById('modalTripName').innerText = tripName;
-
-            // 3. Reveal the modal
-            document.getElementById('reviewModalOverlay').style.display = 'flex';
+        // Load For You recommendations
+        async function loadForYouRecommendations() {
+            const container = document.getElementById('for-you-grid');
+            
+            try {
+                const response = await fetch('index.php?route=traveller/for-you', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const packages = await response.json();
+                
+                if (packages.length === 0) {
+                    container.innerHTML = '<p class="no-results">Sign in to see personalized recommendations!</p>';
+                    return;
+                }
+                
+                container.innerHTML = packages.map(pkg => `
+                    <div class="package-card-small">
+                        <h4>${escapeHtml(pkg.title)}</h4>
+                        <p>📍 ${escapeHtml(pkg.destination)}</p>
+                        <p class="price">$${Number(pkg.price).toLocaleString()}</p>
+                        <a href="index.php?route=traveller/details&id=${pkg.id}" class="btn-small">View</a>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load recommendations:', error);
+                container.innerHTML = '<p class="no-results">Unable to load recommendations.</p>';
+            }
         }
-
-        function closeReviewModal() {
-            document.getElementById('reviewModalOverlay').style.display = 'none';
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
+        
+        // Load on page ready
+        document.addEventListener('DOMContentLoaded', loadForYouRecommendations);
     </script>
-</div>
+</body>
+</html>
