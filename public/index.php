@@ -51,15 +51,19 @@ switch($route){
 
     // --- Traveller Routes ---
     case '/traveller/dashboard':
-        require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        // Aeron's logic
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController($pdo); 
         $controller->dashboard();
         break;
 
     case '/traveller/details':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController();
         $controller->details();
@@ -74,27 +78,25 @@ switch($route){
         $controller->submitReview();
         break;
 
-    // --- Agency Routes ---
-    case '/agency/dashboard':
-        // Prince's logic
-        //require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-        // You will likely need to instantiate the controller here eventually:
-        // $controller = new AgencyController();
-        // $controller->dashboard();
-        break;
-    
-    // --- System Routes ---
-    case '/manage-data':
-        // raw data manager gateway
-        require_once __DIR__ . '/../src/Controllers/DataController.php';
-        break;
+    case 'traveller/checkout':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
 
-    case '/traveller/checkout':
         $title = 'Checkout - Tripistry';
+
         ob_start();
         require_once __DIR__ . '/../src/Views/traveller/checkout.php';
         $content = ob_get_clean();
         require_once __DIR__ . '/../src/Views/layout.php';
+        break;
+
+    case '/traveller/dashboard':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController();
+        $controller->dashboard();
         break;
 
     case '/traveller/process_booking':
@@ -110,6 +112,27 @@ switch($route){
         // 3. Execute the process (which includes the Trapdoor)
         $controller->processBooking();
         break;
+
+    // --- Agency Routes ---
+    case '/agency/dashboard':
+        // Prince's logic
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        AuthController::checkRole('agency');
+        // I will do this after prince is done:
+        // $controller = new AgencyController();
+        // $controller->dashboard();
+        break;
+    
+    // --- System Routes ---
+    case '/manage-data':
+        // raw data manager gateway
+        require_once __DIR__ . '/../src/Controllers/DataController.php';
+        AuthController::checkRole('agency');
+
+        require_once __DIR__ . '/../src/Controllers/DataController.php';
+        break;
+
+    
 
     // --- Fallback ---
     default:
