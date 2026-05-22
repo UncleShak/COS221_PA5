@@ -18,6 +18,7 @@
 --
 -- Table structure for table `accommodationamenities`
 --
+USE tripistry;
 
 DROP TABLE IF EXISTS `accommodationamenities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -786,3 +787,6 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-05-20 10:25:19
+
+
+UPDATE users SET password_hash = '$2y$10$Fqv8q.lUyQT82cgoca1f5eclkk.CLqGhfYq8CN6Vp8nzynB9ruqFW' WHERE email = 'sarah@email.com';

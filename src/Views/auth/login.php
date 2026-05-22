@@ -11,7 +11,7 @@
             Sign in to continue your journey.
         </p>
         
-        <form action="/traveller/dashboard" method="POST">
+        <form action="/login" method="POST">
             <div class="input-stack" style="text-align: left;">
                 
                 <div class="input-group">

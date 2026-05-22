@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../config/database.example.php';
-// require_once '../src/Models/UserModel.php'; 
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../Models/UserModel.php'; 
 
 class AuthController{
     public function showLogin(){ // self explanatory
@@ -25,17 +25,42 @@ class AuthController{
             $database = new Database();
             $db= $database->getConnection();
 
-            echo "<div style='padding: 2rem; text-align: center; font-family: sans-serif;'>";
-            echo "<h2 style='color: #10b981;'>Tactical Link Established!</h2>";
-            echo "<p>Email captured: " . htmlspecialchars($email) . "</p>";
-            echo "<p>Ready to hand off to UserModel tomorrow.</p>";
-            echo "</div>";
+            $userModel = new UserModel($db);
+            $user = $userModel->verifyCredentials($email, $password);
+
+            if($user){
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['user_type']=$user['user_type'];
+
+                if($user['user_type']==='traveller'){
+                    header("Location: /traveller/dashboard");
+                }else{
+                    header("Location: /agency/dashboard");
+                }
+                exit;
+            }else{
+                header("Location: /login?error=invalid_credentials");
+            }
         }
     }
 
     public static function checkAuth(){
         if(!isset($_SESSION['user_id'])){
             header("Location: /login?error=auth_required");
+            exit;
+        }
+    }
+
+    public static function checkRole($requiredRole){
+        self::checkAuth();
+
+        if($_SESSION['user_type'] !== $requiredRole){
+            http_response_code(403);
+            echo "<div style='text-align:center; padding: 5rem; font-family: sans-serif;'>";
+            echo "<h1 style='color: var(--danger, #ef4444);'>403 - Forbidden Access</h1>";
+            echo "<p>Your account type does not have permission to view this destination.</p>";
+            echo "<a href='/login'>Return to Safety</a>";
+            echo "</div>";
             exit;
         }
     }

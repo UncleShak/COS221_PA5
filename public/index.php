@@ -47,22 +47,50 @@ switch($route){
     // --- Traveller Routes ---
     case '/traveller/dashboard':
         // Aeron's logic
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController();
         $controller->dashboard();
         break;
 
     case '/traveller/details':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController();
         $controller->details();
         break;
 
+    case 'traveller/checkout':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
+        $title = 'Checkout - Tripistry';
+
+        ob_start();
+        require_once __DIR__ . '/../src/Views/traveller/checkout.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../src/Views/layout.php';
+        break;
+
+    case '/traveller/dashboard':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController();
+        $controller->dashboard();
+        break;
+
     // --- Agency Routes ---
     case '/agency/dashboard':
         // Prince's logic
-        //require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-        // You will likely need to instantiate the controller here eventually:
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        AuthController::checkRole('agency');
+        // I will do this after prince is done:
         // $controller = new AgencyController();
         // $controller->dashboard();
         break;
@@ -71,17 +99,12 @@ switch($route){
     case '/manage-data':
         // raw data manager gateway
         require_once __DIR__ . '/../src/Controllers/DataController.php';
+        AuthController::checkRole('agency');
+
+        require_once __DIR__ . '/../src/Controllers/DataController.php';
         break;
 
-    case 'traveller/checkout':
-        $title = 'Checkout - Tripistry';
-
-        ob_start();
-        require_once __DIR__ . '/../src/Views/travller/checkout.php';
-        $content = ob_get_clean();
-        require_once __DIR__ . '/../src/Views/layout.php';
-        break;
-
+    
 
     // --- Fallback ---
     default:
