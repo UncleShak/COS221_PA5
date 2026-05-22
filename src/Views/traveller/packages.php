@@ -36,7 +36,7 @@ $currentPage = $currentPage ?? 1;
     </section>
     
     <div class="dashboard-layout" style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem;">
-        <aside class="filters-sidebar glass-clear" style="padding: 1.5rem;">
+        <aside class="filters-sidebar glass-clear" style="padding: 1.5rem; position: sticky; top: 120px; align-self: start; max-height: calc(100vh - 140px); overflow-y: auto;">
             <h3>Filter Packages</h3>
             <form id="filter-form" method="GET" action="index.php">
                 <input type="hidden" name="route" value="traveller/packages">
