@@ -4,8 +4,6 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// 1. BYPASS FOR STATIC FILES (CSS, Images, etc.)
-// If the requested file actually exists in the public folder, serve it directly.
 $filePath = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (is_file($filePath)) {
     return false; 
@@ -62,11 +60,15 @@ switch($route){
         break;
 
     case '/traveller/details':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
 
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController();
+        $controller = new TravellerController($pdo); 
         $controller->details();
         break;
 
@@ -90,15 +92,6 @@ switch($route){
         require_once __DIR__ . '/../src/Views/traveller/checkout.php';
         $content = ob_get_clean();
         require_once __DIR__ . '/../src/Views/layout.php';
-        break;
-
-    case '/traveller/dashboard':
-        require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('traveller');
-
-        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController();
-        $controller->dashboard();
         break;
 
     case '/traveller/process_booking':
@@ -126,15 +119,15 @@ switch($route){
         $controller = new TravellerController($pdo);
         $controller->cancelBooking();
         break;
+    case '/traveller/packages':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
 
-    // --- Agency Routes ---
-    case '/agency/dashboard':
-        // Prince's logic
-        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-        AuthController::checkRole('agency');
-        // I will do this after prince is done:
-        // $controller = new AgencyController();
-        // $controller->dashboard();
+        $title = 'Browse Packages - Tripistry';
+        ob_start();
+        require_once __DIR__ . '/../src/Views/traveller/packages.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../src/Views/layout.php';
         break;
     
     // --- System Routes ---

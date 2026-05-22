@@ -119,19 +119,13 @@ class TravellerController {
     }
 
     public function cancelBooking() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
         
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
-            header("Location: /login");
-            exit();
-        }
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
             $bookingId = $_POST['booking_id'];
             $travellerId = $_SESSION['user_id'];
 
+            // Assumes you have a cancelBooking method in your model
             $success = $this->bookingModel->cancelBooking($bookingId, $travellerId);
 
             if ($success) {
@@ -139,8 +133,6 @@ class TravellerController {
                 exit();
             }
         }
-        
-        // Fallback if something fails
         header("Location: /traveller/dashboard?status=cancel_failed");
         exit();
     }
