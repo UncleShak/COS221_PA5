@@ -790,3 +790,5 @@ UNLOCK TABLES;
 
 
 UPDATE users SET password_hash = '$2y$10$Fqv8q.lUyQT82cgoca1f5eclkk.CLqGhfYq8CN6Vp8nzynB9ruqFW' WHERE email = 'sarah@email.com';
+
+UPDATE users SET password_hash = '$2y$10$.rd/E5Y4n4geNldOW.mXkOVzj9JqMuCBWpD4iZhbwrldrunAtene.' WHERE email = 'globaltravel@agency.com';

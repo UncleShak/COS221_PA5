@@ -140,13 +140,28 @@ switch($route){
     // --- System Routes ---
     case '/manage-data':
         // raw data manager gateway
-        require_once __DIR__ . '/../src/Controllers/DataController.php';
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
 
-        require_once __DIR__ . '/../src/Controllers/DataController.php';
-        break;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../config/database.php';
+            require_once __DIR__ . '/../src/Controllers/DataController.php';
+            
+            $database = new Database();
+            $pdo = $database->getConnection();
+            
+            $controller = new DataController($pdo);
+            $controller->handleUpload();
+            // The controller handles the redirect, so we stop execution here
+            exit;
+        }
 
-    
+        $title = 'Manage Raw Data - Tripistry';
+        ob_start();
+        require_once __DIR__ . '/../src/Views/agency/manage_data.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../src/Views/layout.php';
+        break;
 
     // --- Fallback ---
     default:
