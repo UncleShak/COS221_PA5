@@ -14,22 +14,27 @@ class TravellerController {
     }
 
     public function dashboard() {
-        // 1. Security check (Mocked for testing)
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         
-        // TEMPORARY TEST DATA
-        $_SESSION['user_id'] = 1;
-        $_SESSION['role'] = 'traveller';
-
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
             header("Location: /login");
             exit();
         }
 
-        // 2. Fetch the raw data from MariaDB
         $userId = $_SESSION['user_id'];
+
+        // NEW: Fetch the logged-in traveller's profile data
+        $userSql = "SELECT u.email, t.first_name, t.last_name 
+                    FROM users u 
+                    JOIN travellers t ON u.user_id = t.user_id 
+                    WHERE u.user_id = ?";
+        $userStmt = $this->pdo->prepare($userSql);
+        $userStmt->execute([$userId]);
+        $traveller = $userStmt->fetch();
+
+        // 2. Fetch the raw booking data from MariaDB
         $allBookings = $this->bookingModel->getTravellerBookings($userId);
 
         // 3. Sort the data into states
@@ -49,9 +54,10 @@ class TravellerController {
             }
         }
 
-        // 4. Pass EVERYTHING to your custom render function
+        // 4. Pass EVERYTHING (including the $traveller) to your custom render function
         $this->render('traveller/dashboard', [
             'title'            => 'Traveller Dashboard | Tripistry',
+            'traveller'        => $traveller, // Passed to the view here!
             'upcomingTrips'    => $upcomingTrips,
             'pastTrips'        => $pastTrips,
             'hasPastTrips'     => !empty($pastTrips),

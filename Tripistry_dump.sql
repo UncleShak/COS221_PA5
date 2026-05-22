@@ -789,4 +789,4 @@ UNLOCK TABLES;
 -- Dump completed on 2026-05-20 10:25:19
 
 
-UPDATE users SET password_hash = '$2y$10$Fqv8q.lUyQT82cgoca1f5eclkk.CLqGhfYq8CN6Vp8nzynB9ruqFW' WHERE email = 'sarah@email.com';
+UPDATE users SET password_hash = '$2y$10$Fqv8q.lUyQT82cgoca1f5eclkk.CLqGhfYq8CN6Vp8nzynB9ruqFW' WHERE email = 'john@email.com';
