@@ -74,13 +74,46 @@ $currentPage = $currentPage ?? 1;
                 <p id="results-count" style="color: var(--text-soft);"><?= $totalPackages ?> packages found</p>
             </div>
             
-            <div id="packages-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div id="packages-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
                 <?php if (empty($packages)): ?>
                     <div class="glass-clear" style="padding: 2rem; text-align: center; grid-column: 1 / -1; color: var(--text-muted);">
                         <p>No packages match your filters. Try adjusting your search criteria!</p>
                     </div>
                 <?php else: ?>
-                    <?php endif; ?>
+                    
+                    <?php foreach ($packages as $pkg): ?>
+                    
+                    <div class="pkg-card glass-frosted" onclick="window.location.href='/traveller/details?id=<?= htmlspecialchars($pkg['id']) ?>'">
+                        
+                        <div class="pkg-card-img" style="<?= !empty($pkg['image_url']) ? "background-image: url('" . htmlspecialchars($pkg['image_url']) . "'); background-size: cover; background-position: center;" : "" ?>">
+                            <?php if (empty($pkg['image_url'])): ?>
+                                🌴 <?php endif; ?>
+                            
+                            <?php if ($pkg['avg_rating'] > 0): ?>
+                                <span class="pkg-card-badge">★ <?= number_format($pkg['avg_rating'], 1) ?> (<?= $pkg['review_count'] ?>)</span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="pkg-card-body">
+                            <div class="pkg-card-dest"><?= htmlspecialchars($pkg['destination'] ?? 'Global') ?></div>
+                            <div class="pkg-card-name"><?= htmlspecialchars($pkg['title']) ?></div>
+                            
+                            <div class="pkg-card-meta">
+                                <span>🗓️ <?= htmlspecialchars($pkg['duration_days']) ?> Days</span>
+                                <span>🏢 <?= htmlspecialchars($pkg['agency_name']) ?></span>
+                            </div>
+                            
+                            <div class="pkg-card-footer">
+                                <div class="pkg-card-price">
+                                    R <?= number_format($pkg['price'], 2) ?> <span>/ person</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php endforeach; ?>
+
+                <?php endif; ?>
             </div>
         </div>
     </div>

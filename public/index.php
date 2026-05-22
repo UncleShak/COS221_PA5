@@ -83,15 +83,14 @@ switch($route){
         break;
 
     case '/traveller/checkout':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('traveller');
-
-        $title = 'Checkout - Tripistry';
-
-        ob_start();
-        require_once __DIR__ . '/../src/Views/traveller/checkout.php';
-        $content = ob_get_clean();
-        require_once __DIR__ . '/../src/Views/layout.php';
+        AuthController::checkRole('traveller'); 
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo); 
+        $controller->checkout();
         break;
 
     case '/traveller/process_booking':
@@ -120,14 +119,19 @@ switch($route){
         $controller->cancelBooking();
         break;
     case '/traveller/packages':
+        // 1. Get the database connection
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        
+        // 2. Verify they are logged in
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
-
-        $title = 'Browse Packages - Tripistry';
-        ob_start();
-        require_once __DIR__ . '/../src/Views/traveller/packages.php';
-        $content = ob_get_clean();
-        require_once __DIR__ . '/../src/Views/layout.php';
+        
+        // 3. Hand the request off to the Controller
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo); 
+        $controller->packages();
         break;
     
     // --- System Routes ---
