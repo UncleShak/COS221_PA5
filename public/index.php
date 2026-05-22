@@ -51,10 +51,11 @@ switch($route){
 
     // --- Traveller Routes ---
     case '/traveller/dashboard':
-        // Aeron's logic
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
-
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController($pdo); 
         $controller->dashboard();
@@ -68,6 +69,7 @@ switch($route){
         $controller = new TravellerController();
         $controller->details();
         break;
+
     case '/traveller/submit-review':
         require_once __DIR__ . '/../config/database.php';
         $database = new Database();
@@ -78,7 +80,7 @@ switch($route){
         $controller->submitReview();
         break;
 
-    case 'traveller/checkout':
+    case '/traveller/checkout':
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
 
@@ -111,6 +113,18 @@ switch($route){
         
         // 3. Execute the process (which includes the Trapdoor)
         $controller->processBooking();
+        break;
+    case '/traveller/cancel-booking':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo);
+        $controller->cancelBooking();
         break;
 
     // --- Agency Routes ---

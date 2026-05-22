@@ -41,6 +41,23 @@ class BookingModel {
         }
     }
 
+    public function cancelBooking($bookingId, $travellerId) {
+        try {
+            $sql = "UPDATE bookings 
+                    SET status = 'cancelled' 
+                    WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
+            
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([
+                ':booking_id'   => $bookingId,
+                ':traveller_id' => $travellerId
+            ]);
+        } catch (PDOException $e) {
+            error_log("Database Error in cancelBooking: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function getTravellerBookings($travellerId) {
         try {
             // THE FIX: Added a LEFT JOIN on the reviews table to pull rating and comment
@@ -63,7 +80,6 @@ class BookingModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
-            // THE LOUD TRAPDOOR: Freeze the screen and print the exact SQL error
             echo "<div style='padding: 2rem; background: #111; color: #ff4b4b; border: 2px solid #ff4b4b; font-family: monospace; z-index: 9999; position: relative;'>";
             echo "<h3>MARIADB SELECT ERROR:</h3>";
             echo $e->getMessage();

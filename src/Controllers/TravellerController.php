@@ -36,10 +36,13 @@ class TravellerController {
         $currentDate = date('Y-m-d'); 
 
         foreach ($allBookings as $booking) {
+            if ($booking['status'] === 'cancelled') {
+                continue; 
+            }
+
             if ($booking['travel_date'] < $currentDate) {
                 $pastTrips[] = $booking;
-            } 
-            else {
+            } else {
                 $upcomingTrips[] = $booking;
             }
         }
@@ -112,6 +115,33 @@ class TravellerController {
             }
         }
         header("Location: /traveller/dashboard?status=review_failed");
+        exit();
+    }
+
+    public function cancelBooking() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
+            header("Location: /login");
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
+            $bookingId = $_POST['booking_id'];
+            $travellerId = $_SESSION['user_id'];
+
+            $success = $this->bookingModel->cancelBooking($bookingId, $travellerId);
+
+            if ($success) {
+                header("Location: /traveller/dashboard?status=booking_cancelled");
+                exit();
+            }
+        }
+        
+        // Fallback if something fails
+        header("Location: /traveller/dashboard?status=cancel_failed");
         exit();
     }
 }

@@ -84,10 +84,22 @@
                     </div>
 
                     <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg);">
-                        <div style="font-family: var(--font-code); font-size: 1.8rem; color: var(--text-muted); letter-spacing: 4px; opacity: 0.5;">
+                        
+                        <div style="font-family: var(--font-code); font-size: 1.8rem; color: var(--text-muted); letter-spacing: 4px; opacity: 0.5; overflow: hidden; white-space: nowrap; flex: 1;">
                             ||||||||||||||||
                         </div>
-                        <button class="btn-danger">Cancel Booking</button>
+                        
+                        <form action="/traveller/cancel-booking" method="POST" 
+                            style="margin: 0; display: flex; align-items: center; flex-shrink: 0; margin-left: 1.5rem;"
+                            onsubmit="return confirm('Are you sure you want to cancel your booking? This action cannot be undone.');">
+                            
+                            <input type="hidden" name="booking_id" value="<?= htmlspecialchars($trip['booking_id']) ?>">
+                            
+                            <button type="submit" class="btn-danger" style="white-space: nowrap; margin: 0; padding: 0.7rem 1.8rem;">
+                                Cancel Booking
+                            </button>
+                        </form>
+
                     </div>
                 </div>
 
