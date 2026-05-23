@@ -130,11 +130,25 @@ switch($route){
     // --- Agency Routes ---
     case '/agency/dashboard':
         // Prince's logic
-        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
         // I will do this after prince is done:
         // $controller = new AgencyController();
         // $controller->dashboard();
+        break;
+
+    case '/agency/create-package':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($pdo);
+        $controller->createPackage();
+
         break;
     
     // --- System Routes ---
