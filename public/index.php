@@ -135,7 +135,7 @@ switch($route){
         break;
     
     // --- System Routes ---
-    case '/manage-data':
+    case '/agency/manage-data':
         // raw data manager gateway
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
