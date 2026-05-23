@@ -40,11 +40,9 @@ switch($route){
         break;
     
     case '/register':
-        $title = 'Register · Tripistry';
-        ob_start();
-        require_once __DIR__ . '/../src/Views/auth/register.php';
-        $content = ob_get_clean();
-        require_once __DIR__ . '/../src/Views/layout.php';
+        require_once __DIR__ . '/../src/Controllers/RegistrationController.php';
+        $controller = new RegistrationController();
+        $controller->register();
         break;
 
     // --- Traveller Routes ---
