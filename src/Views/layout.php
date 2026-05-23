@@ -23,10 +23,22 @@
       </ul>
 
       <div style="display: flex; align-items: center; gap: 1.5rem;">
-        <a href="/traveller/dashboard" style="text-decoration: none; font-size: 1.4rem; transition: transform 0.2s var(--ease);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Your Itinerary">
-            👤
-        </a>
-        <span class="sg-nav-pill">Traveller View</span>
+        
+        <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+        
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <a href="/logout" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;">Sign Out</a>
+            <a href="/traveller/dashboard" style="text-decoration: none; font-size: 1.4rem; transition: transform 0.2s var(--ease);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Your Itinerary">
+                👤
+            </a>
+            <span class="sg-nav-pill">Traveller View</span>
+        <?php else: ?>
+            <a href="/login" style="text-decoration: none; font-size: 1.4rem; transition: transform 0.2s var(--ease);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Sign In">
+                🔒
+            </a>
+            <span class="sg-nav-pill" style="background: rgba(255, 111, 97, 0.1); color: var(--coral);">Guest Mode</span>
+        <?php endif; ?>
+        
       </div>
     </nav>
 

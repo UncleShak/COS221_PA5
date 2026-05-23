@@ -22,7 +22,7 @@ if ($traveller) {
         <h2 class="sg-section-title" style="font-size: 2.5rem; margin-bottom: 2rem;">Finalize Journey</h2>
         
         <form action="/traveller/process_booking" method="POST" id="checkout-form" class="input-stack">
-          <input type="hidden" name="package_id" value="<?= htmlspecialchars($package['id'] ?? '') ?>">
+         <input type="hidden" name="package_id" value="<?= htmlspecialchars($packageId ?? $_GET['package_id'] ?? $_GET['id'] ?? '') ?>">
 
           <div class="demo-cell glass-clear" style="padding: 2rem; margin-bottom: 1.5rem;">
             <h3 style="font-family: var(--font-display); font-style: italic; margin-bottom: 1.5rem; color: var(--ocean);">1. Traveller Profile</h3>
@@ -57,7 +57,7 @@ if ($traveller) {
 
             <div class="input-group">
               <label class="input-label">Special Requests (Optional)</label>
-              <textarea name="requests" class="input-field" rows="3" placeholder="Dietary requirements, accessibility needs, etc."></textarea>
+              <textarea name="special_requests" class="input-field" rows="3" placeholder="Dietary requirements, accessibility needs, etc."></textarea>
             </div>
           </div>
 

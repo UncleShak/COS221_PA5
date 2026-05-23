@@ -127,71 +127,113 @@ switch($route){
         $controller->cancelBooking();
         break;
 
+    case '/traveller/packages':
+        // 1. Get the database connection
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        
+        // 2. Verify they are logged in
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+        
+        // 3. Hand the request off to the Controller
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo); 
+        $controller->packages();
+        break;
+
+    // --- Agency Routes ---
     case '/agency/dashboard':
-    require_once __DIR__ . '/../config/database.php';
-    $database = new Database();
-    $pdo = $database->getConnection();
-    require_once __DIR__ . '/../src/Controllers/AuthController.php';
-    AuthController::checkRole('agency');
-    require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-    $controller = new AgencyController($pdo);
-    $controller->dashboard();
-    break;
- 
-case '/agency/package/create':
-    require_once __DIR__ . '/../config/database.php';
-    $database = new Database();
-    $pdo = $database->getConnection();
-    require_once __DIR__ . '/../src/Controllers/AuthController.php';
-    AuthController::checkRole('agency');
-    require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-    $controller = new AgencyController($pdo);
-    $controller->packageForm();
-    break;
- 
-case '/agency/package/edit':
-    require_once __DIR__ . '/../config/database.php';
-    $database = new Database();
-    $pdo = $database->getConnection();
-    require_once __DIR__ . '/../src/Controllers/AuthController.php';
-    AuthController::checkRole('agency');
-    require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-    $controller = new AgencyController($pdo);
-    $controller->packageForm();   // same method handles both create & edit
-    break;
- 
-case '/agency/package/save':
-    require_once __DIR__ . '/../config/database.php';
-    $database = new Database();
-    $pdo = $database->getConnection();
-    require_once __DIR__ . '/../src/Controllers/AuthController.php';
-    AuthController::checkRole('agency');
-    require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-    $controller = new AgencyController($pdo);
-    $controller->savePackage();
-    break;
- 
-case '/agency/package/archive':
-    require_once __DIR__ . '/../config/database.php';
-    $database = new Database();
-    $pdo = $database->getConnection();
-    require_once __DIR__ . '/../src/Controllers/AuthController.php';
-    AuthController::checkRole('agency');
-    require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-    $controller = new AgencyController($pdo);
-    $controller->archivePackage();
-    break;
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->dashboard(); // You will need to build this method next!
+        break;
+
+    // Prince's URL, but wired to YOUR method
+    case '/agency/package/create':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->createPackage(); 
+        break;
+
+    // Prince's URL, but wired to YOUR method
+    case '/agency/package/save':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->storePackage();
+        break;
+
+    // Prince's Edit Route (Stubbed for later)
+    case '/agency/package/edit':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->packageForm(); 
+        break;
+
+    // Prince's Archive Route (Stubbed for later)
+    case '/agency/package/archive':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->archivePackage();
+        break;
     
     // --- System Routes ---
     case '/manage-data':
         // raw data manager gateway
-        require_once __DIR__ . '/../src/Controllers/DataController.php';
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
 
-        require_once __DIR__ . '/../src/Controllers/DataController.php';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../config/database.php';
+            require_once __DIR__ . '/../src/Controllers/DataController.php';
+            
+            $database = new Database();
+            $pdo = $database->getConnection();
+            
+            $controller = new DataController($pdo);
+            $controller->handleUpload();
+            // The controller handles the redirect, so we stop execution here
+            exit;
+        }
+
+        $title = 'Manage Raw Data - Tripistry';
+        ob_start();
+        require_once __DIR__ . '/../src/Views/agency/manage_data.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../src/Views/layout.php';
         break;
 
-    
+    case '/logout': // Add both just in case your router keeps the slash!
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        $authController = new AuthController();
+        $authController->logout();
+        break;
 
     // --- Fallback ---
     default:

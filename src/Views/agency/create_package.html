@@ -1,0 +1,68 @@
+<div class="dashboard-container">
+    <h1>Create New Travel Package</h1>
+    <p>Bundle flights and accommodations into a master package for travellers.</p>
+
+    <form action="/agency/store-package" method="POST">
+        
+        <section class="upload-section">
+            <h2>1. Core Details</h2>
+            <div class="form-group">
+                <label>Package Title</label>
+                <input type="text" name="title" placeholder="e.g., Tokyo Explorer" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Total Duration (Days)</label>
+                <input type="number" name="duration_days" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Maximum Capacity (Travellers)</label>
+                <input type="number" name="max_capacity" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Base Price (ZAR)</label>
+                <input type="number" name="base_price" step="0.01" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="4"></textarea>
+            </div>
+        </section>
+
+        <section class="upload-section">
+            <h2>2. Attach Inventory</h2>
+            
+            <div class="form-group">
+                <label>Select Outbound Flight</label>
+                <select name="flight_id" required>
+                    <option value="">-- Choose a Flight --</option>
+                    <?php foreach ($flights as $flight): ?>
+                        <option value="<?= $flight['flight_id'] ?>">
+                            <?= htmlspecialchars($flight['airline_name'] . ' ' . $flight['flight_number']) ?> 
+                            (<?= htmlspecialchars($flight['departure_city']) ?> to <?= htmlspecialchars($flight['arrival_city']) ?>) 
+                            - [<?= ucfirst(htmlspecialchars($flight['flight_class'])) ?>]
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Select Accommodation</label>
+                <select name="accommodation_id" required>
+                    <option value="">-- Choose a Hotel --</option>
+                    <?php foreach ($accommodations as $acc): ?>
+                        <option value="<?= $acc['accommodation_id'] ?>">
+                            <?= htmlspecialchars($acc['name']) ?> in <?= htmlspecialchars($acc['city']) ?> 
+                            (<?= $acc['star_rating'] ?> Star <?= ucfirst(htmlspecialchars($acc['type'])) ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </section>
+
+        <button type="submit" class="btn-primary" style="margin-top: 1rem;">Forge Package</button>
+    </form>
+</div>
