@@ -133,6 +133,19 @@ switch($route){
         $controller = new TravellerController($pdo); 
         $controller->packages();
         break;
+
+    case '/traveller/group':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+        
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo); 
+        $controller->groupHub();
+        break;
     
     // --- System Routes ---
     case '/manage-data':

@@ -112,17 +112,21 @@ class BookingModel {
 
     public function getTravellerBookings($travellerId) {
         try {
-            // THE FIX: Added a LEFT JOIN on the reviews table to pull rating and comment
+            // THE FIX: Join through grouptrips to find the connection
             $sql = "SELECT 
                         b.*, 
                         p.title AS package_name, 
                         p.duration_days,
                         p.cover_image_url,
                         r.rating,
-                        r.comment AS review_comment
+                        r.comment AS review_comment,
+                        gtp.group_trip_id
                     FROM bookings b
                     JOIN packages p ON b.package_id = p.package_id
                     LEFT JOIN packagereviews r ON b.booking_id = r.booking_id
+                    LEFT JOIN grouptripparticipants gtp 
+                        ON b.group_trip_id = gtp.group_trip_id 
+                        AND b.traveller_id = gtp.traveller_id
                     WHERE b.traveller_id = :traveller_id
                     ORDER BY b.travel_date ASC";
             
@@ -132,9 +136,9 @@ class BookingModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
-            echo "<div style='padding: 2rem; background: #111; color: #ff4b4b; border: 2px solid #ff4b4b; font-family: monospace; z-index: 9999; position: relative;'>";
-            echo "<h3>MARIADB SELECT ERROR:</h3>";
-            echo $e->getMessage();
+            // Keep your existing error handling
+            echo "<div style='padding: 2rem; background: #111; color: #ff4b4b; border: 2px solid #ff4b4b;'>";
+            echo "<h3>MARIADB SELECT ERROR:</h3>" . $e->getMessage();
             echo "</div>";
             die(); 
         }

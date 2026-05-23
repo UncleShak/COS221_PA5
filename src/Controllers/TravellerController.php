@@ -233,6 +233,34 @@ class TravellerController {
         require_once __DIR__ . '/../Views/layout.php';
     }
 
+    public function groupHub() {
+    if (session_status() === PHP_SESSION_NONE) { session_start(); }
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
+        header("Location: /login"); exit();
+    }
+
+    $groupId = $_GET['id'] ?? null;
+    if (!$groupId) { header("Location: /traveller/dashboard"); exit(); }
+
+    require_once __DIR__ . '/../Models/GroupModel.php';
+    $groupModel = new GroupModel($this->pdo);
+
+    // Final Security Check
+    if (!$groupModel->isUserInGroup($_SESSION['user_id'], $groupId)) {
+        header("Location: /traveller/dashboard?error=unauthorized_cluster");
+        exit();
+    }
+
+    $groupDetails = $groupModel->getGroupDetails($groupId);
+    $roster = $groupModel->getGroupRoster($groupId);
+
+    $this->render('traveller/group', [
+        'title' => 'Group Cluster - Tripistry',
+        'groupDetails' => $groupDetails,
+        'roster' => $roster
+    ]);
+}
+
     
 }
 ?>
