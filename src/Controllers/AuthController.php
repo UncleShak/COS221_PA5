@@ -3,7 +3,8 @@ require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../Models/UserModel.php'; 
 
 class AuthController{
-    public function showLogin(){ // self explanatory
+    
+    public function showLogin(){ 
         $title ='Sign In - Tripistry';
         ob_start();
         require_once __DIR__ . '/../Views/auth/login.php';
@@ -12,9 +13,34 @@ class AuthController{
     }
 
     public function login(){
-        if($_SERVER["REQUEST_METHOD"]== "POST"){
-            $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
+        // Ensure session is started for rate limiting
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
+        if($_SERVER["REQUEST_METHOD"]== "POST"){
+            
+            // SECURITY FEATURE 1: Rate Limiting 
+            // if someone fails logging in 5 times, they are locked out for 5 minutes
+
+            if (!isset($_SESSION['login_attempts'])) {
+                $_SESSION['login_attempts'] = 0;
+                $_SESSION['last_attempt_time'] = time();
+            }
+
+            // If 5 failed attempts, enforce a 5-minute (300 seconds) lockout
+            if ($_SESSION['login_attempts'] >= 5) {
+                if (time() - $_SESSION['last_attempt_time'] < 300) {
+                    header("Location: /login?error=account_locked");
+                    exit;
+                } else {
+                    // Lockout period expired, reset the counter
+                    $_SESSION['login_attempts'] = 0;
+                }
+            }
+            // ==========================================
+
+            $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
             $password = trim($_POST['password']);
 
             if(empty($email) || empty($password)){
@@ -29,6 +55,16 @@ class AuthController{
             $user = $userModel->verifyCredentials($email, $password);
 
             if($user){
+                
+                // SECURITY FEATURE 2: Session Management
+                // Prevent Session Fixation attacks
+
+                session_regenerate_id(true); 
+                
+                // Reset failed attempts upon successful login
+                $_SESSION['login_attempts'] = 0; 
+                // ==========================================
+
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['user_type']=$user['user_type'];
 
@@ -39,9 +75,23 @@ class AuthController{
                 }
                 exit;
             }else{
+                // Increment failed attempts and record the time
+                $_SESSION['login_attempts']++;
+                $_SESSION['last_attempt_time'] = time();
                 header("Location: /login?error=invalid_credentials");
+                exit;
             }
         }
+    }
+
+
+    // SECURITY FEATURE 3: Password Strength Validator
+    // Call this method during User Registration
+
+    public static function isPasswordStrong($password) {
+        // Enforces: 8+ length, 1 uppercase, 1 lowercase, 1 digit, 1 special char
+        $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+        return preg_match($pattern, $password);
     }
 
     public static function checkAuth(){
