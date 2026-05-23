@@ -107,16 +107,59 @@ class BookingModel {
 
     public function cancelBooking($bookingId, $travellerId) {
         try {
+            $this->pdo->beginTransaction();
+
+            // 1. Fetch the booking details first so we know which group to update
+            $findSql = "SELECT group_trip_id, num_travellers FROM bookings WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
+            $findStmt = $this->pdo->prepare($findSql);
+            $findStmt->execute([
+                ':booking_id' => $bookingId, 
+                ':traveller_id' => $travellerId
+            ]);
+            $booking = $findStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$booking) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
+            // 2. Cancel the main booking
             $sql = "UPDATE bookings 
                     SET status = 'cancelled' 
                     WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
-            
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([
+            $stmt->execute([
                 ':booking_id'   => $bookingId,
                 ':traveller_id' => $travellerId
             ]);
+
+            // 3. Remove them from the active group roster
+            if (!empty($booking['group_trip_id'])) {
+                $rosterSql = "UPDATE grouptripparticipants 
+                              SET status = 'cancelled' 
+                              WHERE traveller_id = :traveller_id AND group_trip_id = :group_trip_id";
+                $rosterStmt = $this->pdo->prepare($rosterSql);
+                $rosterStmt->execute([
+                    ':traveller_id' => $travellerId,
+                    ':group_trip_id' => $booking['group_trip_id']
+                ]);
+
+                // 4. Subtract their party size from the group headcount
+                $countSql = "UPDATE grouptrips 
+                             SET current_participants = current_participants - :num 
+                             WHERE group_trip_id = :group_trip_id";
+                $countStmt = $this->pdo->prepare($countSql);
+                $countStmt->execute([
+                    ':num' => $booking['num_travellers'],
+                    ':group_trip_id' => $booking['group_trip_id']
+                ]);
+            }
+
+            $this->pdo->commit();
+            return true;
+
         } catch (PDOException $e) {
+            $this->pdo->rollBack();
             error_log("Database Error in cancelBooking: " . $e->getMessage());
             return false;
         }
