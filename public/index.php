@@ -159,6 +159,12 @@ switch($route){
         $content = ob_get_clean();
         require_once __DIR__ . '/../src/Views/layout.php';
         break;
+    case 'logout':
+    case '/logout': // Add both just in case your router keeps the slash!
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        $authController = new AuthController();
+        $authController->logout();
+        break;
 
     // --- Fallback ---
     default:
