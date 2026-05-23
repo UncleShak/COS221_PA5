@@ -1,5 +1,4 @@
 <?php
-// Safely extract the user data passed from the controller
 $userName = ($traveller && isset($traveller['first_name'])) 
     ? htmlspecialchars($traveller['first_name'] . ' ' . $traveller['last_name']) 
     : 'Verified Traveller';
@@ -12,8 +11,7 @@ $userEmail = ($traveller && isset($traveller['email']))
 <div class="sg-page" style="min-height: 100vh; padding: 100px 2rem 4rem; width: 100%; max-width: 1800px; margin: 0 auto;">
 
     <?php if (isset($_GET['status'])): ?>
-        <?php if ($_GET['status'] === 'booking_confirmed'): ?>
-        <?php elseif ($_GET['status'] === 'booking_cancelled'): ?>
+        <?php if ($_GET['status'] === 'booking_cancelled'): ?>
         <div class="glass-heavy" style="border-left: 4px solid #ff3b30; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem;">
             <div style="width: 10px; height: 10px; border-radius: 50%; background: #ff3b30; box-shadow: 0 0 10px #ff3b30;"></div>
             <div style="color: var(--text-main);">
@@ -21,6 +19,15 @@ $userEmail = ($traveller && isset($traveller['email']))
             </div>
         </div>
         <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['error']) && $_GET['error'] === 'unauthorized_cluster'): ?>
+        <div class="glass-heavy" style="border-left: 4px solid #ff3b30; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background: #ff3b30; box-shadow: 0 0 10px #ff3b30;"></div>
+            <div style="color: var(--text-main);">
+                <strong style="color: #ff3b30;">Access Denied:</strong> You are not authorized to view this private transmission channel.
+            </div>
+        </div>
     <?php endif; ?>
 
     <div style="margin-bottom: 3rem;">
@@ -92,16 +99,27 @@ $userEmail = ($traveller && isset($traveller['email']))
 
                     <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg); gap: 1rem; overflow: hidden;">
                         
-                        <div style="font-family: var(--font-code); font-size: 1.8rem; color: var(--text-muted); letter-spacing: 4px; opacity: 0.5; overflow: hidden; white-space: nowrap; text-overflow: clip;">
-                            ||||||||||||||||
+                        <div style="flex-grow: 1; min-width: 0;">
+                            <?php if (!empty($trip['group_trip_id'])): ?>
+                                <a href="/traveller/group?id=<?= htmlspecialchars($trip['group_trip_id']) ?>" 
+                                   class="btn-primary" 
+                                   style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 100%;">
+                                    🌐 Access Hub #<?= htmlspecialchars($trip['group_trip_id']) ?>
+                                </a>
+                            <?php else: ?>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem; white-space: nowrap;">
+                                    <div class="status-dot" style="background: var(--ocean);"></div> 
+                                    Auto-Matching...
+                                </div>
+                            <?php endif; ?>
                         </div>
-                        
+
                         <button class="btn-danger" 
                                 style="flex-shrink: 0; white-space: nowrap;"
                                 data-booking="<?= htmlspecialchars($trip['booking_id']) ?>"
                                 data-name="<?= htmlspecialchars($trip['package_name']) ?>"
                                 onclick="openCancelModal(this)">
-                            Cancel Booking
+                            Cancel
                         </button>
                     </div>
                 </div>

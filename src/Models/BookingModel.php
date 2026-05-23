@@ -107,16 +107,59 @@ class BookingModel {
 
     public function cancelBooking($bookingId, $travellerId) {
         try {
+            $this->pdo->beginTransaction();
+
+            // 1. Fetch the booking details first so we know which group to update
+            $findSql = "SELECT group_trip_id, num_travellers FROM bookings WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
+            $findStmt = $this->pdo->prepare($findSql);
+            $findStmt->execute([
+                ':booking_id' => $bookingId, 
+                ':traveller_id' => $travellerId
+            ]);
+            $booking = $findStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$booking) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
+            // 2. Cancel the main booking
             $sql = "UPDATE bookings 
                     SET status = 'cancelled' 
                     WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
-            
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([
+            $stmt->execute([
                 ':booking_id'   => $bookingId,
                 ':traveller_id' => $travellerId
             ]);
+
+            // 3. Remove them from the active group roster
+            if (!empty($booking['group_trip_id'])) {
+                $rosterSql = "UPDATE grouptripparticipants 
+                              SET status = 'cancelled' 
+                              WHERE traveller_id = :traveller_id AND group_trip_id = :group_trip_id";
+                $rosterStmt = $this->pdo->prepare($rosterSql);
+                $rosterStmt->execute([
+                    ':traveller_id' => $travellerId,
+                    ':group_trip_id' => $booking['group_trip_id']
+                ]);
+
+                // 4. Subtract their party size from the group headcount
+                $countSql = "UPDATE grouptrips 
+                             SET current_participants = current_participants - :num 
+                             WHERE group_trip_id = :group_trip_id";
+                $countStmt = $this->pdo->prepare($countSql);
+                $countStmt->execute([
+                    ':num' => $booking['num_travellers'],
+                    ':group_trip_id' => $booking['group_trip_id']
+                ]);
+            }
+
+            $this->pdo->commit();
+            return true;
+
         } catch (PDOException $e) {
+            $this->pdo->rollBack();
             error_log("Database Error in cancelBooking: " . $e->getMessage());
             return false;
         }
@@ -124,17 +167,21 @@ class BookingModel {
 
     public function getTravellerBookings($travellerId) {
         try {
-            // THE FIX: Added a LEFT JOIN on the reviews table to pull rating and comment
+            // THE FIX: Join through grouptrips to find the connection
             $sql = "SELECT 
                         b.*, 
                         p.title AS package_name, 
                         p.duration_days,
                         p.cover_image_url,
                         r.rating,
-                        r.comment AS review_comment
+                        r.comment AS review_comment,
+                        gtp.group_trip_id
                     FROM bookings b
                     JOIN packages p ON b.package_id = p.package_id
                     LEFT JOIN packagereviews r ON b.booking_id = r.booking_id
+                    LEFT JOIN grouptripparticipants gtp 
+                        ON b.group_trip_id = gtp.group_trip_id 
+                        AND b.traveller_id = gtp.traveller_id
                     WHERE b.traveller_id = :traveller_id
                     ORDER BY b.travel_date ASC";
             
@@ -144,9 +191,9 @@ class BookingModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
-            echo "<div style='padding: 2rem; background: #111; color: #ff4b4b; border: 2px solid #ff4b4b; font-family: monospace; z-index: 9999; position: relative;'>";
-            echo "<h3>MARIADB SELECT ERROR:</h3>";
-            echo $e->getMessage();
+            // Keep your existing error handling
+            echo "<div style='padding: 2rem; background: #111; color: #ff4b4b; border: 2px solid #ff4b4b;'>";
+            echo "<h3>MARIADB SELECT ERROR:</h3>" . $e->getMessage();
             echo "</div>";
             die(); 
         }
