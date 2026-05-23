@@ -191,17 +191,28 @@ class TravellerController {
         require_once __DIR__ . '/../Models/PackageModel.php';
         $packageModel = new PackageModel($this->pdo);
 
-        // Get search queries if they exist
+        // Collect all active filters from GET params
         $filters = [
-            'search' => $_GET['search'] ?? '',
-            'min_price' => $_GET['min_price'] ?? '',
-            'max_price' => $_GET['max_price'] ?? ''
+            'search'      => $_GET['search'] ?? '',
+            'destination' => $_GET['destination'] ?? '',
+            'min_price'   => $_GET['min_price'] ?? '',
+            'max_price'   => $_GET['max_price'] ?? '',
         ];
         $currentSort = $_GET['sort'] ?? 'price_asc';
 
-        // Fetch the packages from MariaDB!
-        $packages = $packageModel->getFilteredPackages($filters, $currentSort);
-        $totalPackages = count($packages);
+        // Pagination
+        $perPage     = 12;
+        $currentPage = max(1, (int)($_GET['page'] ?? 1));
+        $offset      = ($currentPage - 1) * $perPage;
+
+        // Fetch packages and total count
+        $packages      = $packageModel->getFilteredPackages($filters, $currentSort, $perPage, $offset);
+        $totalPackages = $packageModel->getFilteredCount($filters);
+        $totalPages    = max(1, (int)ceil($totalPackages / $perPage));
+
+        // Filter options for the sidebar dropdowns
+        $filterOptions  = $packageModel->getFilterOptions();
+        $currentFilters = $filters;
 
         // Render the view inside the layout shell
         $title = 'Explore Packages - Tripistry';
