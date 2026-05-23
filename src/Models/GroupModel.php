@@ -6,11 +6,6 @@ class GroupModel {
         $this->pdo = $pdo;
     }
 
-<<<<<<< HEAD
-    // 1. Fetch the main group details and join with the package name
-=======
-
->>>>>>> c6188d06043cca8505774fc693afb45515438270
     public function getGroupDetails($groupTripId) {
         $sql = "SELECT g.*, p.title as package_name, p.destination
                 FROM grouptrips g
