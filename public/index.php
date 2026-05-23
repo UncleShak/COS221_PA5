@@ -132,8 +132,6 @@ switch($route){
         
         // 2. Verify they are logged in
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('traveller');
-        
         // 3. Hand the request off to the Controller
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController($pdo); 

@@ -648,7 +648,7 @@ $gradients = [
          * e.g. href="/packages?sort=rating" or just href="/packages"
          * depending on how the packages controller handles sorting.
          */ ?>
-        <a href="/packages" class="btn-view-all">View All →</a>
+        <a href="/traveller/packages" class="btn-view-all">View All →</a>
     </div>
 
     <div class="carousel-outer" id="carousel-top-rated">
@@ -676,14 +676,13 @@ $gradients = [
                      * e.g. href="/packages/<?= $pkg['id'] ?>"
                      * (add a 'packages/{id}' case in public/index.php's switch)
                      */ ?>
-                    <a href="/packages/<?= (int)$pkg['id'] ?>" class="carousel-card">
+                    <a href="/traveller/details?id=<?= (int)$pkg['id'] ?>" class="carousel-card">
                         <div class="carousel-card-img" style="background:<?= $grad ?>;">
                             <?php if (!empty($pkg['image_filename'])): ?>
                                 <img src="<?= $imgPath ?>"
                                      alt="<?= htmlspecialchars($pkg['name']) ?>"
                                      onerror="this.style.display='none'">
                             <?php endif; ?>
-                            <div class="img-fallback">🏔️</div>
                             <span class="carousel-card-badge">★ <?= $rating ?></span>
                         </div>
                         <div class="carousel-card-body">
@@ -728,7 +727,7 @@ $gradients = [
          * TODO: Update href to packages listing sorted by popularity.
          * e.g. href="/packages?sort=popular" or href="/packages"
          */ ?>
-        <a href="/packages" class="btn-view-all">View All →</a>
+        <a href="/traveller/packages" class="btn-view-all">View All →</a>
     </div>
 
     <div class="carousel-outer" id="carousel-most-popular">
@@ -751,14 +750,13 @@ $gradients = [
                     $imgPath = htmlspecialchars($pkg['image_filename'] ?? '');
                     $count   = isset($pkg['booking_count']) ? number_format($pkg['booking_count']) : '—';
                 ?>
-                    <a href="/packages/<?= (int)$pkg['id'] ?>" class="carousel-card">
+                    <a href="/traveller/details?id=<?= (int)$pkg['id'] ?>" class="carousel-card">
                         <div class="carousel-card-img" style="background:<?= $grad ?>;">
                             <?php if (!empty($pkg['image_filename'])): ?>
                                 <img src="<?= $imgPath ?>"
                                      alt="<?= htmlspecialchars($pkg['name']) ?>"
                                      onerror="this.style.display='none'">
                             <?php endif; ?>
-                            <div class="img-fallback">✈️</div>
                             <span class="carousel-card-badge"><?= $count ?> booked</span>
                         </div>
                         <div class="carousel-card-body">
