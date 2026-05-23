@@ -586,14 +586,26 @@ $gradients = [
     <nav class="lp-hero-nav">
         <a href="/" class="lp-hero-brand">Tripistry</a>
         <div class="lp-hero-nav-actions">
-            <?php /*
-             * TODO (routing): Update hrefs to match the routes defined in
-             * public/index.php. Typically something like:
-             *   /login   → case 'login': in the switch
-             *   /signup  → case 'signup' / 'register': in the switch
-             */ ?>
-            <a href="/login"  class="btn-hero-login">Log In</a>
-            <a href="/register" class="btn-hero-signup">Sign Up</a
+            <?php
+            /*
+             * SESSION CHECK — show different buttons depending on login state.
+             *
+             * This assumes your app stores the logged-in user in $_SESSION.
+             * TODO: replace $_SESSION['user_id'] with whatever session key
+             * your auth system actually uses (e.g. $_SESSION['user'],
+             * $_SESSION['traveller_id'], $_SESSION['agency_id'], etc.).
+             *
+             * TODO: update the hrefs to match your router's switch cases:
+             *   /login       → case 'login':
+             *   /signup      → case 'signup' / 'register':
+             *   /dashboard   → case 'dashboard': (or traveller/agency dashboard)
+             */
+            if (!empty($_SESSION['user_id'])): ?>
+                <a href="/dashboard" class="btn-hero-signup">View Dashboard</a>
+            <?php else: ?>
+                <a href="/login"  class="btn-hero-login">Log In</a>
+                <a href="/signup" class="btn-hero-signup">Sign Up</a>
+            <?php endif; ?>
         </div>
     </nav>
 
@@ -606,28 +618,6 @@ $gradients = [
             Discover handpicked travel packages from South Africa's best agencies.
             Your next adventure starts here.
         </p>
-
-        <?php /* Search bar — wires up to /packages with query params.
-                 TODO: update the form action to the packages search route. */ ?>
-        <form action="/traveller/packages" method="GET" class="lp-search-bar">
-            <div class="lp-search-bar-field">
-                <span>📍</span>
-                <input type="text" name="destination" placeholder="Destination"
-                       style="background:transparent;border:none;outline:none;color:#fff;font-family:var(--font-body);font-size:0.9rem;width:110px;"
-                       autocomplete="off">
-            </div>
-            <div class="lp-search-bar-field">
-                <span>📅</span>
-                <input type="text" name="dates" placeholder="Dates"
-                       style="background:transparent;border:none;outline:none;color:#fff;font-family:var(--font-body);font-size:0.9rem;width:90px;">
-            </div>
-            <div class="lp-search-bar-field">
-                <span>👥</span>
-                <input type="number" name="guests" placeholder="Guests" min="1"
-                       style="background:transparent;border:none;outline:none;color:#fff;font-family:var(--font-body);font-size:0.9rem;width:70px;">
-            </div>
-            <button type="submit" class="btn-hero-signup" style="margin-left:0.5rem;">Search</button>
-        </form>
 
     </div>
 
@@ -658,7 +648,7 @@ $gradients = [
          * e.g. href="/packages?sort=rating" or just href="/packages"
          * depending on how the packages controller handles sorting.
          */ ?>
-        <a href="/traveller/packages" class="btn-view-all">View All →</a>
+        <a href="/packages" class="btn-view-all">View All →</a>
     </div>
 
     <div class="carousel-outer" id="carousel-top-rated">
@@ -686,7 +676,7 @@ $gradients = [
                      * e.g. href="/packages/<?= $pkg['id'] ?>"
                      * (add a 'packages/{id}' case in public/index.php's switch)
                      */ ?>
-                    <a href="/traveller/details?id=<?= (int)$pkg['id'] ?>" class="carousel-card">
+                    <a href="/packages/<?= (int)$pkg['id'] ?>" class="carousel-card">
                         <div class="carousel-card-img" style="background:<?= $grad ?>;">
                             <?php if (!empty($pkg['image_filename'])): ?>
                                 <img src="<?= $imgPath ?>"
