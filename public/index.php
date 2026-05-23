@@ -146,6 +146,13 @@ switch($route){
         $controller = new TravellerController($pdo); 
         $controller->groupHub();
         break;
+
+    case 'traveller/send-message':
+    case '/traveller/send-message':
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $travellerController = new TravellerController();
+        $travellerController->sendMessage();
+        break;
     
     // --- System Routes ---
     case '/agency/manage-data':

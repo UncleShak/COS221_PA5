@@ -93,37 +93,51 @@ $maxParticipants = $groupDetails['max_participants'] ?? 0;
                     </span>
                 </div>
 
-                <div style="display: flex; gap: 1rem; max-width: 80%;">
-                    <div style="width: 35px; height: 35px; border-radius: 50%; background: rgba(0, 166, 199, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
-                        👤
+                <?php if (!empty($messages)): ?>
+                    <?php foreach ($messages as $msg): ?>
+                        <?php 
+                            // Check if the current user sent this message
+                            $isMe = ($msg['traveller_id'] == $_SESSION['user_id']); 
+                        ?>
+                        
+                        <div style="display: flex; gap: 1rem; max-width: 80%; <?= $isMe ? 'align-self: flex-end; flex-direction: row-reverse;' : '' ?>">
+                            <?php if (!$isMe): ?>
+                                <div style="width: 35px; height: 35px; border-radius: 50%; background: rgba(0, 166, 199, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                                    👤
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div style="<?= $isMe ? 'background: rgba(255, 111, 97, 0.1); border: 1px solid rgba(255, 111, 97, 0.2); border-radius: var(--r-md) 0 var(--r-md) var(--r-md);' : 'background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 0 var(--r-md) var(--r-md) var(--r-md);' ?> padding: 1rem 1.2rem;">
+                                
+                                <?php if (!$isMe): ?>
+                                    <div style="font-size: 0.8rem; color: var(--ocean); margin-bottom: 0.4rem; font-weight: 600;">
+                                        <?= htmlspecialchars($msg['first_name'] . ' ' . $msg['last_name']) ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div style="color: var(--text-main); line-height: 1.5; font-size: 0.95rem;">
+                                    <?= htmlspecialchars($msg['message_text']) ?>
+                                </div>
+                                <div style="font-family: var(--font-code); font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; text-align: right;">
+                                    <?= date('h:i A', strtotime($msg['sent_at'])) ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 2rem;">
+                        No transmissions yet. Be the first to break the silence.
                     </div>
-                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 1rem 1.2rem; border-radius: 0 var(--r-md) var(--r-md) var(--r-md);">
-                        <div style="font-size: 0.8rem; color: var(--ocean); margin-bottom: 0.4rem; font-weight: 600;">Sarah Johnson</div>
-                        <div style="color: var(--text-main); line-height: 1.5; font-size: 0.95rem;">
-                            Transmission test: Is anyone else packing heavy winter gear for this expedition?
-                        </div>
-                        <div style="font-family: var(--font-code); font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; text-align: right;">
-                            10:42 AM
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 1rem; max-width: 80%; align-self: flex-end; flex-direction: row-reverse;">
-                    <div style="background: rgba(255, 111, 97, 0.1); border: 1px solid rgba(255, 111, 97, 0.2); padding: 1rem 1.2rem; border-radius: var(--r-md) 0 var(--r-md) var(--r-md);">
-                        <div style="color: var(--text-main); line-height: 1.5; font-size: 0.95rem;">
-                            I'm bringing a heavy coat just in case. Better safe than freezing!
-                        </div>
-                        <div style="font-family: var(--font-code); font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; text-align: right;">
-                            10:45 AM
-                        </div>
-                    </div>
-                </div>
+                <?php endif; ?>
 
             </div>
 
             <div style="padding: 1.5rem 2rem; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.2);">
-                <form id="chat-form" style="display: flex; gap: 1rem;">
-                    <input type="text" id="chat-input" placeholder="Broadcast to cluster..." style="flex: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: var(--r-pill); padding: 1rem 1.5rem; color: var(--text-main); outline: none; font-family: var(--font-body); font-size: 1rem;">
+                <form action="/traveller/send-message" method="POST" id="chat-form" style="display: flex; gap: 1rem;">
+                    <input type="hidden" name="group_trip_id" value="<?= htmlspecialchars($groupDetails['group_trip_id']) ?>">
+                    
+                    <input type="text" name="message_text" id="chat-input" placeholder="Broadcast to cluster..." required style="flex: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: var(--r-pill); padding: 1rem 1.5rem; color: var(--text-main); outline: none; font-family: var(--font-body); font-size: 1rem;">
+                    
                     <button type="submit" class="btn-primary" style="border-radius: var(--r-pill); padding: 0 2rem; white-space: nowrap;">
                         Send ↗
                     </button>

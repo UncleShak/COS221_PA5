@@ -151,23 +151,64 @@ class TravellerController {
         exit();
     }
 
-    public function cancelBooking() {
-        if (session_status() === PHP_SESSION_NONE) { session_start(); }
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
-            $bookingId = $_POST['booking_id'];
-            $travellerId = $_SESSION['user_id'];
+    public function cancelBooking($bookingId, $travellerId) {
+        try {
+            $this->pdo->beginTransaction();
 
-            // Assumes you have a cancelBooking method in your model
-            $success = $this->bookingModel->cancelBooking($bookingId, $travellerId);
+            // 1. Fetch the booking details first so we know which group to update
+            $findSql = "SELECT group_trip_id, num_travellers FROM bookings WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
+            $findStmt = $this->pdo->prepare($findSql);
+            $findStmt->execute([
+                ':booking_id' => $bookingId, 
+                ':traveller_id' => $travellerId
+            ]);
+            $booking = $findStmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($success) {
-                header("Location: /traveller/dashboard?status=booking_cancelled");
-                exit();
+            if (!$booking) {
+                $this->pdo->rollBack();
+                return false;
             }
+
+            // 2. Cancel the main booking
+            $sql = "UPDATE bookings 
+                    SET status = 'cancelled' 
+                    WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                ':booking_id'   => $bookingId,
+                ':traveller_id' => $travellerId
+            ]);
+
+            // 3. Remove them from the active group roster
+            if (!empty($booking['group_trip_id'])) {
+                $rosterSql = "UPDATE grouptripparticipants 
+                              SET status = 'cancelled' 
+                              WHERE traveller_id = :traveller_id AND group_trip_id = :group_trip_id";
+                $rosterStmt = $this->pdo->prepare($rosterSql);
+                $rosterStmt->execute([
+                    ':traveller_id' => $travellerId,
+                    ':group_trip_id' => $booking['group_trip_id']
+                ]);
+
+                // 4. Subtract their party size from the group headcount
+                $countSql = "UPDATE grouptrips 
+                             SET current_participants = current_participants - :num 
+                             WHERE group_trip_id = :group_trip_id";
+                $countStmt = $this->pdo->prepare($countSql);
+                $countStmt->execute([
+                    ':num' => $booking['num_travellers'],
+                    ':group_trip_id' => $booking['group_trip_id']
+                ]);
+            }
+
+            $this->pdo->commit();
+            return true;
+
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("Database Error in cancelBooking: " . $e->getMessage());
+            return false;
         }
-        header("Location: /traveller/dashboard?status=cancel_failed");
-        exit();
     }
 
     public function packages() {
@@ -234,32 +275,67 @@ class TravellerController {
     }
 
     public function groupHub() {
-    if (session_status() === PHP_SESSION_NONE) { session_start(); }
-    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
-        header("Location: /login"); exit();
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
+            header("Location: /login");
+            exit();
+        }
+
+        $groupId = $_GET['id'] ?? null;
+        if (!$groupId) { header("Location: /traveller/dashboard"); exit(); }
+
+        require_once __DIR__ . '/../Models/GroupModel.php';
+        $groupModel = new GroupModel($this->pdo);
+
+        // Final Security Check
+        if (!$groupModel->isUserInGroup($_SESSION['user_id'], $groupId)) {
+            header("Location: /traveller/dashboard?error=unauthorized_cluster");
+            exit();
+        }
+
+        $groupDetails = $groupModel->getGroupDetails($groupId);
+        $roster = $groupModel->getGroupRoster($groupId);
+        $messages = $groupModel->getGroupMessages($groupId); // Fetch real messages!
+
+            // Render the private Group Hub view
+        $this->render('traveller/group', [
+            'title'        => 'Group Cluster - Tripistry',
+            'groupDetails' => $groupDetails,
+            'roster'       => $roster,
+            'messages'     => $messages
+        ]);
     }
 
-    $groupId = $_GET['id'] ?? null;
-    if (!$groupId) { header("Location: /traveller/dashboard"); exit(); }
+    public function sendMessage() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
+            header("Location: /login");
+            exit();
+        }
 
-    require_once __DIR__ . '/../Models/GroupModel.php';
-    $groupModel = new GroupModel($this->pdo);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $travellerId = $_SESSION['user_id'];
+            $groupId = $_POST['group_trip_id'] ?? null;
+            $messageText = trim($_POST['message_text'] ?? '');
 
-    // Final Security Check
-    if (!$groupModel->isUserInGroup($_SESSION['user_id'], $groupId)) {
-        header("Location: /traveller/dashboard?error=unauthorized_cluster");
-        exit();
+            if ($groupId && !empty($messageText)) {
+                // 1. Explicitly connect to the database first
+                require_once __DIR__ . '/../../config/database.php';
+                $database = new Database();
+                $db = $database->getConnection();
+                require_once __DIR__ . '/../Models/GroupModel.php';
+                $groupModel = new GroupModel($db);
+
+                // Security: Only save if they actually belong to this group
+                if ($groupModel->isUserInGroup($travellerId, $groupId)) {
+                    $groupModel->saveMessage($groupId, $travellerId, $messageText);
+                }
+            }
+            header("Location: /traveller/group?id=" . $groupId);
+            exit();
+        }
     }
-
-    $groupDetails = $groupModel->getGroupDetails($groupId);
-    $roster = $groupModel->getGroupRoster($groupId);
-
-    $this->render('traveller/group', [
-        'title' => 'Group Cluster - Tripistry',
-        'groupDetails' => $groupDetails,
-        'roster' => $roster
-    ]);
-}
 
     
 }

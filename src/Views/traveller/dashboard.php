@@ -97,38 +97,29 @@ $userEmail = ($traveller && isset($traveller['email']))
                         </div>
                     </div>
 
-<<<<<<< HEAD
-                    <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg);">
+                    <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg); gap: 1rem; overflow: hidden;">
                         
-                        <div>
+                        <div style="flex-grow: 1; min-width: 0;">
                             <?php if (!empty($trip['group_trip_id'])): ?>
                                 <a href="/traveller/group?id=<?= htmlspecialchars($trip['group_trip_id']) ?>" 
-                                class="btn-primary" 
-                                style="...">
-                                    🌐 Access Hub for Group #<?= htmlspecialchars($trip['group_trip_id']) ?>
+                                   class="btn-primary" 
+                                   style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 100%;">
+                                    🌐 Access Hub #<?= htmlspecialchars($trip['group_trip_id']) ?>
                                 </a>
                             <?php else: ?>
-                                <div style="...">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem; white-space: nowrap;">
                                     <div class="status-dot" style="background: var(--ocean);"></div> 
-                                    Auto-Matching in Progress...
+                                    Auto-Matching...
                                 </div>
                             <?php endif; ?>
                         </div>
 
-=======
-                    <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg); gap: 1rem; overflow: hidden;">
-                        
-                        <div style="font-family: var(--font-code); font-size: 1.8rem; color: var(--text-muted); letter-spacing: 4px; opacity: 0.5; overflow: hidden; white-space: nowrap; text-overflow: clip;">
-                            ||||||||||||||||
-                        </div>
-                        
->>>>>>> c6188d06043cca8505774fc693afb45515438270
                         <button class="btn-danger" 
                                 style="flex-shrink: 0; white-space: nowrap;"
                                 data-booking="<?= htmlspecialchars($trip['booking_id']) ?>"
                                 data-name="<?= htmlspecialchars($trip['package_name']) ?>"
                                 onclick="openCancelModal(this)">
-                            Cancel Booking
+                            Cancel
                         </button>
                     </div>
                 </div>
