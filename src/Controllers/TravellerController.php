@@ -18,7 +18,7 @@ class TravellerController {
             session_start();
         }
         
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
             header("Location: /login");
             exit();
         }
