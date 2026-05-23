@@ -668,7 +668,7 @@ $gradients = [
                  */
                 foreach ($topRated as $i => $pkg):
                     $grad = $gradients[$i % count($gradients)];
-                    $imgPath = '/images/' . htmlspecialchars($pkg['image_filename'] ?? '');
+                    $imgPath = htmlspecialchars($pkg['image_filename'] ?? '');
                     $rating  = isset($pkg['avg_rating']) ? number_format($pkg['avg_rating'], 1) : '—';
                 ?>
                     <?php /*
@@ -683,7 +683,6 @@ $gradients = [
                                      alt="<?= htmlspecialchars($pkg['name']) ?>"
                                      onerror="this.style.display='none'">
                             <?php endif; ?>
-                            <div class="img-fallback">🏔️</div>
                             <span class="carousel-card-badge">★ <?= $rating ?></span>
                         </div>
                         <div class="carousel-card-body">
@@ -748,7 +747,7 @@ $gradients = [
                  */
                 foreach ($mostPopular as $i => $pkg):
                     $grad  = $gradients[$i % count($gradients)];
-                    $imgPath = '/images/' . htmlspecialchars($pkg['image_filename'] ?? '');
+                    $imgPath = htmlspecialchars($pkg['image_filename'] ?? '');
                     $count   = isset($pkg['booking_count']) ? number_format($pkg['booking_count']) : '—';
                 ?>
                     <a href="/packages/<?= (int)$pkg['id'] ?>" class="carousel-card">
@@ -757,8 +756,7 @@ $gradients = [
                                 <img src="<?= $imgPath ?>"
                                      alt="<?= htmlspecialchars($pkg['name']) ?>"
                                      onerror="this.style.display='none'">
-                            <?php endif; ?>
-                            <div class="img-fallback">✈️</div>
+                            <?php endif; ?> 
                             <span class="carousel-card-badge"><?= $count ?> booked</span>
                         </div>
                         <div class="carousel-card-body">
