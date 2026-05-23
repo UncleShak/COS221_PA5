@@ -19,13 +19,19 @@ if (strpos($route, $baseDir) === 0) {
 }
 $route = rtrim($route, '/') ?: '/'; // Normalizes URL by removing trailing slashes
 
-// Default routing to login if root is accessed
-if($route === '/'){
-    $route = '/login';
-}
-
 // 3. Route the request to the correct controller/view
 switch($route){
+    
+    case '/':
+    case '/home':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        
+        require_once __DIR__ . '/../src/Controllers/HomeController.php';
+        $homeController = new HomeController($pdo);
+        $homeController->index();
+        break;
     
     // --- Auth Routes ---
     case '/login':
