@@ -119,16 +119,6 @@ switch($route){
         $controller->cancelBooking();
         break;
 
-    // --- Agency Routes ---
-    case '/agency/dashboard':
-        // Prince's logic
-        require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('agency');
-        // I will do this after prince is done:
-        // $controller = new AgencyController();
-        // $controller->dashboard();
-        break;
-
     case '/traveller/packages':
         // 1. Get the database connection
         require_once __DIR__ . '/../config/database.php';
@@ -145,18 +135,64 @@ switch($route){
         $controller->packages();
         break;
 
-    case '/agency/create-package':
+    // --- Agency Routes ---
+    case '/agency/dashboard':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
-
-        require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
-        $controller = new AgencyController($pdo);
-        $controller->createPackage();
+        $controller = new AgencyController($connection);
+        $controller->dashboard(); // You will need to build this method next!
+        break;
 
+    // Prince's URL, but wired to YOUR method
+    case '/agency/package/create':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->createPackage(); 
+        break;
+
+    // Prince's URL, but wired to YOUR method
+    case '/agency/package/save':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->storePackage();
+        break;
+
+    // Prince's Edit Route (Stubbed for later)
+    case '/agency/package/edit':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->packageForm(); 
+        break;
+
+    // Prince's Archive Route (Stubbed for later)
+    case '/agency/package/archive':
+        require_once __DIR__ . '/../config/database.php';
+        $dbInstance = new Database();
+        $connection = $dbInstance->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($connection);
+        $controller->archivePackage();
         break;
     
     // --- System Routes ---
@@ -184,7 +220,7 @@ switch($route){
         $content = ob_get_clean();
         require_once __DIR__ . '/../src/Views/layout.php';
         break;
-    case 'logout':
+
     case '/logout': // Add both just in case your router keeps the slash!
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         $authController = new AuthController();
