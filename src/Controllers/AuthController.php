@@ -33,9 +33,9 @@ class AuthController{
                 $_SESSION['user_type']=$user['user_type'];
 
                 if($user['user_type']==='traveller'){
-                    header("Location: /traveller/packages");
+                    header("Location: index.php?route=traveller/dashboard");
                 }else{
-                    header("Location: /agency/dashboard");
+                    header("Location: index.php?route=agency/dashboard");
                 }
                 exit;
             }else{
