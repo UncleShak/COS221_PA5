@@ -78,6 +78,18 @@ class BookingModel {
                 ':special_requests'  => $specialRequests,
                 ':payment_reference' => $paymentRef
             ]);
+
+            $rosterSql = "INSERT INTO grouptripparticipants (traveller_id, group_trip_id, package_id, status, joined_at) 
+                          VALUES (:tid, :gid, :pid, 'confirmed', NOW()) 
+                          ON DUPLICATE KEY UPDATE status = 'confirmed'";
+            
+            $rosterStmt = $this->pdo->prepare($rosterSql);
+            $rosterStmt->execute([
+                ':tid' => $travellerId,
+                ':gid' => $groupTripId,
+                ':pid' => $packageId // <-- This is the missing piece!
+            ]);
+
             $this->pdo->commit();
             return $success;
 

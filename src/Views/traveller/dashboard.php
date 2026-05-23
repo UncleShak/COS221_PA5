@@ -97,6 +97,7 @@ $userEmail = ($traveller && isset($traveller['email']))
                         </div>
                     </div>
 
+<<<<<<< HEAD
                     <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg);">
                         
                         <div>
@@ -114,7 +115,16 @@ $userEmail = ($traveller && isset($traveller['email']))
                             <?php endif; ?>
                         </div>
 
+=======
+                    <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg); gap: 1rem; overflow: hidden;">
+                        
+                        <div style="font-family: var(--font-code); font-size: 1.8rem; color: var(--text-muted); letter-spacing: 4px; opacity: 0.5; overflow: hidden; white-space: nowrap; text-overflow: clip;">
+                            ||||||||||||||||
+                        </div>
+                        
+>>>>>>> c6188d06043cca8505774fc693afb45515438270
                         <button class="btn-danger" 
+                                style="flex-shrink: 0; white-space: nowrap;"
                                 data-booking="<?= htmlspecialchars($trip['booking_id']) ?>"
                                 data-name="<?= htmlspecialchars($trip['package_name']) ?>"
                                 onclick="openCancelModal(this)">
