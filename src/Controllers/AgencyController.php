@@ -1,7 +1,5 @@
 <?php
 // src/Controllers/AgencyController.php
-// Handles all HTTP actions for the Agency role.
-// Every method begins with an ownership/auth check via requireAgency().
 
 require_once __DIR__ . '/../Models/AgencyModel.php';
 
@@ -16,14 +14,6 @@ class AgencyController
         $this->model = new AgencyModel($db);
     }
 
-    // ---------------------------------------------------------------
-    // AUTH GUARD
-    // ---------------------------------------------------------------
-
-    /**
-     * Abort with a redirect to /login if the current session is not an agency.
-     * Call this at the top of every action method.
-     */
     private function requireAgency(): void
     {
         if (
@@ -31,25 +21,16 @@ class AgencyController
             empty($_SESSION['user_type']) ||
             $_SESSION['user_type'] !== 'agency'
         ) {
-            header('Location: /login');
+            header('Location: index.php?route=login');
             exit;
         }
     }
 
-    /** Convenience: current agency's user_id from session. */
     private function agencyId(): int
     {
         return (int) $_SESSION['user_id'];
     }
 
-    // ---------------------------------------------------------------
-    // DASHBOARD
-    // ---------------------------------------------------------------
-
-    /**
-     * GET /agency/dashboard
-     * Renders the agency dashboard with stats, package list, and recent bookings.
-     */
     public function dashboard(): void
     {
         $this->requireAgency();
@@ -61,7 +42,6 @@ class AgencyController
         $packages       = $this->model->getPackagesByAgency($agencyId);
         $recentBookings = $this->model->getRecentBookings($agencyId, 5);
 
-        // Flash message (set by savePackage / archivePackage)
         $flash = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
 
@@ -73,14 +53,6 @@ class AgencyController
         require __DIR__ . '/../Views/layout.php';
     }
 
-    // ---------------------------------------------------------------
-    // PACKAGE FORM (create & edit)
-    // ---------------------------------------------------------------
-
-    /**
-     * GET /agency/package/create    → blank form
-     * GET /agency/package/edit?id=X → pre-filled form
-     */
     public function packageForm(): void
     {
         $this->requireAgency();
@@ -88,7 +60,6 @@ class AgencyController
         $agencyId  = $this->agencyId();
         $packageId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
-        // Available options for all multi-select dropdowns
         $allDestinations   = $this->model->getAllDestinations();
         $allFlights        = $this->model->getAllFlights();
         $allAccommodations = $this->model->getAllAccommodations();
@@ -96,18 +67,16 @@ class AgencyController
         $allRestaurants    = $this->model->getAllRestaurants();
 
         if ($packageId !== null) {
-            // ── EDIT mode ──────────────────────────────────────────
             $package = $this->model->getPackageById($packageId, $agencyId);
 
             if (!$package) {
                 $_SESSION['flash'] = ['type' => 'error', 'message' => 'Package not found or access denied.'];
-                header('Location: /agency/dashboard');
+                header('Location: index.php?route=agency/dashboard');
                 exit;
             }
 
             $groupTrip = $this->model->getGroupTrip($packageId);
 
-            // IDs already linked — used to pre-check multi-selects in the view
             $selectedDestinations   = $this->model->getPackageDestinationIds($packageId);
             $selectedFlights        = $this->model->getPackageFlightIds($packageId);
             $selectedAccommodations = $this->model->getPackageAccommodationIds($packageId);
@@ -117,7 +86,6 @@ class AgencyController
             $formMode = 'edit';
             $title    = 'Edit Package · Tripistry';
         } else {
-            // ── CREATE mode ────────────────────────────────────────
             $package   = null;
             $groupTrip = null;
 
@@ -141,27 +109,18 @@ class AgencyController
         require __DIR__ . '/../Views/layout.php';
     }
 
-    // ---------------------------------------------------------------
-    // SAVE PACKAGE (create or update)
-    // ---------------------------------------------------------------
-
-    /**
-     * POST /agency/package/save
-     * Handles both create (no package_id in POST) and update (package_id present).
-     */
     public function savePackage(): void
     {
         $this->requireAgency();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /agency/dashboard');
+            header('Location: index.php?route=agency/dashboard');
             exit;
         }
 
         $agencyId  = $this->agencyId();
         $packageId = !empty($_POST['package_id']) ? (int) $_POST['package_id'] : null;
 
-        // ── Validate core fields ───────────────────────────────────
         $errors = [];
 
         $title       = trim($_POST['title']           ?? '');
@@ -181,27 +140,23 @@ class AgencyController
         if (!is_numeric($durationDay) || $durationDay < 1) {
             $errors['duration_days'] = 'Duration must be at least 1 day.';
         }
-
-        // FIX: status ENUM in DB is ('draft', 'active', 'archived') — not 'published'
         if (!in_array($status, ['draft', 'active', 'archived'], true)) {
             $status = 'draft';
         }
 
-        // ── Group trip validation ──────────────────────────────────
         $isGroupTrip   = !empty($_POST['is_group_trip']);
         $groupTripData = null;
 
         if ($isGroupTrip) {
-            $depDate = trim($_POST['departure_date']    ?? '');
-            $retDate = trim($_POST['return_date']       ?? '');
+            $depDate = trim($_POST['departure_date']        ?? '');
+            $retDate = trim($_POST['return_date']           ?? '');
             $minP    = (int) ($_POST['gt_min_participants'] ?? 0);
             $maxP    = (int) ($_POST['gt_max_participants'] ?? 0);
-            $meetPt  = trim($_POST['meeting_point']    ?? '');
+            $meetPt  = trim($_POST['meeting_point']         ?? '');
 
             if ($depDate === '') {
                 $errors['departure_date'] = 'Departure date is required for group trips.';
             }
-            // FIX: return_date is NOT NULL in GroupTrips schema
             if ($retDate === '') {
                 $errors['return_date'] = 'Return date is required for group trips.';
             }
@@ -229,13 +184,12 @@ class AgencyController
             $_SESSION['form_old']    = $_POST;
 
             $redirect = $packageId
-                ? "/agency/package/edit?id={$packageId}"
-                : '/agency/package/create';
+                ? "index.php?route=agency/package/edit&id={$packageId}"
+                : 'index.php?route=agency/package/create';
             header("Location: {$redirect}");
             exit;
         }
 
-        // ── Persist ───────────────────────────────────────────────
         $data = [
             'title'           => $title,
             'description'     => $description,
@@ -243,7 +197,7 @@ class AgencyController
             'duration_days'   => (int) $durationDay,
             'status'          => $status,
             'cover_image_url' => $coverUrl ?: null,
-            'max_capacity'    => $maxCapacity,  // matches DB column name
+            'max_capacity'    => $maxCapacity,
         ];
 
         $this->db->beginTransaction();
@@ -269,29 +223,21 @@ class AgencyController
         } catch (Exception $e) {
             $this->db->rollBack();
             $_SESSION['flash'] = ['type' => 'error', 'message' => 'Save failed: ' . $e->getMessage()];
-            header('Location: /agency/dashboard');
+            header('Location: index.php?route=agency/dashboard');
             exit;
         }
 
         $_SESSION['flash'] = ['type' => 'success', 'message' => 'Package saved successfully.'];
-        header('Location: /agency/dashboard');
+        header('Location: index.php?route=agency/dashboard');
         exit;
     }
 
-    // ---------------------------------------------------------------
-    // ARCHIVE (soft-delete)
-    // ---------------------------------------------------------------
-
-    /**
-     * POST /agency/package/archive
-     * Expects POST field: package_id
-     */
     public function archivePackage(): void
     {
         $this->requireAgency();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['package_id'])) {
-            header('Location: /agency/dashboard');
+            header('Location: index.php?route=agency/dashboard');
             exit;
         }
 
@@ -304,13 +250,9 @@ class AgencyController
             ? ['type' => 'success', 'message' => 'Package archived.']
             : ['type' => 'error',   'message' => 'Package not found or access denied.'];
 
-        header('Location: /agency/dashboard');
+        header('Location: index.php?route=agency/dashboard');
         exit;
     }
-
-    // ---------------------------------------------------------------
-    // HELPER: sync all five junction tables in one place
-    // ---------------------------------------------------------------
 
     private function syncJunctions(int $packageId, array $post): void
     {
