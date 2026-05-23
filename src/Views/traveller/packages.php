@@ -64,7 +64,7 @@ $currentPage = $currentPage ?? 1;
                 </div>
                 
                 <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 0.5rem;">Apply Filters</button>
-                <a href="/traveller/packages" class="btn-secondary" style="width: 100%; text-align: center; display: inline-block;">Reset All</a>
+                <a href="index.php?route=traveller/packages" class="btn-secondary" style="width: 100%; text-align: center; display: inline-block;">Reset All</a>
             </form>
         </aside>
         
@@ -115,6 +115,23 @@ $currentPage = $currentPage ?? 1;
 
                 <?php endif; ?>
             </div>
+
+            <?php if ($totalPages > 1): ?>
+            <div class="pagination" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2.5rem; flex-wrap: wrap;">
+                <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                    <?php
+                        $pageParams = array_merge($_GET, ['page' => $p]);
+                        $pageUrl = 'index.php?' . http_build_query($pageParams);
+                    ?>
+                    <a href="<?= htmlspecialchars($pageUrl) ?>"
+                       class="<?= $p === $currentPage ? 'btn-primary' : 'btn-secondary' ?>"
+                       style="padding: 0.5rem 1rem; min-width: 2.5rem; text-align: center;">
+                        <?= $p ?>
+                    </a>
+                <?php endfor; ?>
+            </div>
+            <?php endif; ?>
+
         </div>
     </div>
 </main>
