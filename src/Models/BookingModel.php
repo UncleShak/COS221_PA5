@@ -8,36 +8,88 @@ class BookingModel {
         $this->pdo = $pdo;
     }
 
-    public function createBooking($travellerId, $packageId, $travelDate, $partySize, $specialRequests) {
+    public function processGroupBooking($travellerId, $packageId, $travelDate, $partySize, $specialRequests) {
         try {
+            $this->pdo->beginTransaction();
+
             $paymentRef = 'TRP-' . strtoupper(substr(uniqid(), -6));
-            $sql = "INSERT INTO bookings (
-                        traveller_id, package_id, travel_date, num_travellers, 
+            $groupTripId = null;
+
+            // 2. THE SEARCH ALGORITHM
+            $findSql = "SELECT group_trip_id, current_participants, max_participants 
+                        FROM grouptrips 
+                        WHERE package_id = :package_id 
+                          AND departure_date = :travel_date 
+                          AND status = 'open' 
+                        LIMIT 1 FOR UPDATE";
+            
+            $findStmt = $this->pdo->prepare($findSql);
+            $findStmt->execute([
+                ':package_id' => $packageId,
+                ':travel_date' => $travelDate
+            ]);
+            $group = $findStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($group && ($group['current_participants'] + $partySize <= $group['max_participants'])) {
+
+                $groupTripId = $group['group_trip_id'];
+                
+                $updateSql = "UPDATE grouptrips 
+                              SET current_participants = current_participants + :party_size 
+                              WHERE group_trip_id = :group_trip_id";
+                $updateStmt = $this->pdo->prepare($updateSql);
+                $updateStmt->execute([
+                    ':party_size' => $partySize,
+                    ':group_trip_id' => $groupTripId
+                ]);
+
+            } else {
+                $insertGroupSql = "INSERT INTO grouptrips (
+                                      package_id, departure_date, return_date, meeting_point, min_participants, max_participants, 
+                                      current_participants, status, created_at
+                                   ) VALUES (
+                                      :package_id, :departure_date, DATE_ADD(:departure_date, INTERVAL 7 DAY), 'To Be Determined', 2, 10, 
+                                      :party_size, 'open', NOW()
+                                   )";
+                $insertGrpStmt = $this->pdo->prepare($insertGroupSql);
+                $insertGrpStmt->execute([
+                    ':package_id'     => $packageId,
+                    ':departure_date' => $travelDate,
+                    ':party_size'     => $partySize
+                ]);
+                $groupTripId = $this->pdo->lastInsertId();
+            }
+            $insertBookingSql = "INSERT INTO bookings (
+                        traveller_id, package_id, group_trip_id, travel_date, num_travellers, 
                         special_requests, status, total_price, currency, payment_reference
                     ) 
                     VALUES (
-                        :traveller_id, :package_id, :travel_date, :num_travellers, 
+                        :traveller_id, :package_id, :group_trip_id, :travel_date, :num_travellers, 
                         :special_requests, 'confirmed', 19700.00, 'ZAR', :payment_reference
                     )";
             
-            $stmt = $this->pdo->prepare($sql);
-            
-            $success = $stmt->execute([
+            $bookStmt = $this->pdo->prepare($insertBookingSql);
+            $success = $bookStmt->execute([
                 ':traveller_id'      => $travellerId,
                 ':package_id'        => $packageId,
+                ':group_trip_id'     => $groupTripId,
                 ':travel_date'       => $travelDate,
                 ':num_travellers'    => $partySize, 
                 ':special_requests'  => $specialRequests,
                 ':payment_reference' => $paymentRef
             ]);
-
+            $this->pdo->commit();
             return $success;
 
-        } catch (PDOException $e) {
-            echo "<br><div style='padding: 1rem; background: #ffebee; color: #c62828; border: 2px solid #c62828;'>";
-            echo "<strong>MARIADB ERROR:</strong><br>" . $e->getMessage();
+        } catch (Exception $e) {
+            // 6. FAILURE: Something broke. Revert all changes instantly.
+            $this->pdo->rollBack();
+            
+            // Trapdoor for Relentless Testing
+            echo "<br><div style='padding: 1rem; background: #ffebee; color: #c62828; border: 2px solid #c62828; z-index: 999; position: relative;'>";
+            echo "<strong>MATCHING ALGORITHM ERROR:</strong><br>" . $e->getMessage();
             echo "</div><br>";
-            return false;
+            die();
         }
     }
 

@@ -4,8 +4,6 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// 1. BYPASS FOR STATIC FILES (CSS, Images, etc.)
-// If the requested file actually exists in the public folder, serve it directly.
 $filePath = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (is_file($filePath)) {
     return false; 
@@ -62,11 +60,15 @@ switch($route){
         break;
 
     case '/traveller/details':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
 
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController();
+        $controller = new TravellerController($pdo); 
         $controller->details();
         break;
 
@@ -81,24 +83,14 @@ switch($route){
         break;
 
     case '/traveller/checkout':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('traveller');
-
-        $title = 'Checkout - Tripistry';
-
-        ob_start();
-        require_once __DIR__ . '/../src/Views/traveller/checkout.php';
-        $content = ob_get_clean();
-        require_once __DIR__ . '/../src/Views/layout.php';
-        break;
-
-    case '/traveller/dashboard':
-        require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('traveller');
-
+        AuthController::checkRole('traveller'); 
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController();
-        $controller->dashboard();
+        $controller = new TravellerController($pdo); 
+        $controller->checkout();
         break;
 
     case '/traveller/process_booking':
@@ -135,6 +127,22 @@ switch($route){
         // I will do this after prince is done:
         // $controller = new AgencyController();
         // $controller->dashboard();
+        break;
+
+    case '/traveller/packages':
+        // 1. Get the database connection
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        
+        // 2. Verify they are logged in
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+        
+        // 3. Hand the request off to the Controller
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo); 
+        $controller->packages();
         break;
 
     case '/agency/create-package':

@@ -17,11 +17,17 @@
 
     <nav class="sg-nav">
       <div class="sg-nav-logo"><span class="logo-dot"></span> TRIPISTRY</div>
+      
       <ul class="sg-nav-links">
-        <li><a href="/traveller/dashboard">Dashboard</a></li>
-        <li><a href="/traveller/details">Packages</a></li>
+        <li><a href="/traveller/packages">Explore Packages</a></li>
       </ul>
-      <span class="sg-nav-pill">Traveller View</span>
+
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <a href="/traveller/dashboard" style="text-decoration: none; font-size: 1.4rem; transition: transform 0.2s var(--ease);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Your Itinerary">
+            👤
+        </a>
+        <span class="sg-nav-pill">Traveller View</span>
+      </div>
     </nav>
 
     <div class="content">

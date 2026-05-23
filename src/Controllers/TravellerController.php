@@ -5,29 +5,36 @@ require_once __DIR__ . '/../Models/BookingModel.php';
 class TravellerController {
     
     private $bookingModel;
+    private $pdo;
 
-    // We need the constructor to receive Prince's database connection
-    public function __construct($pdo) {
-        $this->bookingModel = new BookingModel($pdo);
+    // 2. Capture the connection when the router creates the controller
+    public function __construct($pdo = null) {
+        $this->pdo = $pdo;
+        $this->bookingModel = new BookingModel($this->pdo);
     }
 
     public function dashboard() {
-        // 1. Security check (Mocked for testing)
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         
-        // TEMPORARY TEST DATA
-        $_SESSION['user_id'] = 1;
-        $_SESSION['role'] = 'traveller';
-
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
             header("Location: /login");
             exit();
         }
 
-        // 2. Fetch the raw data from MariaDB
         $userId = $_SESSION['user_id'];
+
+        // NEW: Fetch the logged-in traveller's profile data
+        $userSql = "SELECT u.email, t.first_name, t.last_name 
+                    FROM users u 
+                    JOIN travellers t ON u.user_id = t.user_id 
+                    WHERE u.user_id = ?";
+        $userStmt = $this->pdo->prepare($userSql);
+        $userStmt->execute([$userId]);
+        $traveller = $userStmt->fetch();
+
+        // 2. Fetch the raw booking data from MariaDB
         $allBookings = $this->bookingModel->getTravellerBookings($userId);
 
         // 3. Sort the data into states
@@ -47,9 +54,10 @@ class TravellerController {
             }
         }
 
-        // 4. Pass EVERYTHING to your custom render function
+        // 4. Pass EVERYTHING (including the $traveller) to your custom render function
         $this->render('traveller/dashboard', [
             'title'            => 'Traveller Dashboard | Tripistry',
+            'traveller'        => $traveller, // Passed to the view here!
             'upcomingTrips'    => $upcomingTrips,
             'pastTrips'        => $pastTrips,
             'hasPastTrips'     => !empty($pastTrips),
@@ -58,7 +66,32 @@ class TravellerController {
     }
 
     public function details() {
-        $this->render('traveller/details', ['title' => 'Package Details | Tripistry']);
+        // 1. Grab the ID from the URL (e.g., ?id=1)
+        $packageId = $_GET['id'] ?? null;
+        
+        // If they tampered with the URL, bounce them back to the storefront
+        if (!$packageId) {
+            header("Location: /traveller/packages");
+            exit();
+        }
+
+        // 2. Fetch the specific package from MariaDB
+        require_once __DIR__ . '/../Models/PackageModel.php';
+        $packageModel = new PackageModel($this->pdo);
+        $package = $packageModel->getPackageById($packageId);
+
+        // If the package doesn't exist, bounce them back
+        if (!$package) {
+            header("Location: /traveller/packages?error=not_found");
+            exit();
+        }
+
+        // 3. Render the view inside the layout shell
+        $title = $package['title'] . ' - Tripistry';
+        ob_start();
+        require_once __DIR__ . '/../Views/traveller/details.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../Views/layout.php';
     }
 
     /**
@@ -119,19 +152,13 @@ class TravellerController {
     }
 
     public function cancelBooking() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
         
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
-            header("Location: /login");
-            exit();
-        }
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
             $bookingId = $_POST['booking_id'];
             $travellerId = $_SESSION['user_id'];
 
+            // Assumes you have a cancelBooking method in your model
             $success = $this->bookingModel->cancelBooking($bookingId, $travellerId);
 
             if ($success) {
@@ -139,10 +166,73 @@ class TravellerController {
                 exit();
             }
         }
-        
-        // Fallback if something fails
         header("Location: /traveller/dashboard?status=cancel_failed");
         exit();
     }
+
+    public function packages() {
+        require_once __DIR__ . '/../Models/PackageModel.php';
+        $packageModel = new PackageModel($this->pdo);
+
+        // Get search queries if they exist
+        $filters = [
+            'search' => $_GET['search'] ?? '',
+            'min_price' => $_GET['min_price'] ?? '',
+            'max_price' => $_GET['max_price'] ?? ''
+        ];
+        $currentSort = $_GET['sort'] ?? 'price_asc';
+
+        // Fetch the packages from MariaDB!
+        $packages = $packageModel->getFilteredPackages($filters, $currentSort);
+        $totalPackages = count($packages);
+
+        // Render the view inside the layout shell
+        $title = 'Explore Packages - Tripistry';
+        ob_start();
+        require_once __DIR__ . '/../Views/traveller/packages.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function checkout() {
+        // 1. Grab the ID from the URL
+        $packageId = $_GET['package_id'] ?? null;
+        
+        if (!$packageId) {
+            header("Location: /traveller/packages");
+            exit();
+        }
+
+        // 2. Fetch the specific package data
+        require_once __DIR__ . '/../Models/PackageModel.php';
+        $packageModel = new PackageModel($this->pdo);
+        $package = $packageModel->getPackageById($packageId);
+
+        if (!$package) {
+            header("Location: /traveller/packages?error=not_found");
+            exit();
+        }
+
+        // 3. FETCH THE LOGGED-IN TRAVELLER'S DATA
+        // Assuming your session holds 'user_id' after login
+        $userId = $_SESSION['user_id'] ?? 1; // Safe fallback to Sarah for testing
+        
+        $userSql = "SELECT u.email, t.first_name, t.last_name 
+                    FROM users u 
+                    JOIN travellers t ON u.user_id = t.user_id 
+                    WHERE u.user_id = ?";
+        $userStmt = $this->pdo->prepare($userSql);
+        $userStmt->execute([$userId]);
+        $traveller = $userStmt->fetch();
+
+        // 4. Render the checkout view
+        $title = 'Secure Checkout - Tripistry';
+        ob_start();
+        require_once __DIR__ . '/../Views/traveller/checkout.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    
 }
 ?>
