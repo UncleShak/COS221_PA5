@@ -4,6 +4,8 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+// 1. BYPASS FOR STATIC FILES (CSS, Images, etc.)
+// If the requested file actually exists in the public folder, serve it directly.
 $filePath = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (is_file($filePath)) {
     return false; 
@@ -58,15 +60,11 @@ switch($route){
         break;
 
     case '/traveller/details':
-        require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
 
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController($pdo); 
+        $controller = new TravellerController();
         $controller->details();
         break;
 
@@ -81,14 +79,24 @@ switch($route){
         break;
 
     case '/traveller/checkout':
-        require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('traveller'); 
+        AuthController::checkRole('traveller');
+
+        $title = 'Checkout - Tripistry';
+
+        ob_start();
+        require_once __DIR__ . '/../src/Views/traveller/checkout.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../src/Views/layout.php';
+        break;
+
+    case '/traveller/dashboard':
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController($pdo); 
-        $controller->checkout();
+        $controller = new TravellerController();
+        $controller->dashboard();
         break;
 
     case '/traveller/process_booking':
