@@ -593,7 +593,7 @@ $gradients = [
              *   /signup  → case 'signup' / 'register': in the switch
              */ ?>
             <a href="/login"  class="btn-hero-login">Log In</a>
-            <a href="/signup" class="btn-hero-signup">Sign Up</a>
+            <a href="/register" class="btn-hero-signup">Sign Up</a
         </div>
     </nav>
 
@@ -609,7 +609,7 @@ $gradients = [
 
         <?php /* Search bar — wires up to /packages with query params.
                  TODO: update the form action to the packages search route. */ ?>
-        <form action="/packages" method="GET" class="lp-search-bar">
+        <form action="/traveller/packages" method="GET" class="lp-search-bar">
             <div class="lp-search-bar-field">
                 <span>📍</span>
                 <input type="text" name="destination" placeholder="Destination"
@@ -658,7 +658,7 @@ $gradients = [
          * e.g. href="/packages?sort=rating" or just href="/packages"
          * depending on how the packages controller handles sorting.
          */ ?>
-        <a href="/packages" class="btn-view-all">View All →</a>
+        <a href="/traveller/packages" class="btn-view-all">View All →</a>
     </div>
 
     <div class="carousel-outer" id="carousel-top-rated">
@@ -686,7 +686,7 @@ $gradients = [
                      * e.g. href="/packages/<?= $pkg['id'] ?>"
                      * (add a 'packages/{id}' case in public/index.php's switch)
                      */ ?>
-                    <a href="/packages/<?= (int)$pkg['id'] ?>" class="carousel-card">
+                    <a href="/traveller/details?id=<?= (int)$pkg['id'] ?>" class="carousel-card">
                         <div class="carousel-card-img" style="background:<?= $grad ?>;">
                             <?php if (!empty($pkg['image_filename'])): ?>
                                 <img src="<?= $imgPath ?>"
