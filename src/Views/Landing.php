@@ -583,28 +583,24 @@ $gradients = [
 <section class="lp-full-hero" id="hero">
 
     <?php /* ── HERO NAV (Log In / Sign Up only) ── */ ?>
+    <?php
+// ... [Keep the top PHP block and CSS styles exactly the same] ...
+?>
+
+<?php /* ═══════════════════════════════════════════════════
+   SECTION 1 — FULL-BLEED HERO
+   ═══════════════════════════════════════════════════ */ ?>
+<section class="lp-full-hero" id="hero">
+
+    <?php /* ── HERO NAV (Log In / Sign Up only) ── */ ?>
     <nav class="lp-hero-nav">
         <a href="/" class="lp-hero-brand">Tripistry</a>
         <div class="lp-hero-nav-actions">
-            <?php
-            /*
-             * SESSION CHECK — show different buttons depending on login state.
-             *
-             * This assumes your app stores the logged-in user in $_SESSION.
-             * TODO: replace $_SESSION['user_id'] with whatever session key
-             * your auth system actually uses (e.g. $_SESSION['user'],
-             * $_SESSION['traveller_id'], $_SESSION['agency_id'], etc.).
-             *
-             * TODO: update the hrefs to match your router's switch cases:
-             *   /login       → case 'login':
-             *   /signup      → case 'signup' / 'register':
-             *   /dashboard   → case 'dashboard': (or traveller/agency dashboard)
-             */
-            if (!empty($_SESSION['user_id'])): ?>
-                <a href="/dashboard" class="btn-hero-signup">View Dashboard</a>
+            <?php if (!empty($_SESSION['user_id'])): ?>
+                <a href="<?= $_SESSION['user_type'] === 'agency' ? '/agency/dashboard' : '/traveller/dashboard' ?>" class="btn-hero-signup">View Dashboard</a>
             <?php else: ?>
                 <a href="/login"  class="btn-hero-login">Log In</a>
-                <a href="/signup" class="btn-hero-signup">Sign Up</a>
+                <a href="/register" class="btn-hero-signup">Sign Up</a>
             <?php endif; ?>
         </div>
     </nav>
@@ -724,7 +720,7 @@ $gradients = [
             <h2>Most Popular Packages</h2>
         </div>
         <?php /*
-         * TODO: Update href to packages listing sorted by popularity.
+         * todo: Update href to packages listing sorted by popularity.
          * e.g. href="/packages?sort=popular" or href="/packages"
          */ ?>
         <a href="/traveller/packages" class="btn-view-all">View All →</a>

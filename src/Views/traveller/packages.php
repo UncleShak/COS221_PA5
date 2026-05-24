@@ -19,16 +19,8 @@ $currentPage = $currentPage ?? 1;
         <p class="sg-section-sub" style="margin: 0 auto 2rem;">Explore thousands of travel packages from trusted agencies worldwide.</p>
         
         <form id="search-form" class="hero-search" method="GET" action="/traveller/packages" style="width: 100%; max-width: 700px; margin: 0 auto;">
-            
             <div style="display: flex; background: rgba(255, 255, 255, 0.95); padding: 0.5rem; border-radius: var(--r-pill); box-shadow: var(--glass-shadow-hi); border: 1px solid var(--glass-border);">
-                
-                <input type="text" 
-                       name="search" 
-                       id="search-input" 
-                       placeholder="Where do you want to go?" 
-                       value="<?= htmlspecialchars($currentFilters['search'] ?? '') ?>"
-                       style="flex: 1; border: none; outline: none; background: transparent; padding: 0.5rem 1.5rem; font-family: var(--font-body); font-size: 1rem; color: var(--text-main);">
-                
+                <input type="text" name="search" id="search-input" placeholder="Where do you want to go?" value="<?= htmlspecialchars($currentFilters['search'] ?? '') ?>" style="flex: 1; border: none; outline: none; background: transparent; padding: 0.5rem 1.5rem; font-family: var(--font-body); font-size: 1rem; color: var(--text-main);">
                 <button type="submit" class="btn-primary" style="padding: 0.8rem 2.5rem;">Search</button>
             </div>
         </form>
@@ -38,16 +30,12 @@ $currentPage = $currentPage ?? 1;
         <aside class="filters-sidebar glass-clear" style="padding: 1.5rem; position: sticky; top: 120px; align-self: start; max-height: calc(100vh - 140px); overflow-y: auto;">
             <h3>Filter Packages</h3>
             <form id="filter-form" method="GET" action="/traveller/packages">
-                
                 <div class="filter-group" style="margin-bottom: 1rem;">
                     <label for="destination" class="input-label">Destination</label>
                     <select name="destination" id="destination" class="input-field">
                         <option value="">All Destinations</option>
                         <?php foreach ($filterOptions['destinations'] as $dest): ?>
-                            <option value="<?= htmlspecialchars($dest) ?>" 
-                                <?= (isset($currentFilters['destination']) && $currentFilters['destination'] == $dest) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($dest) ?>
-                            </option>
+                            <option value="<?= htmlspecialchars($dest) ?>" <?= (isset($currentFilters['destination']) && $currentFilters['destination'] == $dest) ? 'selected' : '' ?>><?= htmlspecialchars($dest) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -78,29 +66,21 @@ $currentPage = $currentPage ?? 1;
                         <p>No packages match your filters. Try adjusting your search criteria!</p>
                     </div>
                 <?php else: ?>
-                    
                     <?php foreach ($packages as $pkg): ?>
-                    
                     <div class="pkg-card glass-frosted" onclick="window.location.href='/traveller/details?id=<?= htmlspecialchars($pkg['id']) ?>'">
-                        
                         <div class="pkg-card-img" style="<?= !empty($pkg['image_url']) ? "background-image: url('" . htmlspecialchars($pkg['image_url']) . "'); background-size: cover; background-position: center;" : "" ?>">
-                            <?php if (empty($pkg['image_url'])): ?>
-                                🌴 <?php endif; ?>
-                            
+                            <?php if (empty($pkg['image_url'])): ?> 🌴 <?php endif; ?>
                             <?php if ($pkg['avg_rating'] > 0): ?>
                                 <span class="pkg-card-badge">★ <?= number_format($pkg['avg_rating'], 1) ?> (<?= $pkg['review_count'] ?>)</span>
                             <?php endif; ?>
                         </div>
-                        
                         <div class="pkg-card-body">
                             <div class="pkg-card-dest"><?= htmlspecialchars($pkg['destination'] ?? 'Global') ?></div>
                             <div class="pkg-card-name"><?= htmlspecialchars($pkg['title']) ?></div>
-                            
                             <div class="pkg-card-meta">
                                 <span>🗓️ <?= htmlspecialchars($pkg['duration_days']) ?> Days</span>
                                 <span>🏢 <?= htmlspecialchars($pkg['agency_name']) ?></span>
                             </div>
-                            
                             <div class="pkg-card-footer">
                                 <div class="pkg-card-price">
                                     R <?= number_format($pkg['price'], 2) ?> <span>/ person</span>
@@ -108,9 +88,7 @@ $currentPage = $currentPage ?? 1;
                             </div>
                         </div>
                     </div>
-
                     <?php endforeach; ?>
-
                 <?php endif; ?>
             </div>
 
@@ -119,17 +97,15 @@ $currentPage = $currentPage ?? 1;
                 <?php for ($p = 1; $p <= $totalPages; $p++): ?>
                     <?php
                         $pageParams = array_merge($_GET, ['page' => $p]);
-                        $pageUrl = 'index.php?' . http_build_query($pageParams);
+                        // THE FIX: Links directly to the clean router path
+                        $pageUrl = '/traveller/packages?' . http_build_query($pageParams);
                     ?>
-                    <a href="<?= htmlspecialchars($pageUrl) ?>"
-                       class="<?= $p === $currentPage ? 'btn-primary' : 'btn-secondary' ?>"
-                       style="padding: 0.5rem 1rem; min-width: 2.5rem; text-align: center;">
+                    <a href="<?= htmlspecialchars($pageUrl) ?>" class="<?= $p === $currentPage ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 0.5rem 1rem; min-width: 2.5rem; text-align: center;">
                         <?= $p ?>
                     </a>
                 <?php endfor; ?>
             </div>
             <?php endif; ?>
-
         </div>
     </div>
 </main>

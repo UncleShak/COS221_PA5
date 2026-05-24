@@ -23,7 +23,6 @@
         <div class="detail-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
             
             <div class="detail-left">
-                
                 <div class="main-image" style="margin-bottom: 3rem; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--glass-shadow-hi);">
                     <img src="<?= htmlspecialchars($package['image_url'] ?? '/images/placeholder-large.jpg') ?>" 
                          alt="<?= htmlspecialchars($package['title'] ?? 'Image') ?>"
@@ -74,7 +73,6 @@
             </div>
             
             <div class="detail-right" style="position: sticky; top: 100px; align-self: start;">
-                
                 <div class="price-card glass-frosted" style="padding: 2.5rem; text-align: center; border-radius: var(--r-xl); margin-bottom: 2rem;">
                     <div class="duration-info" style="color: var(--text-soft); margin-bottom: 1rem; font-weight: 600;">
                         🗓️ <?= htmlspecialchars($package['duration_days'] ?? 0) ?> Days of Exploration
@@ -95,7 +93,7 @@
                             <button type="submit" class="btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; border-radius: var(--r-md); cursor: pointer; border: none;">Secure Your Spot →</button>
                         </form>
                     <?php else: ?>
-                        <a href="/login" class="btn-primary" style="display: block; width: 100%; padding: 1rem; font-size: 1.1rem; border-radius: var(--r-md); text-align: center; text-decoration: none;">Secure Your Spot →</a>
+                        <a href="/login?redirect=<?= urlencode('/traveller/checkout?package_id=' . ($package['id'] ?? '')) ?>" class="btn-secondary" style="display: block; width: 100%; padding: 1rem; text-decoration: none; border-radius: var(--r-md); text-align: center;">Login to Book</a>
                     <?php endif; ?>
                 </div>
                 
@@ -106,7 +104,6 @@
                         <p style="color: var(--text-muted); font-size: 0.9rem;">Standard inclusions apply. Details syncing.</p>
                     <?php else: ?>
                         <?php 
-                        // Loop through specific categories in order for the UI
                         $categories = ['hotel', 'flight', 'restaurant', 'attraction'];
                         foreach ($categories as $type): 
                             if (!empty($package['inclusions'][$type])): 
