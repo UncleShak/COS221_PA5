@@ -3,3 +3,4 @@ config/database.php
 .DS_Store
 .env
 population.sql
+/config/secrets.php

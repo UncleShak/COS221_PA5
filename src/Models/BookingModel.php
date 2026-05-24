@@ -1,4 +1,3 @@
--- Active: 1779372272824@@127.0.0.1@3306
 <?php
 
 class BookingModel {
