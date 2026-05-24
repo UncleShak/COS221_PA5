@@ -21,13 +21,19 @@ if (strpos($route, $baseDir) === 0) {
 }
 $route = rtrim($route, '/') ?: '/'; // Normalizes URL by removing trailing slashes
 
-// Default routing to login if root is accessed
-if($route === '/'){
-    $route = '/login';
-}
-
 // 3. Route the request to the correct controller/view
 switch($route){
+    
+    case '/':
+    case '/home':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        
+        require_once __DIR__ . '/../src/Controllers/HomeController.php';
+        $homeController = new HomeController($pdo);
+        $homeController->index();
+        break;
     
     // --- Auth Routes ---
     case '/login':
@@ -133,8 +139,6 @@ switch($route){
         
         // 2. Verify they are logged in
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('traveller');
-        
         // 3. Hand the request off to the Controller
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController($pdo); 
@@ -209,9 +213,29 @@ switch($route){
         $controller = new AgencyController($connection);
         $controller->archivePackage();
         break;
+
+    case '/traveller/group':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+        
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo); 
+        $controller->groupHub();
+        break;
+
+
+    case '/traveller/send-message':
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $travellerController = new TravellerController();
+        $travellerController->sendMessage();
+        break;
     
     // --- System Routes ---
-    case '/manage-data':
+    case '/agency/manage-data':
         // raw data manager gateway
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');

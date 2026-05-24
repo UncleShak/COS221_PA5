@@ -95,7 +95,7 @@
                             <button type="submit" class="btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; border-radius: var(--r-md); cursor: pointer; border: none;">Secure Your Spot →</button>
                         </form>
                     <?php else: ?>
-                        <a href="/login" class="btn-secondary" style="display: block; width: 100%; padding: 1rem; text-decoration: none; border-radius: var(--r-md); text-align: center;">Login to Book</a>
+                        <a href="/login" class="btn-primary" style="display: block; width: 100%; padding: 1rem; font-size: 1.1rem; border-radius: var(--r-md); text-align: center; text-decoration: none;">Secure Your Spot →</a>
                     <?php endif; ?>
                 </div>
                 

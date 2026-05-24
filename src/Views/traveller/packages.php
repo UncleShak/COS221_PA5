@@ -18,8 +18,7 @@ $currentPage = $currentPage ?? 1;
         <h1 class="sg-section-title">Discover Your Next Adventure</h1>
         <p class="sg-section-sub" style="margin: 0 auto 2rem;">Explore thousands of travel packages from trusted agencies worldwide.</p>
         
-        <form id="search-form" class="hero-search" method="GET" action="index.php" style="width: 100%; max-width: 700px; margin: 0 auto;">
-            <input type="hidden" name="route" value="traveller/packages">
+        <form id="search-form" class="hero-search" method="GET" action="/traveller/packages" style="width: 100%; max-width: 700px; margin: 0 auto;">
             
             <div style="display: flex; background: rgba(255, 255, 255, 0.95); padding: 0.5rem; border-radius: var(--r-pill); box-shadow: var(--glass-shadow-hi); border: 1px solid var(--glass-border);">
                 
@@ -38,8 +37,7 @@ $currentPage = $currentPage ?? 1;
     <div class="dashboard-layout" style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem;">
         <aside class="filters-sidebar glass-clear" style="padding: 1.5rem; position: sticky; top: 120px; align-self: start; max-height: calc(100vh - 140px); overflow-y: auto;">
             <h3>Filter Packages</h3>
-            <form id="filter-form" method="GET" action="index.php">
-                <input type="hidden" name="route" value="traveller/packages">
+            <form id="filter-form" method="GET" action="/traveller/packages">
                 
                 <div class="filter-group" style="margin-bottom: 1rem;">
                     <label for="destination" class="input-label">Destination</label>
@@ -115,6 +113,23 @@ $currentPage = $currentPage ?? 1;
 
                 <?php endif; ?>
             </div>
+
+            <?php if ($totalPages > 1): ?>
+            <div class="pagination" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2.5rem; flex-wrap: wrap;">
+                <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                    <?php
+                        $pageParams = array_merge($_GET, ['page' => $p]);
+                        $pageUrl = 'index.php?' . http_build_query($pageParams);
+                    ?>
+                    <a href="<?= htmlspecialchars($pageUrl) ?>"
+                       class="<?= $p === $currentPage ? 'btn-primary' : 'btn-secondary' ?>"
+                       style="padding: 0.5rem 1rem; min-width: 2.5rem; text-align: center;">
+                        <?= $p ?>
+                    </a>
+                <?php endfor; ?>
+            </div>
+            <?php endif; ?>
+
         </div>
     </div>
 </main>

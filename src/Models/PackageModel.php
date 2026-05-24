@@ -89,12 +89,20 @@ class PackageModel {
         
         $params = [];
         
-        // Search filter (Since 'destination' doesn't exist, we search title and description)
+        // Search filter (searches title and description)
         if (!empty($filters['search'])) {
             $sql .= " AND (p.title LIKE ? OR p.description LIKE ?)";
             $searchTerm = "%{$filters['search']}%";
             $params[] = $searchTerm;
             $params[] = $searchTerm;
+        }
+
+        // Destination filter (searches title and description since no dedicated column)
+        if (!empty($filters['destination'])) {
+            $sql .= " AND (p.title LIKE ? OR p.description LIKE ?)";
+            $destTerm = "%{$filters['destination']}%";
+            $params[] = $destTerm;
+            $params[] = $destTerm;
         }
         
         // Price range filter
@@ -134,54 +142,38 @@ class PackageModel {
      * Get total count of filtered packages for pagination
      */
     public function getFilteredCount($filters = []) {
-        // Build subquery for counting
-        $sql = "SELECT COUNT(DISTINCT p.id) as total
+        $sql = "SELECT COUNT(DISTINCT p.package_id) as total
                 FROM packages p
-                JOIN agencies a ON p.agency_id = a.id
-                LEFT JOIN reviews r ON p.id = r.package_id
+                LEFT JOIN packagereviews r ON p.package_id = r.package_id
                 WHERE p.status = 'active'";
         
         $params = [];
         
+        if (!empty($filters['search'])) {
+            $sql .= " AND (p.title LIKE ? OR p.description LIKE ?)";
+            $searchTerm = "%{$filters['search']}%";
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+        }
+
         if (!empty($filters['destination'])) {
-            $sql .= " AND (p.destination LIKE ? OR p.city LIKE ?)";
-            $params[] = "%{$filters['destination']}%";
-            $params[] = "%{$filters['destination']}%";
+            $sql .= " AND (p.title LIKE ? OR p.description LIKE ?)";
+            $destTerm = "%{$filters['destination']}%";
+            $params[] = $destTerm;
+            $params[] = $destTerm;
         }
         
         if (!empty($filters['min_price'])) {
-            $sql .= " AND p.price >= ?";
+            $sql .= " AND p.base_price >= ?";
             $params[] = (float)$filters['min_price'];
         }
         
         if (!empty($filters['max_price'])) {
-            $sql .= " AND p.price <= ?";
+            $sql .= " AND p.base_price <= ?";
             $params[] = (float)$filters['max_price'];
         }
         
-        if (!empty($filters['duration'])) {
-            $sql .= " AND p.duration_days = ?";
-            $params[] = (int)$filters['duration'];
-        }
-        
-        if (!empty($filters['search'])) {
-            $sql .= " AND (p.title LIKE ? OR p.destination LIKE ? OR p.description LIKE ?)";
-            $searchTerm = "%{$filters['search']}%";
-            $params[] = $searchTerm;
-            $params[] = $searchTerm;
-            $params[] = $searchTerm;
-        }
-        
-        $sql .= " GROUP BY p.id";
-        
-        if (!empty($filters['min_rating'])) {
-            $sql .= " HAVING COALESCE(AVG(r.rating), 0) >= ?";
-            $params[] = (float)$filters['min_rating'];
-        }
-        
-        // Wrap in count query
-        $countSql = "SELECT COUNT(*) as total FROM ($sql) as filtered";
-        $stmt = $this->pdo->prepare($countSql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         $result = $stmt->fetch();
         return $result['total'] ?? 0;
@@ -263,12 +255,8 @@ class PackageModel {
     public function getFilterOptions() {
         $options = [];
         
-        // Get unique destinations
-        $stmt = $this->pdo->query("SELECT DISTINCT destination FROM packages WHERE status = 'active' ORDER BY destination");
-        $options['destinations'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        
         // Get price range
-        $stmt = $this->pdo->query("SELECT MIN(price) as min_price, MAX(price) as max_price FROM packages WHERE status = 'active'");
+        $stmt = $this->pdo->query("SELECT MIN(base_price) as min_price, MAX(base_price) as max_price FROM packages WHERE status = 'active'");
         $priceRange = $stmt->fetch();
         $options['min_price'] = floor($priceRange['min_price'] ?? 0);
         $options['max_price'] = ceil($priceRange['max_price'] ?? 10000);
@@ -276,6 +264,9 @@ class PackageModel {
         // Get durations
         $stmt = $this->pdo->query("SELECT DISTINCT duration_days FROM packages WHERE status = 'active' ORDER BY duration_days");
         $options['durations'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        // No dedicated destination column — use empty array (sidebar dropdown hidden or populated from titles)
+        $options['destinations'] = [];
         
         return $options;
     }

@@ -16,7 +16,9 @@
     <div class="orb orb-3"></div>
 
     <nav class="sg-nav">
-      <div class="sg-nav-logo"><span class="logo-dot"></span> TRIPISTRY</div>
+      <a href="/home" class="sg-nav-logo" style="text-decoration: none; color: inherit;">
+         TRIPISTRY
+      </a>
       
       <ul class="sg-nav-links">
         <li><a href="/traveller/packages">Explore Packages</a></li>

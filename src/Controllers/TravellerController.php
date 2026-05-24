@@ -152,21 +152,38 @@ class TravellerController {
     }
 
     public function cancelBooking() {
-        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        if (session_status() === PHP_SESSION_NONE) session_start();
         
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
-            $bookingId = $_POST['booking_id'];
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
+            header("Location: /login");
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Grab the booking ID from the hidden form input
+            $bookingId = $_POST['booking_id'] ?? null;
+            // Grab the traveller ID securely from the session
             $travellerId = $_SESSION['user_id'];
 
-            // Assumes you have a cancelBooking method in your model
-            $success = $this->bookingModel->cancelBooking($bookingId, $travellerId);
+            if ($bookingId) {
+                // Safely establish the database connection
+                require_once __DIR__ . '/../../config/database.php';
+                $database = new Database();
+                $db = $database->getConnection();
+                
+                require_once __DIR__ . '/../Models/BookingModel.php';
+                $bookingModel = new BookingModel($db);
 
-            if ($success) {
-                header("Location: /traveller/dashboard?status=booking_cancelled");
-                exit();
+                // Pass the variables to the Model to execute the cancellation
+                if ($bookingModel->cancelBooking($bookingId, $travellerId)) {
+                    header("Location: /traveller/dashboard?status=booking_cancelled");
+                    exit();
+                }
             }
         }
-        header("Location: /traveller/dashboard?status=cancel_failed");
+        
+        // Fallback if something fails
+        header("Location: /traveller/dashboard?error=cancel_failed");
         exit();
     }
 
@@ -174,17 +191,28 @@ class TravellerController {
         require_once __DIR__ . '/../Models/PackageModel.php';
         $packageModel = new PackageModel($this->pdo);
 
-        // Get search queries if they exist
+        // Collect all active filters from GET params
         $filters = [
-            'search' => $_GET['search'] ?? '',
-            'min_price' => $_GET['min_price'] ?? '',
-            'max_price' => $_GET['max_price'] ?? ''
+            'search'      => $_GET['search'] ?? '',
+            'destination' => $_GET['destination'] ?? '',
+            'min_price'   => $_GET['min_price'] ?? '',
+            'max_price'   => $_GET['max_price'] ?? '',
         ];
         $currentSort = $_GET['sort'] ?? 'price_asc';
 
-        // Fetch the packages from MariaDB!
-        $packages = $packageModel->getFilteredPackages($filters, $currentSort);
-        $totalPackages = count($packages);
+        // Pagination
+        $perPage     = 12;
+        $currentPage = max(1, (int)($_GET['page'] ?? 1));
+        $offset      = ($currentPage - 1) * $perPage;
+
+        // Fetch packages and total count
+        $packages      = $packageModel->getFilteredPackages($filters, $currentSort, $perPage, $offset);
+        $totalPackages = $packageModel->getFilteredCount($filters);
+        $totalPages    = max(1, (int)ceil($totalPackages / $perPage));
+
+        // Filter options for the sidebar dropdowns
+        $filterOptions  = $packageModel->getFilterOptions();
+        $currentFilters = $filters;
 
         // Render the view inside the layout shell
         $title = 'Explore Packages - Tripistry';
@@ -231,6 +259,69 @@ class TravellerController {
         require_once __DIR__ . '/../Views/traveller/checkout.php';
         $content = ob_get_clean();
         require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function groupHub() {
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
+            header("Location: /login");
+            exit();
+        }
+
+        $groupId = $_GET['id'] ?? null;
+        if (!$groupId) { header("Location: /traveller/dashboard"); exit(); }
+
+        require_once __DIR__ . '/../Models/GroupModel.php';
+        $groupModel = new GroupModel($this->pdo);
+
+        // Final Security Check
+        if (!$groupModel->isUserInGroup($_SESSION['user_id'], $groupId)) {
+            header("Location: /traveller/dashboard?error=unauthorized_cluster");
+            exit();
+        }
+
+        $groupDetails = $groupModel->getGroupDetails($groupId);
+        $roster = $groupModel->getGroupRoster($groupId);
+        $messages = $groupModel->getGroupMessages($groupId); // Fetch real messages!
+
+            // Render the private Group Hub view
+        $this->render('traveller/group', [
+            'title'        => 'Group Cluster - Tripistry',
+            'groupDetails' => $groupDetails,
+            'roster'       => $roster,
+            'messages'     => $messages
+        ]);
+    }
+
+    public function sendMessage() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
+            header("Location: /login");
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $travellerId = $_SESSION['user_id'];
+            $groupId = $_POST['group_trip_id'] ?? null;
+            $messageText = trim($_POST['message_text'] ?? '');
+
+            if ($groupId && !empty($messageText)) {
+                // 1. Explicitly connect to the database first
+                require_once __DIR__ . '/../../config/database.php';
+                $database = new Database();
+                $db = $database->getConnection();
+                require_once __DIR__ . '/../Models/GroupModel.php';
+                $groupModel = new GroupModel($db);
+
+                // Security: Only save if they actually belong to this group
+                if ($groupModel->isUserInGroup($travellerId, $groupId)) {
+                    $groupModel->saveMessage($groupId, $travellerId, $messageText);
+                }
+            }
+            header("Location: /traveller/group?id=" . $groupId);
+            exit();
+        }
     }
 
     
