@@ -4,78 +4,59 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// 1. BYPASS FOR STATIC FILES (CSS, Images, etc.)
 $filePath = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-if (is_file($filePath)) {
-    return false; 
-}
+if (is_file($filePath)) { return false; }
 
-// 2. Get the clean URL path
 $route = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $baseDir = '/COS221/COS221_PA5/public';
-if (strpos($route, $baseDir) === 0) {
-    $route = substr($route, strlen($baseDir));
-}
+if (strpos($route, $baseDir) === 0) { $route = substr($route, strlen($baseDir)); }
 $route = rtrim($route, '/') ?: '/';
 
-// 3. Route the request to the correct controller/view
 switch($route){
-    
+
     case '/':
     case '/home':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
-        
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/HomeController.php';
         $homeController = new HomeController($pdo);
         $homeController->index();
         break;
-    
-    // --- Auth Routes ---
+
     case '/login':
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        $auth= new AuthController();
-
-        if($_SERVER['REQUEST_METHOD']==='POST'){
-            $auth->login();
-        }else {
-            $auth->showLogin();
-        }
+        $auth = new AuthController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') { $auth->login(); }
+        else { $auth->showLogin(); }
         break;
-    
+
     case '/register':
-        // THE FIX: Restored the actual Controller call!
         require_once __DIR__ . '/../src/Controllers/RegistrationController.php';
         $controller = new RegistrationController();
         $controller->register();
         break;
 
-    // --- Traveller Routes ---
     case '/traveller/dashboard':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController($pdo); 
+        $controller = new TravellerController($pdo);
         $controller->dashboard();
         break;
 
     case '/traveller/details':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController($pdo); 
+        $controller = new TravellerController($pdo);
         $controller->details();
         break;
 
     case '/traveller/submit-review':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController($pdo);
         $controller->submitReview();
@@ -83,28 +64,25 @@ switch($route){
 
     case '/traveller/checkout':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
-        AuthController::checkRole('traveller'); 
+        AuthController::checkRole('traveller');
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController($pdo); 
+        $controller = new TravellerController($pdo);
         $controller->checkout();
         break;
 
     case '/traveller/process_booking':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/BookingController.php';
-        $controller = new BookingController($pdo); 
+        $controller = new BookingController($pdo);
         $controller->processBooking();
         break;
 
     case '/traveller/cancel-booking':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
@@ -114,21 +92,19 @@ switch($route){
 
     case '/traveller/packages':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController($pdo); 
+        $controller = new TravellerController($pdo);
         $controller->packages();
         break;
 
     case '/traveller/group':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('traveller');
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController($pdo); 
+        $controller = new TravellerController($pdo);
         $controller->groupHub();
         break;
 
@@ -138,34 +114,47 @@ switch($route){
         $travellerController = new TravellerController();
         $travellerController->sendMessage();
         break;
-    
-    // --- Agency Routes ---
+
+    // ── Read-Only Entity Browsers ──────────────────────────────────────────
+    case '/traveller/destinations':
+    case '/traveller/flights':
+    case '/traveller/accommodations':
+    case '/traveller/attractions':
+    case '/traveller/restaurants':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database(); $pdo = $database->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo);
+        $action = ltrim(str_replace('/traveller/', '', $route), '/');
+        $controller->$action();
+        break;
+
+    // ── Agency Routes ──────────────────────────────────────────────────────
     case '/agency/dashboard':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
         $controller = new AgencyController($pdo);
-        $controller->dashboard(); 
+        $controller->dashboard();
         break;
 
     case '/agency/package/create':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
         $controller = new AgencyController($pdo);
-        $controller->packageForm(); 
+        $controller->packageForm();
         break;
 
     case '/agency/package/save':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
@@ -175,19 +164,17 @@ switch($route){
 
     case '/agency/package/edit':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
         $controller = new AgencyController($pdo);
-        $controller->packageForm(); 
+        $controller->packageForm();
         break;
 
     case '/agency/package/archive':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
@@ -197,8 +184,7 @@ switch($route){
 
     case '/agency/package/activate':
         require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
+        $database = new Database(); $pdo = $database->getConnection();
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
@@ -206,16 +192,13 @@ switch($route){
         $controller->activatePackage();
         break;
 
-    // --- System Routes ---
     case '/agency/manage-data':
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once __DIR__ . '/../config/database.php';
             require_once __DIR__ . '/../src/Controllers/DataController.php';
-            $database = new Database();
-            $pdo = $database->getConnection();
+            $database = new Database(); $pdo = $database->getConnection();
             $controller = new DataController($pdo);
             $controller->handleUpload();
             exit;
@@ -228,13 +211,12 @@ switch($route){
         break;
 
     case 'logout':
-    case '/logout': 
+    case '/logout':
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         $authController = new AuthController();
         $authController->logout();
         break;
 
-    // --- Fallback ---
     default:
         http_response_code(404);
         $title = '404 Not Found · Tripistry';
