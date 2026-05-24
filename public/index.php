@@ -45,7 +45,6 @@ switch($route){
         break;
     
     case '/register':
-        // THE FIX: Restored the actual Controller call!
         require_once __DIR__ . '/../src/Controllers/RegistrationController.php';
         $controller = new RegistrationController();
         $controller->register();
@@ -79,6 +78,16 @@ switch($route){
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController($pdo);
         $controller->submitReview();
+        break;
+
+    // FRANK'S NEW ROUTE: Safely merged
+    case '/traveller/submit-agency-review':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo);
+        $controller->submitAgencyReview();
         break;
 
     case '/traveller/checkout':
@@ -138,7 +147,7 @@ switch($route){
         $travellerController = new TravellerController();
         $travellerController->sendMessage();
         break;
-    
+
     // --- Agency Routes ---
     case '/agency/dashboard':
         require_once __DIR__ . '/../config/database.php';

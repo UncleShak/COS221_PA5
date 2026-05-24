@@ -113,38 +113,116 @@ class TravellerController {
             session_start();
         }
         
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
+        if (!isset($_SESSION['user_id']) || ($_SESSION['user_type'] ?? '') !== 'traveller') {
             header("Location: /login");
             exit();
         }
 
         // 2. Ensure this is actually a POST request
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $travellerId = $_SESSION['user_id'];
-            $bookingId   = $_POST['booking_id'] ?? null;
-            $packageId   = $_POST['package_id'] ?? null;
-            $rating      = $_POST['rating'] ?? null;
-            $comment     = $_POST['comment'] ?? '';
+            $travellerId   = $_SESSION['user_id'];
+            $bookingId     = !empty($_POST['booking_id']) ? (int)$_POST['booking_id'] : null;
+            $packageId     = !empty($_POST['package_id']) ? (int)$_POST['package_id'] : null;
 
-            // 3. Validate mandatory fields
-            if ($bookingId && $packageId && $rating) {
-                
-                require_once __DIR__ . '/../Models/ReviewModel.php';
-                require_once __DIR__ . '/../../config/database.php';
-                $db = new Database();
-                $reviewModel = new ReviewModel($db->getConnection());
+            $pkgRating     = $_POST['package_rating'] ?? null;
+            $pkgComment    = trim($_POST['package_comment'] ?? '');
+            $agencyRating  = $_POST['agency_rating'] ?? null;
+            $agencyComment = trim($_POST['agency_comment'] ?? '');
 
-                $success = $reviewModel->createReview($travellerId, $packageId, $bookingId, $rating, $comment);
+            if (!$bookingId || !$packageId) {
+                header("Location: /traveller/dashboard?status=review_failed");
+                exit();
+            }
 
-                if ($success) {
-                    header("Location: /traveller/dashboard?status=review_submitted");
-                    exit();
-                } else {
-                    // THE FIX: We halt the redirect here so the screen freezes and displays 
-                    // the red Trapdoor error from ReviewModel.php
-                    echo "<br><br><a href='/traveller/dashboard' style='color: white; padding: 1rem; background: #333;'>← Go Back</a>";
-                    die(); 
+            require_once __DIR__ . '/../../config/database.php';
+            $database = new Database();
+            $db = $database->getConnection();
+
+            try {
+                $debugLog = __DIR__ . '/../../logs/review_debug.log';
+                @mkdir(dirname($debugLog), 0755, true);
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: POST data - booking_id=$bookingId, package_id=$packageId, pkgRating=$pkgRating, agencyRating=$agencyRating\n", FILE_APPEND);
+
+                $lookupStmt = $db->prepare("SELECT b.package_id, p.agency_id
+                                           FROM bookings b
+                                           JOIN packages p ON p.package_id = b.package_id
+                                           WHERE b.booking_id = :booking_id AND b.traveller_id = :traveller_id
+                                           LIMIT 1");
+                $lookupStmt->execute([
+                    ':booking_id' => $bookingId,
+                    ':traveller_id' => $travellerId
+                ]);
+                $bookingInfo = $lookupStmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$bookingInfo) {
+                    throw new RuntimeException('Booking context could not be resolved.');
                 }
+
+                $packageId = (int)$bookingInfo['package_id'];
+                $agencyId = (int)$bookingInfo['agency_id'];
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: Booking lookup result - packageId=$packageId, agencyId=$agencyId\n", FILE_APPEND);
+
+                if ($pkgRating === null || $pkgRating === '' || $pkgComment === '') {
+                    throw new RuntimeException('Package review is required.');
+                }
+
+                if ($agencyId === null || $agencyRating === null || $agencyRating === '' || $agencyComment === '') {
+                    throw new RuntimeException('Agency review is required.');
+                }
+
+                $db->beginTransaction();
+
+                require_once __DIR__ . '/../Models/ReviewModel.php';
+                $reviewModel = new ReviewModel($db);
+
+                $packageSql = "INSERT INTO packagereviews (traveller_id, package_id, booking_id, rating, comment, created_at)
+                               VALUES (:traveller_id, :package_id, :booking_id, :rating, :comment, NOW())
+                               ON DUPLICATE KEY UPDATE
+                                   package_id = VALUES(package_id),
+                                   rating = VALUES(rating),
+                                   comment = VALUES(comment),
+                                   created_at = NOW()";
+                $packageStmt = $db->prepare($packageSql);
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: About to insert package review - traveller_id=$travellerId, package_id=$packageId, booking_id=$bookingId, rating=$pkgRating\n", FILE_APPEND);
+                $packageStmt->execute([
+                    ':traveller_id' => $travellerId,
+                    ':package_id'   => $packageId,
+                    ':booking_id'   => $bookingId,
+                    ':rating'       => (int)$pkgRating,
+                    ':comment'      => htmlspecialchars(strip_tags($pkgComment))
+                ]);
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: Package review insert completed successfully\n", FILE_APPEND);
+
+                $agencySql = "INSERT INTO agencyreviews (traveller_id, agency_id, booking_id, rating, comment, created_at)
+                              VALUES (:traveller_id, :agency_id, :booking_id, :rating, :comment, NOW())
+                              ON DUPLICATE KEY UPDATE
+                                  agency_id = VALUES(agency_id),
+                                  rating = VALUES(rating),
+                                  comment = VALUES(comment),
+                                  created_at = NOW()";
+                $agencyStmt = $db->prepare($agencySql);
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: About to insert agency review - traveller_id=$travellerId, agency_id=$agencyId, booking_id=$bookingId, rating=$agencyRating, comment_len=" . strlen($agencyComment) . "\n", FILE_APPEND);
+                $agencyStmt->execute([
+                    ':traveller_id' => $travellerId,
+                    ':agency_id'    => $agencyId,
+                    ':booking_id'   => $bookingId,
+                    ':rating'       => (int)$agencyRating,
+                    ':comment'      => htmlspecialchars(strip_tags($agencyComment))
+                ]);
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: Agency review insert completed successfully\n", FILE_APPEND);
+
+                $db->commit();
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: Transaction committed successfully\n", FILE_APPEND);
+                header("Location: /traveller/dashboard?status=review_submitted");
+                exit();
+            } catch (Throwable $e) {
+                if ($db->inTransaction()) {
+                    $db->rollBack();
+                }
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: Exception caught - Type: " . get_class($e) . " | Message: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine() . "\n", FILE_APPEND);
+                file_put_contents($debugLog, "[" . date('Y-m-d H:i:s') . "] REVIEW DEBUG: Full trace - " . $e->getTraceAsString() . "\n", FILE_APPEND);
+                header("Location: /traveller/dashboard?error=review_failed");
+                exit();
             }
         }
         header("Location: /traveller/dashboard?status=review_failed");
@@ -321,6 +399,55 @@ class TravellerController {
             }
             header("Location: /traveller/group?id=" . $groupId);
             exit();
+        }
+    }
+
+    public function submitAgencyReview() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
+        if (!isset($_SESSION['user_id']) || ($_SESSION['user_type'] ?? '') !== 'traveller') {
+            header("Location: /login");
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                // 1. Extract the data
+                $travellerId = $_SESSION['user_id'];
+                $agencyId = !empty($_POST['agency_id']) ? (int)$_POST['agency_id'] : null;
+                $bookingId = !empty($_POST['booking_id']) ? (int)$_POST['booking_id'] : null;
+                $rating = !empty($_POST['rating']) ? (int)$_POST['rating'] : 0;
+                $comment = htmlspecialchars(trim($_POST['comment'] ?? ''));
+
+                // 2. Validate
+                if (!$agencyId || !$bookingId || $rating < 1 || $rating > 5) {
+                    header("Location: /traveller/dashboard?error=invalid_review_data");
+                    exit;
+                }
+
+                // 3. Insert into the database
+                $query = "INSERT INTO agencyreviews (traveller_id, agency_id, booking_id, rating, comment, created_at)
+                          VALUES (:traveller_id, :agency_id, :booking_id, :rating, :comment, NOW())";
+                
+                $stmt = $this->pdo->prepare($query); 
+                $stmt->execute([
+                    ':traveller_id' => $travellerId,
+                    ':agency_id' => $agencyId,
+                    ':booking_id' => $bookingId,
+                    ':rating' => $rating,
+                    ':comment' => $comment
+                ]);
+
+                // 4. Redirect with success
+                header("Location: /traveller/dashboard?success=agency_reviewed");
+                exit;
+
+            } catch (PDOException $e) {
+                error_log("Agency Review Error: " . $e->getMessage());
+                // If they already reviewed this exact booking, the UNIQUE constraint will trigger an error
+                header("Location: /traveller/dashboard?error=review_failed");
+                exit;
+            }
         }
     }
 

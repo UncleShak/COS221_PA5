@@ -15,10 +15,11 @@ class PackageModel {
                        p.description as destination,
                        p.base_price as price, 
                        p.duration_days,
-                       p.cover_image_url as image_url,
-                       a.agency_name as agency_name,
-                       COALESCE(AVG(r.rating), 0) as avg_rating,
-                       COUNT(DISTINCT r.review_id) as review_count
+                      p.cover_image_url as image_url,
+                      a.agency_name as agency_name,
+                      GROUP_CONCAT(DISTINCT ac.name SEPARATOR ', ') as accommodations,
+                      COALESCE(AVG(r.rating), 0) as avg_rating,
+                      COUNT(DISTINCT r.review_id) as review_count
                 FROM packages p
                 LEFT JOIN agencies a ON p.agency_id = a.user_id
                 LEFT JOIN packagereviews r ON p.package_id = r.package_id
@@ -81,6 +82,8 @@ class PackageModel {
                 FROM packages p
                 LEFT JOIN agencies a ON p.agency_id = a.user_id
                 LEFT JOIN packagereviews r ON p.package_id = r.package_id
+                    LEFT JOIN packageaccommodations pa ON p.package_id = pa.package_id
+                    LEFT JOIN accommodations ac ON pa.accommodation_id = ac.accommodation_id
                 WHERE p.status = 'active'";
         
         $params = [];
@@ -108,7 +111,7 @@ class PackageModel {
             $params[] = (float)$filters['max_price'];
         }
         
-        $sql .= " GROUP BY p.package_id";
+            $sql .= " GROUP BY p.package_id";
         
         switch($sort) {
             case 'price_asc':

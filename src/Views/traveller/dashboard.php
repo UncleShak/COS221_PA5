@@ -136,6 +136,10 @@ $userEmail = ($traveller && isset($traveller['email']))
             <div class="input-stack" style="overflow-y: auto; max-height: 700px; padding-right: 0.5rem;">
                 
                 <?php foreach ($pastTrips as $pastTrip): ?>
+                <?php
+                    $packageReviewExists = !empty($pastTrip['rating']);
+                    $agencyReviewExists = !empty($pastTrip['agency_review_rating']);
+                ?>
                 <div class="glass-clear" style="padding: 1.8rem; transition: all 0.3s var(--ease);">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                         <div>
@@ -149,24 +153,59 @@ $userEmail = ($traveller && isset($traveller['email']))
                         <span class="badge badge-blue">COMPLETED</span>
                     </div>
                     
-                    <?php if (!empty($pastTrip['rating'])): ?>
-                        <div style="background: rgba(255,255,255,0.3); padding: 1rem 1.2rem; border-radius: var(--r-md); border-left: 3px solid var(--ocean);">
-                            <div style="color: #fbbf24; font-size: 1.2rem; margin-bottom: 0.5rem; letter-spacing: 2px;">
+                    <?php if ($packageReviewExists): ?>
+                        <div style="position: relative; background: rgba(255,255,255,0.3); padding: 1rem 1.2rem; border-radius: var(--r-md); border-left: 3px solid var(--ocean);">
+                            <button type="button"
+                                    aria-label="Edit review"
+                                    title="Edit review"
+                                    onclick="openReviewModal(this)"
+                                    data-booking="<?= htmlspecialchars($pastTrip['booking_id']) ?>"
+                                    data-package="<?= htmlspecialchars($pastTrip['package_id']) ?>"
+                                    data-agency="<?= htmlspecialchars($pastTrip['agency_id'] ?? '') ?>"
+                                    data-name="<?= htmlspecialchars($pastTrip['package_name']) ?>"
+                                    data-package-rating="<?= htmlspecialchars($pastTrip['rating'] ?? '') ?>"
+                                    data-package-comment="<?= htmlspecialchars($pastTrip['review_comment'] ?? '') ?>"
+                                    data-agency-rating="<?= htmlspecialchars($pastTrip['agency_review_rating'] ?? '') ?>"
+                                    data-agency-comment="<?= htmlspecialchars($pastTrip['agency_review_comment'] ?? '') ?>"
+                                    style="position:absolute; top:0.75rem; right:0.75rem; background: rgba(255,255,255,0.75); border: 1px solid rgba(0,0,0,0.06); border-radius: 999px; width: 32px; height: 32px; display:flex; align-items:center; justify-content:center; cursor:pointer; color: var(--text-main);">
+                                ✎
+                            </button>
+                            <div style="color: #fbbf24; font-size: 1.2rem; margin-bottom: 0.5rem; letter-spacing: 2px; padding-right: 2rem;">
                                 <?php 
                                     for ($i = 1; $i <= 5; $i++) {
                                         echo $i <= $pastTrip['rating'] ? '★' : '<span style="color: rgba(0,0,0,0.1);">★</span>';
                                     }
                                 ?>
                             </div>
-                            <p style="font-size: 0.9rem; color: var(--text-soft); font-style: italic; line-height: 1.5; margin: 0;">
-                                "<?= htmlspecialchars($pastTrip['review_comment']) ?>"
+                            <p style="font-size: 0.9rem; color: var(--text-soft); font-style: italic; line-height: 1.5; margin: 0; padding-right: 2rem;">
+                                "<?= htmlspecialchars($pastTrip['review_comment'] ?? '') ?>"
                             </p>
+                            <?php if ($agencyReviewExists): ?>
+                                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--glass-border);">
+                                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 0.4rem;">Agency Review</div>
+                                    <div style="color: #fbbf24; font-size: 1rem; margin-bottom: 0.4rem; letter-spacing: 2px;">
+                                        <?php 
+                                            for ($i = 1; $i <= 5; $i++) {
+                                                echo $i <= $pastTrip['agency_review_rating'] ? '★' : '<span style="color: rgba(0,0,0,0.1);">★</span>';
+                                            }
+                                        ?>
+                                    </div>
+                                    <p style="font-size: 0.9rem; color: var(--text-soft); font-style: italic; line-height: 1.5; margin: 0;">
+                                        "<?= htmlspecialchars($pastTrip['agency_review_comment'] ?? '') ?>"
+                                    </p>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     <?php else: ?>
                         <button class="btn-primary" style="width: 100%;" 
                                 data-booking="<?= htmlspecialchars($pastTrip['booking_id']) ?>" 
                                 data-package="<?= htmlspecialchars($pastTrip['package_id']) ?>"
+                                data-agency="<?= htmlspecialchars($pastTrip['agency_id'] ?? '') ?>"
                                 data-name="<?= htmlspecialchars($pastTrip['package_name']) ?>"
+                                data-package-rating=""
+                                data-package-comment=""
+                                data-agency-rating=""
+                                data-agency-comment=""
                                 onclick="openReviewModal(this)">
                             Submit Review
                         </button>
@@ -191,21 +230,45 @@ $userEmail = ($traveller && isset($traveller['email']))
             <form action="/traveller/submit-review" method="POST" class="input-stack">
                 <input type="hidden" name="booking_id" id="modalBookingId">
                 <input type="hidden" name="package_id" id="modalPackageId">
+                <input type="hidden" name="agency_id" id="modalAgencyId">
 
-                <div class="input-group">
-                    <label class="input-label">Rating (1-5)</label>
-                    <select name="rating" class="input-field" required>
-                        <option value="5">5 - Flawless Execution</option>
-                        <option value="4">4 - Minor Anomalies</option>
-                        <option value="3">3 - Acceptable</option>
-                        <option value="2">2 - Suboptimal</option>
-                        <option value="1">1 - Critical Failure</option>
-                    </select>
+                <div id="packageReviewSection">
+                    <h4 style="margin-top:0.2rem; margin-bottom:0.6rem; font-size:1rem; color:var(--text-main);">Package Review</h4>
+                    <div class="input-group">
+                        <label class="input-label">Rating (1-5)</label>
+                        <select name="package_rating" class="input-field" id="modalPackageRating" required>
+                            <option value="5">5 - Flawless Execution</option>
+                            <option value="4">4 - Minor Anomalies</option>
+                            <option value="3">3 - Acceptable</option>
+                            <option value="2">2 - Suboptimal</option>
+                            <option value="1">1 - Critical Failure</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 1.5rem;">
+                        <label class="input-label">Expedition Notes</label>
+                        <textarea name="package_comment" class="input-field" id="modalPackageComment" rows="4" placeholder="Detail your experience..." required></textarea>
+                    </div>
                 </div>
 
-                <div class="input-group" style="margin-bottom: 1.5rem;">
-                    <label class="input-label">Expedition Notes</label>
-                    <textarea name="comment" class="input-field" rows="4" placeholder="Detail your experience..." required></textarea>
+                <div id="agencyReviewSection">
+                    <h4 style="margin-top:0.2rem; margin-bottom:0.6rem; font-size:1rem; color:var(--text-main);">Agency Review</h4>
+                    <div class="input-group">
+                        <label class="input-label">Rating (1-5)</label>
+                        <select name="agency_rating" class="input-field" id="modalAgencyRating" required>
+                            <option value="" disabled>Select Rating...</option>
+                            <option value="5">5 - Exceptional</option>
+                            <option value="4">4 - Good</option>
+                            <option value="3">3 - Average</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="1">1 - Unacceptable</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 1.5rem;">
+                        <label class="input-label">Notes for the Agency</label>
+                        <textarea name="agency_comment" class="input-field" id="modalAgencyComment" rows="3" placeholder="Detail your agency feedback..." required></textarea>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-primary" style="width: 100%;">Transmit Log</button>
@@ -235,11 +298,27 @@ $userEmail = ($traveller && isset($traveller['email']))
         function openReviewModal(button) {
             const bookingId = button.getAttribute('data-booking');
             const packageId = button.getAttribute('data-package');
+            const agencyId = button.getAttribute('data-agency');
             const tripName = button.getAttribute('data-name');
+            const packageRatingValue = button.getAttribute('data-package-rating') || '5';
+            const packageCommentValue = button.getAttribute('data-package-comment') || '';
+            const agencyRatingValue = button.getAttribute('data-agency-rating') || '5';
+            const agencyCommentValue = button.getAttribute('data-agency-comment') || '';
 
             document.getElementById('modalBookingId').value = bookingId;
             document.getElementById('modalPackageId').value = packageId;
+            document.getElementById('modalAgencyId').value = agencyId || '';
             document.getElementById('modalTripName').innerText = tripName;
+
+            const packageRating = document.getElementById('modalPackageRating');
+            const packageComment = document.getElementById('modalPackageComment');
+            const agencyRating = document.getElementById('modalAgencyRating');
+            const agencyComment = document.getElementById('modalAgencyComment');
+
+            if (packageRating) packageRating.value = packageRatingValue;
+            if (packageComment) packageComment.value = packageCommentValue;
+            if (agencyRating) agencyRating.value = agencyRatingValue;
+            if (agencyComment) agencyComment.value = agencyCommentValue;
 
             document.getElementById('reviewModalOverlay').style.display = 'flex';
         }
