@@ -66,23 +66,75 @@ class TravellerController {
 
     public function submitReview() {
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'traveller') {
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
             header("Location: /login"); exit();
         }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $travellerId = $_SESSION['user_id'];
             $bookingId   = $_POST['booking_id'] ?? null;
             $packageId   = $_POST['package_id'] ?? null;
-            $rating      = $_POST['rating'] ?? null;
-            $comment     = $_POST['comment'] ?? '';
-            if ($bookingId && $packageId && $rating) {
-                require_once __DIR__ . '/../Models/ReviewModel.php';
-                require_once __DIR__ . '/../../config/database.php';
-                $db = new Database();
-                $reviewModel = new ReviewModel($db->getConnection());
-                $success = $reviewModel->createReview($travellerId, $packageId, $bookingId, $rating, $comment);
-                if ($success) { header("Location: /traveller/dashboard?status=review_submitted"); exit(); }
-                else { echo "<br><br><a href='/traveller/dashboard' style='color: white; padding: 1rem; background: #333;'>← Go Back</a>"; die(); }
+            $agencyId    = $_POST['agency_id'] ?? null;
+            
+            // Package review fields
+            $packageRating  = $_POST['package_rating'] ?? null;
+            $packageComment = $_POST['package_comment'] ?? '';
+            
+            // Agency review fields
+            $agencyRating  = $_POST['agency_rating'] ?? null;
+            $agencyComment = $_POST['agency_comment'] ?? '';
+            
+            require_once __DIR__ . '/../../config/database.php';
+            $db = new Database();
+            $pdo = $db->getConnection();
+            
+            $allSuccess = true;
+            
+            // Submit package review if rating is provided
+            if ($bookingId && $packageId && $packageRating) {
+                try {
+                    $sql = "INSERT INTO packagereviews (traveller_id, package_id, booking_id, rating, comment, created_at) 
+                            VALUES (?, ?, ?, ?, ?, NOW())";
+                    $stmt = $pdo->prepare($sql);
+                    $success = $stmt->execute([
+                        $travellerId,
+                        $packageId,
+                        $bookingId,
+                        (int)$packageRating,
+                        htmlspecialchars(strip_tags($packageComment))
+                    ]);
+                    if (!$success) { $allSuccess = false; }
+                } catch (PDOException $e) {
+                    error_log("Package review error: " . $e->getMessage());
+                    $allSuccess = false;
+                }
+            }
+            
+            // Submit agency review if rating is provided
+            if ($bookingId && $agencyId && $agencyRating) {
+                try {
+                    $sql = "INSERT INTO agencyreviews (agency_id, traveller_id, booking_id, rating, comment, created_at)
+                            VALUES (?, ?, ?, ?, ?, NOW())";
+                    $stmt = $pdo->prepare($sql);
+                    $success = $stmt->execute([
+                        $agencyId,
+                        $travellerId,
+                        $bookingId,
+                        (int)$agencyRating,
+                        htmlspecialchars(strip_tags($agencyComment))
+                    ]);
+                    if (!$success) { $allSuccess = false; }
+                } catch (PDOException $e) {
+                    error_log("Agency review error: " . $e->getMessage());
+                    $allSuccess = false;
+                }
+            }
+            
+            if ($allSuccess && ($packageRating || $agencyRating)) {
+                header("Location: /traveller/dashboard?status=review_submitted");
+                exit();
+            } else {
+                echo "<br><br><a href='/traveller/dashboard' style='color: white; padding: 1rem; background: #333;'>← Go Back</a>";
+                die("Review submission failed");
             }
         }
         header("Location: /traveller/dashboard?status=review_failed"); exit();

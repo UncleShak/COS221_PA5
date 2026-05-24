@@ -82,16 +82,6 @@ switch($route){
         $controller->submitReview();
         break;
 
-    // FRANK'S NEW ROUTE: Safely merged
-    case '/traveller/submit-agency-review':
-        require_once __DIR__ . '/../config/database.php';
-        $database = new Database();
-        $pdo = $database->getConnection();
-        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
-        $controller = new TravellerController($pdo);
-        $controller->submitAgencyReview();
-        break;
-
     case '/traveller/checkout':
         require_once __DIR__ . '/../config/database.php';
         $database = new Database();
