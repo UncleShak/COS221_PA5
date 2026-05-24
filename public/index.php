@@ -238,6 +238,10 @@ switch($route){
         require_once __DIR__ . '/../src/Views/layout.php';
         break;
 
+    case '/loading':
+        require_once __DIR__ . '/../src/Views/loading.php';
+        break;
+
     case 'logout':
     case '/logout': 
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
