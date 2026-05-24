@@ -173,6 +173,7 @@ class BookingModel {
                         p.title AS package_name, 
                         p.duration_days,
                         p.cover_image_url,
+                        p.agency_id,
                         r.rating,
                         r.comment AS review_comment,
                         gtp.group_trip_id
