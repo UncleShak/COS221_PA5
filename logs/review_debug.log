@@ -1,0 +1,16 @@
+[2026-05-24 15:10:45] REVIEW DEBUG: POST data - booking_id=1018, package_id=6, pkgRating=4, agencyRating=5
+[2026-05-24 15:10:45] REVIEW DEBUG: Booking lookup result - packageId=6, agencyId=1
+[2026-05-24 15:10:45] REVIEW DEBUG: About to insert package review - traveller_id=5, package_id=6, booking_id=1018, rating=4
+[2026-05-24 15:10:45] REVIEW DEBUG: Package review insert completed successfully
+[2026-05-24 15:10:45] REVIEW DEBUG: About to insert agency review - traveller_id=5, agency_id=1, booking_id=1018, rating=5, comment_len=18
+[2026-05-24 15:10:45] REVIEW DEBUG: Exception caught - Type: PDOException | Message: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`Tripsty`.`agencyreviews`, CONSTRAINT `fk_ar_agency` FOREIGN KEY (`agency_id`) REFERENCES `agencies` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE) | File: /home/shak/COS221/COS221_PA5/src/Controllers/TravellerController.php | Line: 205
+[2026-05-24 15:10:45] REVIEW DEBUG: Full trace - #0 /home/shak/COS221/COS221_PA5/src/Controllers/TravellerController.php(205): PDOStatement->execute()
+#1 /home/shak/COS221/COS221_PA5/public/index.php(80): TravellerController->submitReview()
+#2 {main}
+[2026-05-24 15:13:29] REVIEW DEBUG: POST data - booking_id=1018, package_id=6, pkgRating=4, agencyRating=5
+[2026-05-24 15:13:29] REVIEW DEBUG: Booking lookup result - packageId=6, agencyId=4
+[2026-05-24 15:13:29] REVIEW DEBUG: About to insert package review - traveller_id=5, package_id=6, booking_id=1018, rating=4
+[2026-05-24 15:13:29] REVIEW DEBUG: Package review insert completed successfully
+[2026-05-24 15:13:29] REVIEW DEBUG: About to insert agency review - traveller_id=5, agency_id=4, booking_id=1018, rating=5, comment_len=16
+[2026-05-24 15:13:29] REVIEW DEBUG: Agency review insert completed successfully
+[2026-05-24 15:13:29] REVIEW DEBUG: Transaction committed successfully
