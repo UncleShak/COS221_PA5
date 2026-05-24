@@ -14,3 +14,10 @@
 [2026-05-24 15:13:29] REVIEW DEBUG: About to insert agency review - traveller_id=5, agency_id=4, booking_id=1018, rating=5, comment_len=16
 [2026-05-24 15:13:29] REVIEW DEBUG: Agency review insert completed successfully
 [2026-05-24 15:13:29] REVIEW DEBUG: Transaction committed successfully
+[2026-05-24 15:33:59] REVIEW DEBUG: POST data - booking_id=1020, package_id=6, pkgRating=4, agencyRating=5
+[2026-05-24 15:33:59] REVIEW DEBUG: Booking lookup result - packageId=6, agencyId=4
+[2026-05-24 15:33:59] REVIEW DEBUG: About to insert package review - traveller_id=5, package_id=6, booking_id=1020, rating=4
+[2026-05-24 15:33:59] REVIEW DEBUG: Package review insert completed successfully
+[2026-05-24 15:33:59] REVIEW DEBUG: About to insert agency review - traveller_id=5, agency_id=4, booking_id=1020, rating=5, comment_len=6
+[2026-05-24 15:33:59] REVIEW DEBUG: Agency review insert completed successfully
+[2026-05-24 15:33:59] REVIEW DEBUG: Transaction committed successfully
