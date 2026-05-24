@@ -8,6 +8,25 @@
     <link rel="stylesheet" href="/css/StyleGuide.css">
     
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base nav setup for transition */
+        .sg-nav {
+            transition: all 0.4s var(--ease);
+            background: transparent;
+            border-bottom: 1px solid transparent;
+        }
+        /* The class we will inject with JS */
+        .sg-nav.scrolled {
+            background: rgba(11, 43, 51, 0.85); /* Deep ocean color */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+    </style>
 </head>
 <body>
     <div class="ambient-bg"></div>
@@ -47,5 +66,18 @@
     <div class="content">
         <?= $content ?>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.querySelector('.sg-nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
