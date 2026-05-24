@@ -50,7 +50,7 @@ $userEmail = ($traveller && isset($traveller['email']))
             <div style="margin-top: 3rem; text-align: left; border-top: 1px dashed var(--glass-border); padding-top: 2rem;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 1.2rem;">
                     <span class="input-label">Total Expeditions</span>
-                    <strong style="color: var(--teal); font-size: 1.2rem;"><?= $totalExpeditions ?></strong>
+                    <strong style="color: var(--teal); font-size: 1.2rem;"><?= $totalExpeditions ?? 0 ?></strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
                     <span class="input-label">Account Status</span>
@@ -86,16 +86,46 @@ $userEmail = ($traveller && isset($traveller['email']))
                         <p style="color: var(--text-soft); font-size: 1.1rem;"><?= htmlspecialchars($trip['duration_days']) ?> Days of Exploration</p>
                     </div>
 
-                    <div style="padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                        <div>
-                            <div class="input-label" style="margin-bottom: 0.4rem;">DEPARTURE DATE</div>
-                            <div style="font-size: 1.3rem; font-weight: 500; color: var(--text-main);"><?= htmlspecialchars($trip['travel_date']) ?></div>
+                    <div style="padding: 2.5rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div>
+                                <div class="input-label" style="margin-bottom: 0.4rem;">DEPARTURE DATE</div>
+                                <div style="font-size: 1.3rem; font-weight: 500; color: var(--text-main);"><?= htmlspecialchars($trip['travel_date']) ?></div>
+                            </div>
+                            <div>
+                                <div class="input-label" style="margin-bottom: 0.4rem;">PARTY SIZE</div>
+                                <div style="font-size: 1.3rem; font-weight: 500; color: var(--text-main);"><?= htmlspecialchars($trip['num_travellers']) ?> Travellers</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="input-label" style="margin-bottom: 0.4rem;">PARTY SIZE</div>
-                            <div style="font-size: 1.3rem; font-weight: 500; color: var(--text-main);"><?= htmlspecialchars($trip['num_travellers']) ?> Travellers</div>
+
+                        <?php 
+                            $intel = !empty($trip['prep_notes']) ? json_decode($trip['prep_notes'], true) : null; 
+                            if ($intel && isset($intel['packing_list']) && isset($intel['etiquette'])): 
+                        ?>
+                            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px dashed rgba(255,255,255,0.1);">
+                                <h4 style="font-family: var(--font-code); color: var(--ocean); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem;">// Mission Intel Acquired</h4>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                    <div>
+                                        <strong style="color: var(--text-main); font-size: 0.9rem;">Required Gear:</strong>
+                                        <ul style="list-style-type: none; padding: 0; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-soft);">
+                                            <?php foreach ($intel['packing_list'] as $item): ?>
+                                                <li style="margin-bottom: 0.4rem; line-height: 1.4;">> <?= htmlspecialchars($item) ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--text-main); font-size: 0.9rem;">Local Protocols:</strong>
+                                        <ul style="list-style-type: none; padding: 0; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-soft);">
+                                            <?php foreach ($intel['etiquette'] as $tip): ?>
+                                                <li style="margin-bottom: 0.4rem; line-height: 1.4;">> <?= htmlspecialchars($tip) ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                         </div>
-                    </div>
 
                     <div style="padding: 1.5rem 2.5rem; background: rgba(255, 255, 255, 0.4); display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--r-lg) var(--r-lg); gap: 1rem; overflow: hidden;">
                         
@@ -129,7 +159,7 @@ $userEmail = ($traveller && isset($traveller['email']))
             <?php endif; ?>
         </div>
 
-        <?php if ($hasPastTrips): ?>
+        <?php if (!empty($hasPastTrips) && !empty($pastTrips)): ?>
         <div style="flex: 1; min-width: 350px; display: flex; flex-direction: column;">
             <p class="sg-section-label" style="margin-bottom: 1.5rem; color: var(--text-muted);">Past adventures</p>
             
@@ -208,7 +238,6 @@ $userEmail = ($traveller && isset($traveller['email']))
                 <input type="hidden" name="package_id" id="modalPackageId">
                 <input type="hidden" name="agency_id" id="modalAgencyId">
 
-                <!-- PACKAGE REVIEW SECTION -->
                 <div style="border-bottom: 2px dashed rgba(0, 166, 199, 0.2); padding-bottom: 2rem; margin-bottom: 2rem;">
                     <div class="input-label" style="color: var(--ocean); font-weight: 700; margin-bottom: 1rem;">PACKAGE EXPERIENCE</div>
                     
@@ -230,7 +259,6 @@ $userEmail = ($traveller && isset($traveller['email']))
                     </div>
                 </div>
 
-                <!-- AGENCY REVIEW SECTION -->
                 <div>
                     <div class="input-label" style="color: var(--teal); font-weight: 700; margin-bottom: 1rem;">AGENCY SERVICE</div>
                     
@@ -265,7 +293,7 @@ $userEmail = ($traveller && isset($traveller['email']))
             </div>
             
             <h3 style="font-family: var(--font-display); font-size: 2rem; font-style: italic; font-weight: 300; color: var(--text-main); margin-bottom: 0.5rem;">Cancel Adventure?</h3>
-            <p style="color: var(--text-soft); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.5;">Are you sure you wan to cancel your trip? <strong id="modalCancelTripName" style="color: var(--coral);">[Trip]</strong>? This sequence cannot be reversed.</p>
+            <p style="color: var(--text-soft); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.5;">Are you sure you want to cancel your trip to <strong id="modalCancelTripName" style="color: var(--coral);">[Trip]</strong>? This sequence cannot be reversed.</p>
 
             <form action="/traveller/cancel-booking" method="POST" style="display: flex; gap: 1rem; flex-direction: column;">
                 <input type="hidden" name="booking_id" id="modalCancelBookingId">

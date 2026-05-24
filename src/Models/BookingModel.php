@@ -79,6 +79,9 @@ class BookingModel {
                 ':payment_reference' => $paymentRef
             ]);
 
+            // THE FIX: Grab the exact ID of the booking we just created!
+            $newBookingId = $this->pdo->lastInsertId();
+
             $rosterSql = "INSERT INTO grouptripparticipants (traveller_id, group_trip_id, package_id, status, joined_at) 
                           VALUES (:tid, :gid, :pid, 'confirmed', NOW()) 
                           ON DUPLICATE KEY UPDATE status = 'confirmed'";
@@ -87,11 +90,13 @@ class BookingModel {
             $rosterStmt->execute([
                 ':tid' => $travellerId,
                 ':gid' => $groupTripId,
-                ':pid' => $packageId // <-- This is the missing piece!
+                ':pid' => $packageId
             ]);
 
             $this->pdo->commit();
-            return $success;
+            
+            // THE FIX: Return the ID instead of just a boolean
+            return $newBookingId;
 
         } catch (Exception $e) {
             // 6. FAILURE: Something broke. Revert all changes instantly.

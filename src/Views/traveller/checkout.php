@@ -138,34 +138,73 @@ if ($traveller) {
   </section>
 </div>
 
+<div id="aiLoadingOverlay" style="display: none; position: fixed; inset: 0; background: rgba(11, 43, 51, 0.95); backdrop-filter: blur(12px); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; font-family: var(--font-code);">
+    
+    <div style="width: 80px; height: 80px; border: 3px solid transparent; border-top-color: var(--coral); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 2rem;"></div>
+    
+    <div style="color: var(--coral); font-size: 1.2rem; font-weight: bold; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1rem; text-shadow: 0 0 10px rgba(232, 97, 74, 0.5);">
+        Processing Transaction
+    </div>
+
+    <div style="background: rgba(0,0,0,0.8); border: 1px solid rgba(0, 166, 199, 0.3); padding: 1.5rem; border-radius: var(--r-md); width: 400px; height: 140px; color: var(--ocean); font-size: 0.85rem; line-height: 1.6; text-align: left; overflow: hidden; position: relative;">
+        <div id="terminalText">
+            > Securing booking cluster...<br>
+        </div>
+        <div style="display: inline-block; width: 8px; height: 15px; background: var(--ocean); animation: blink 1s step-end infinite; vertical-align: middle;"></div>
+    </div>
+</div>
+
+<style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes blink { 50% { opacity: 0; } }
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // --- 1. DYNAMIC PRICING LOGIC ---
     const partyInput = document.getElementById('party-size');
     const multiplierDisplay = document.getElementById('summary-multiplier');
     const taxesDisplay = document.getElementById('summary-taxes');
     const totalDisplay = document.getElementById('summary-total');
     
-    // Inject PHP values directly into the JS variables
     const basePrice = <?= json_encode($basePrice) ?>;
     const taxRate = <?= json_encode($taxRate) ?>;
 
-    // Currency formatter
     const formatCurrency = (amount) => {
         return 'R ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
-    partyInput.addEventListener('input', (e) => {
-        let size = parseInt(e.target.value);
-        if (isNaN(size) || size < 1) size = 1;
-        
-        const subtotal = basePrice * size;
-        const currentTaxes = subtotal * taxRate;
-        const currentTotal = subtotal + currentTaxes;
+    if (partyInput) {
+        partyInput.addEventListener('input', (e) => {
+            let size = parseInt(e.target.value);
+            if (isNaN(size) || size < 1) size = 1;
+            
+            const subtotal = basePrice * size;
+            const currentTaxes = subtotal * taxRate;
+            const currentTotal = subtotal + currentTaxes;
 
-        // Update the UI
-        multiplierDisplay.textContent = 'x ' + size;
-        taxesDisplay.textContent = formatCurrency(currentTaxes);
-        totalDisplay.textContent = formatCurrency(currentTotal);
-    });
+            multiplierDisplay.textContent = 'x ' + size;
+            taxesDisplay.textContent = formatCurrency(currentTaxes);
+            totalDisplay.textContent = formatCurrency(currentTotal);
+        });
+    }
+
+    // --- 2. AI TERMINAL OVERLAY LOGIC ---
+    const checkoutForm = document.getElementById('checkout-form');
+    const overlay = document.getElementById('aiLoadingOverlay');
+    const terminalText = document.getElementById('terminalText');
+
+    if (checkoutForm && overlay && terminalText) {
+        checkoutForm.addEventListener('submit', function() {
+            // Un-hide the terminal
+            overlay.style.display = 'flex';
+            
+            // Sequence the cybercore terminal output
+            setTimeout(() => { terminalText.innerHTML += "> Payment verified.<br>"; }, 800);
+            setTimeout(() => { terminalText.innerHTML += "> Handshake with AI Concierge established...<br>"; }, 1800);
+            setTimeout(() => { terminalText.innerHTML += "> Compiling custom Mission Briefing parameters...<br>"; }, 2800);
+        });
+    }
 });
 </script>
