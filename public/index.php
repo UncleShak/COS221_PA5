@@ -141,6 +141,16 @@ switch($route){
         $controller->packages();
         break;
 
+    case '/traveller/submit-agency-review':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo);
+        $controller->submitAgencyReview();
+        break;
+
     // --- Agency Routes ---
     case '/agency/dashboard':
         require_once __DIR__ . '/../config/database.php';
