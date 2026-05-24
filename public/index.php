@@ -153,7 +153,6 @@ switch($route){
         $controller->dashboard(); // You will need to build this method next!
         break;
 
-    // Prince's URL, but wired to YOUR method
     case '/agency/package/create':
         require_once __DIR__ . '/../config/database.php';
         $dbInstance = new Database();
@@ -162,10 +161,10 @@ switch($route){
         AuthController::checkRole('agency');
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
         $controller = new AgencyController($connection);
-        $controller->createPackage(); 
+        $controller->packageForm(); 
         break;
 
-    // Prince's URL, but wired to YOUR method
+    // Now uses savePackage() instead of storePackage()
     case '/agency/package/save':
         require_once __DIR__ . '/../config/database.php';
         $dbInstance = new Database();
@@ -174,7 +173,7 @@ switch($route){
         AuthController::checkRole('agency');
         require_once __DIR__ . '/../src/Controllers/AgencyController.php';
         $controller = new AgencyController($connection);
-        $controller->storePackage();
+        $controller->savePackage();
         break;
 
     // Prince's Edit Route (Stubbed for later)
