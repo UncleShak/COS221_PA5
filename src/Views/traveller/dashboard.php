@@ -166,9 +166,14 @@ $userEmail = ($traveller && isset($traveller['email']))
                         <button class="btn-primary" style="width: 100%;" 
                                 data-booking="<?= htmlspecialchars($pastTrip['booking_id']) ?>" 
                                 data-package="<?= htmlspecialchars($pastTrip['package_id']) ?>"
+                                data-agency="<?= htmlspecialchars($pastTrip['agency_id']) ?>"
                                 data-name="<?= htmlspecialchars($pastTrip['package_name']) ?>"
+                                data-pkg-rating="<?= htmlspecialchars($pastTrip['rating'] ?? '') ?>"
+                                data-pkg-comment="<?= htmlspecialchars($pastTrip['review_comment'] ?? '') ?>"
+                                data-agency-rating="<?= htmlspecialchars($pastTrip['agency_review_rating'] ?? '') ?>"
+                                data-agency-comment="<?= htmlspecialchars($pastTrip['agency_review_comment'] ?? '') ?>"
                                 onclick="openReviewModal(this)">
-                            Submit Review
+                            <?= (!empty($pastTrip['rating']) || !empty($pastTrip['agency_review_rating'])) ? '✎ Edit Review' : 'Submit Review' ?>
                         </button>
                     <?php endif; ?>
 
@@ -181,7 +186,7 @@ $userEmail = ($traveller && isset($traveller['email']))
     </div>
     
     <div id="reviewModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(11, 43, 51, 0.6); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-        <div class="glass-heavy" style="padding: 3rem 2.5rem; border-radius: var(--r-xl); width: 100%; max-width: 500px; position: relative; animation: fadeUp 0.3s ease-out forwards;">
+        <div class="glass-heavy" style="padding: 3rem 2.5rem; border-radius: var(--r-xl); width: 100%; max-width: 500px; position: relative; animation: fadeUp 0.3s ease-out forwards; max-height: 90vh; overflow-y: auto;">
             
             <button onclick="closeReviewModal()" style="position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
             
@@ -191,24 +196,53 @@ $userEmail = ($traveller && isset($traveller['email']))
             <form action="/traveller/submit-review" method="POST" class="input-stack">
                 <input type="hidden" name="booking_id" id="modalBookingId">
                 <input type="hidden" name="package_id" id="modalPackageId">
+                <input type="hidden" name="agency_id" id="modalAgencyId">
 
-                <div class="input-group">
-                    <label class="input-label">Rating (1-5)</label>
-                    <select name="rating" class="input-field" required>
-                        <option value="5">5 - Flawless Execution</option>
-                        <option value="4">4 - Minor Anomalies</option>
-                        <option value="3">3 - Acceptable</option>
-                        <option value="2">2 - Suboptimal</option>
-                        <option value="1">1 - Critical Failure</option>
-                    </select>
+                <!-- PACKAGE REVIEW SECTION -->
+                <div style="border-bottom: 2px dashed rgba(0, 166, 199, 0.2); padding-bottom: 2rem; margin-bottom: 2rem;">
+                    <div class="input-label" style="color: var(--ocean); font-weight: 700; margin-bottom: 1rem;">PACKAGE EXPERIENCE</div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Package Rating (1-5)</label>
+                        <select name="package_rating" class="input-field" required>
+                            <option value="">Select rating...</option>
+                            <option value="5">5 - Flawless Execution</option>
+                            <option value="4">4 - Minor Anomalies</option>
+                            <option value="3">3 - Acceptable</option>
+                            <option value="2">2 - Suboptimal</option>
+                            <option value="1">1 - Critical Failure</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Package Notes</label>
+                        <textarea name="package_comment" class="input-field" rows="3" placeholder="Detail your experience with the package..." required></textarea>
+                    </div>
                 </div>
 
-                <div class="input-group" style="margin-bottom: 1.5rem;">
-                    <label class="input-label">Expedition Notes</label>
-                    <textarea name="comment" class="input-field" rows="4" placeholder="Detail your experience..." required></textarea>
+                <!-- AGENCY REVIEW SECTION -->
+                <div>
+                    <div class="input-label" style="color: var(--teal); font-weight: 700; margin-bottom: 1rem;">AGENCY SERVICE</div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Agency Rating (1-5)</label>
+                        <select name="agency_rating" class="input-field" required>
+                            <option value="">Select rating...</option>
+                            <option value="5">5 - Exceptional Service</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Satisfactory</option>
+                            <option value="2">2 - Needs Improvement</option>
+                            <option value="1">1 - Poor Service</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 1.5rem;">
+                        <label class="input-label">Agency Feedback</label>
+                        <textarea name="agency_comment" class="input-field" rows="3" placeholder="Share your thoughts on the agency..." required></textarea>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn-primary" style="width: 100%;">Transmit Log</button>
+                <button type="submit" class="btn-primary" style="width: 100%;">Transmit Logs</button>
             </form>
         </div>
     </div>
@@ -235,11 +269,29 @@ $userEmail = ($traveller && isset($traveller['email']))
         function openReviewModal(button) {
             const bookingId = button.getAttribute('data-booking');
             const packageId = button.getAttribute('data-package');
+            const agencyId = button.getAttribute('data-agency');
             const tripName = button.getAttribute('data-name');
+            const pkgRating = button.getAttribute('data-pkg-rating');
+            const pkgComment = button.getAttribute('data-pkg-comment');
+            const agencyRating = button.getAttribute('data-agency-rating');
+            const agencyComment = button.getAttribute('data-agency-comment');
 
             document.getElementById('modalBookingId').value = bookingId;
             document.getElementById('modalPackageId').value = packageId;
+            document.getElementById('modalAgencyId').value = agencyId;
             document.getElementById('modalTripName').innerText = tripName;
+            
+            // Prefill package review if exists
+            if (pkgRating) {
+                document.querySelector('select[name="package_rating"]').value = pkgRating;
+                document.querySelector('textarea[name="package_comment"]').value = pkgComment || '';
+            }
+            
+            // Prefill agency review if exists
+            if (agencyRating) {
+                document.querySelector('select[name="agency_rating"]').value = agencyRating;
+                document.querySelector('textarea[name="agency_comment"]').value = agencyComment || '';
+            }
 
             document.getElementById('reviewModalOverlay').style.display = 'flex';
         }

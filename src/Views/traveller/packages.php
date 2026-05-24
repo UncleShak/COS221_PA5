@@ -80,6 +80,9 @@ $currentPage = $currentPage ?? 1;
                             <div class="pkg-card-meta">
                                 <span>🗓️ <?= htmlspecialchars($pkg['duration_days']) ?> Days</span>
                                 <span>🏢 <?= htmlspecialchars($pkg['agency_name']) ?></span>
+                                <?php if (!empty($pkg['accommodations'])): ?>
+                                    <span>🏨 <?= htmlspecialchars($pkg['accommodations']) ?></span>
+                                <?php endif; ?>
                             </div>
                             <div class="pkg-card-footer">
                                 <div class="pkg-card-price">

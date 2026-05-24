@@ -76,11 +76,14 @@ class PackageModel {
                        p.duration_days,
                        p.cover_image_url as image_url,
                        a.agency_name as agency_name,
+                       GROUP_CONCAT(DISTINCT ac.name SEPARATOR ', ') as accommodations,
                        COALESCE(AVG(r.rating), 0) as avg_rating,
                        COUNT(DISTINCT r.review_id) as review_count
                 FROM packages p
                 LEFT JOIN agencies a ON p.agency_id = a.user_id
                 LEFT JOIN packagereviews r ON p.package_id = r.package_id
+                LEFT JOIN packageaccommodations pa ON p.package_id = pa.package_id
+                LEFT JOIN accommodations ac ON pa.accommodation_id = ac.accommodation_id
                 WHERE p.status = 'active'";
         
         $params = [];

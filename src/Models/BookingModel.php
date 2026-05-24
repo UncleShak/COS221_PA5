@@ -173,12 +173,16 @@ class BookingModel {
                         p.title AS package_name, 
                         p.duration_days,
                         p.cover_image_url,
+                        p.agency_id,
                         r.rating,
                         r.comment AS review_comment,
+                        ar.rating AS agency_review_rating,
+                        ar.comment AS agency_review_comment,
                         gtp.group_trip_id
                     FROM bookings b
                     JOIN packages p ON b.package_id = p.package_id
                     LEFT JOIN packagereviews r ON b.booking_id = r.booking_id
+                    LEFT JOIN agencyreviews ar ON b.booking_id = ar.booking_id
                     LEFT JOIN grouptripparticipants gtp 
                         ON b.group_trip_id = gtp.group_trip_id 
                         AND b.traveller_id = gtp.traveller_id
