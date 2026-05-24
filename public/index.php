@@ -150,6 +150,23 @@ switch($route){
         $travellerController->sendMessage();
         break;
 
+    // --- Read-Only Entity Browsers ---
+    case '/traveller/destinations':
+    case '/traveller/flights':
+    case '/traveller/accommodations':
+    case '/traveller/attractions':
+    case '/traveller/restaurants':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo);
+        $action = ltrim(str_replace('/traveller/', '', $route), '/');
+        $controller->$action();
+        break;
+
     // --- Agency Routes ---
     case '/agency/dashboard':
         require_once __DIR__ . '/../config/database.php';

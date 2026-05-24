@@ -21,7 +21,12 @@
       <ul class="sg-nav-links">
         <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
         <?php if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] === 'traveller'): ?>
-            <li><a href="/traveller/packages">Explore Packages</a></li>
+            <li><a href="/traveller/packages">Packages</a></li>
+            <li><a href="/traveller/destinations">Destinations</a></li>
+            <li><a href="/traveller/flights">Flights</a></li>
+            <li><a href="/traveller/accommodations">Accommodations</a></li>
+            <li><a href="/traveller/attractions">Attractions</a></li>
+            <li><a href="/traveller/restaurants">Restaurants</a></li>
         <?php endif; ?>
       </ul>
 
