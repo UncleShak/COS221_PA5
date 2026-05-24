@@ -67,19 +67,19 @@ $currentPage = $currentPage ?? 1;
                     </div>
                 <?php else: ?>
                     <?php foreach ($packages as $pkg): ?>
-                    <div class="pkg-card glass-frosted" onclick="window.location.href='/traveller/details?id=<?= htmlspecialchars($pkg['id']) ?>'">
-                        <div class="pkg-card-img" style="<?= !empty($pkg['image_url']) ? "background-image: url('" . htmlspecialchars($pkg['image_url']) . "'); background-size: cover; background-position: center;" : "" ?>">
+                    <div class="pkg-card glass-frosted" onclick="window.location.href='/traveller/details?id=<?= (int)($pkg['id'] ?? 0) ?>'">
+                        <div class="pkg-card-img" style="<?= !empty($pkg['image_url']) ? "background-image: url('" . htmlspecialchars($pkg['image_url'] ?? '') . "'); background-size: cover; background-position: center;" : "" ?>">
                             <?php if (empty($pkg['image_url'])): ?> 🌴 <?php endif; ?>
-                            <?php if ($pkg['avg_rating'] > 0): ?>
-                                <span class="pkg-card-badge">★ <?= number_format($pkg['avg_rating'], 1) ?> (<?= $pkg['review_count'] ?>)</span>
+                            <?php if (!empty($pkg['avg_rating']) && $pkg['avg_rating'] > 0): ?>
+                                <span class="pkg-card-badge">★ <?= number_format($pkg['avg_rating'], 1) ?> (<?= htmlspecialchars($pkg['review_count'] ?? '') ?>)</span>
                             <?php endif; ?>
                         </div>
                         <div class="pkg-card-body">
                             <div class="pkg-card-dest"><?= htmlspecialchars($pkg['destination'] ?? 'Global') ?></div>
-                            <div class="pkg-card-name"><?= htmlspecialchars($pkg['title']) ?></div>
+                            <div class="pkg-card-name"><?= htmlspecialchars($pkg['title'] ?? '') ?></div>
                             <div class="pkg-card-meta">
-                                <span>🗓️ <?= htmlspecialchars($pkg['duration_days']) ?> Days</span>
-                                <span>🏢 <?= htmlspecialchars($pkg['agency_name']) ?></span>
+                                <span>🗓️ <?= htmlspecialchars($pkg['duration_days'] ?? '') ?> Days</span>
+                                <span>🏢 <?= htmlspecialchars($pkg['accommodations'] ?? $pkg['agency_name'] ?? '') ?></span>
                             </div>
                             <div class="pkg-card-footer">
                                 <div class="pkg-card-price">

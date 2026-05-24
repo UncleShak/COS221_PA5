@@ -135,12 +135,8 @@ $gradients = [
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        160deg,
-        rgba(42, 31, 53, 0.52) 0%,
-        rgba(61, 74, 122, 0.40) 45%,
-        rgba(232, 97, 74, 0.18) 100%
-    );
+    /* Removed the dark gradient overlay so the hero image displays normally */
+    background: none;
     z-index: 1;
 }
 
@@ -580,16 +576,10 @@ $gradients = [
 <?php /* ═══════════════════════════════════════════════════
    SECTION 1 — FULL-BLEED HERO
    ═══════════════════════════════════════════════════ */ ?>
-<section class="lp-full-hero" id="hero">
-
-    <?php /* ── HERO NAV (Log In / Sign Up only) ── */ ?>
-    <?php
-// ... [Keep the top PHP block and CSS styles exactly the same] ...
-?>
 
 <?php /* ═══════════════════════════════════════════════════
-   SECTION 1 — FULL-BLEED HERO
-   ═══════════════════════════════════════════════════ */ ?>
+    SECTION 1 — FULL-BLEED HERO
+    ═══════════════════════════════════════════════════ */ ?>
 <section class="lp-full-hero" id="hero">
 
     <?php /* ── HERO NAV (Log In / Sign Up only) ── */ ?>
