@@ -150,7 +150,21 @@ $userEmail = ($traveller && isset($traveller['email']))
                     </div>
                     
                     <?php if (!empty($pastTrip['rating'])): ?>
-                        <div style="background: rgba(255,255,255,0.3); padding: 1rem 1.2rem; border-radius: var(--r-md); border-left: 3px solid var(--ocean);">
+                        <div style="background: rgba(255,255,255,0.3); padding: 1rem 1.2rem 1rem 1.2rem; border-radius: var(--r-md); border-left: 3px solid var(--ocean); position: relative;">
+                            <button type="button"
+                                    style="position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1rem; background: transparent; color: var(--text-main); border: none; cursor: pointer; z-index: 20;"
+                                    data-booking="<?= htmlspecialchars($pastTrip['booking_id']) ?>"
+                                    data-package="<?= htmlspecialchars($pastTrip['package_id']) ?>"
+                                    data-agency="<?= htmlspecialchars($pastTrip['agency_id']) ?>"
+                                    data-name="<?= htmlspecialchars($pastTrip['package_name']) ?>"
+                                    data-pkg-rating="<?= htmlspecialchars($pastTrip['rating'] ?? '') ?>"
+                                    data-pkg-comment="<?= htmlspecialchars($pastTrip['review_comment'] ?? '') ?>"
+                                    data-agency-rating="<?= htmlspecialchars($pastTrip['agency_review_rating'] ?? '') ?>"
+                                    data-agency-comment="<?= htmlspecialchars($pastTrip['agency_review_comment'] ?? '') ?>"
+                                    onclick="openReviewModal(this)"
+                                    title="Edit Review">
+                                <span style="display:inline-block; transform-origin: center; transform: rotate(180deg);">✐</span>
+                            </button>
                             <div style="color: #fbbf24; font-size: 1.2rem; margin-bottom: 0.5rem; letter-spacing: 2px;">
                                 <?php 
                                     for ($i = 1; $i <= 5; $i++) {
@@ -168,12 +182,8 @@ $userEmail = ($traveller && isset($traveller['email']))
                                 data-package="<?= htmlspecialchars($pastTrip['package_id']) ?>"
                                 data-agency="<?= htmlspecialchars($pastTrip['agency_id']) ?>"
                                 data-name="<?= htmlspecialchars($pastTrip['package_name']) ?>"
-                                data-pkg-rating="<?= htmlspecialchars($pastTrip['rating'] ?? '') ?>"
-                                data-pkg-comment="<?= htmlspecialchars($pastTrip['review_comment'] ?? '') ?>"
-                                data-agency-rating="<?= htmlspecialchars($pastTrip['agency_review_rating'] ?? '') ?>"
-                                data-agency-comment="<?= htmlspecialchars($pastTrip['agency_review_comment'] ?? '') ?>"
                                 onclick="openReviewModal(this)">
-                            <?= (!empty($pastTrip['rating']) || !empty($pastTrip['agency_review_rating'])) ? '✎ Edit Review' : 'Submit Review' ?>
+                            Submit Review
                         </button>
                     <?php endif; ?>
 
@@ -285,12 +295,18 @@ $userEmail = ($traveller && isset($traveller['email']))
             if (pkgRating) {
                 document.querySelector('select[name="package_rating"]').value = pkgRating;
                 document.querySelector('textarea[name="package_comment"]').value = pkgComment || '';
+            } else {
+                document.querySelector('select[name="package_rating"]').value = '';
+                document.querySelector('textarea[name="package_comment"]').value = '';
             }
             
             // Prefill agency review if exists
             if (agencyRating) {
                 document.querySelector('select[name="agency_rating"]').value = agencyRating;
                 document.querySelector('textarea[name="agency_comment"]').value = agencyComment || '';
+            } else {
+                document.querySelector('select[name="agency_rating"]').value = '';
+                document.querySelector('textarea[name="agency_comment"]').value = '';
             }
 
             document.getElementById('reviewModalOverlay').style.display = 'flex';
