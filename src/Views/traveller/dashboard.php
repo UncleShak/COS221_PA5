@@ -172,6 +172,28 @@ $userEmail = ($traveller && isset($traveller['email']))
                         </button>
                     <?php endif; ?>
 
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--glass-border);">
+                        <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-soft);">Rate the Agency for this trip:</p>
+                        
+                        <form action="/traveller/submit-agency-review" method="POST" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                            <input type="hidden" name="agency_id" value="<?= (int)$pastTrip['agency_id'] ?>">
+                            <input type="hidden" name="booking_id" value="<?= (int)$pastTrip['booking_id'] ?>">
+                            
+                            <select name="rating" class="input-field" style="width: 140px; padding: 0.4rem; font-size: 0.9rem;" required>
+                                <option value="" disabled selected>Select Rating...</option>
+                                <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                                <option value="4">⭐⭐⭐⭐ (4)</option>
+                                <option value="3">⭐⭐⭐ (3)</option>
+                                <option value="2">⭐⭐ (2)</option>
+                                <option value="1">⭐ (1)</option>
+                            </select>
+                            
+                            <input type="text" name="comment" class="input-field" placeholder="Leave a short comment..." style="flex-grow: 1; min-width: 200px; padding: 0.4rem; font-size: 0.9rem;">
+                            
+                            <button type="submit" class="btn-primary" style="padding: 0.4rem 1.2rem; font-size: 0.9rem;">Submit</button>
+                        </form>
+                    </div>
+
                 </div>
                 <?php endforeach; ?>
 

@@ -324,6 +324,49 @@ class TravellerController {
         }
     }
 
+    public function submitAgencyReview() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                // 1. Extract the data
+                $travellerId = $_SESSION['user_id'];
+                $agencyId = !empty($_POST['agency_id']) ? (int)$_POST['agency_id'] : null;
+                $bookingId = !empty($_POST['booking_id']) ? (int)$_POST['booking_id'] : null;
+                $rating = !empty($_POST['rating']) ? (int)$_POST['rating'] : 0;
+                $comment = htmlspecialchars(trim($_POST['comment'] ?? ''));
+
+                // 2. Validate
+                if (!$agencyId || !$bookingId || $rating < 1 || $rating > 5) {
+                    header("Location: /traveller/dashboard?error=invalid_review_data");
+                    exit;
+                }
+
+                // 3. Insert into the database
+                $query = "INSERT INTO agencyreviews (traveller_id, agency_id, booking_id, rating, comment) 
+                          VALUES (:traveller_id, :agency_id, :booking_id, :rating, :comment)";
+                
+                // Note: Change $this->conn to $this->pdo if that is what your constructor uses!
+                $stmt = $this->conn->prepare($query); 
+                $stmt->execute([
+                    ':traveller_id' => $travellerId,
+                    ':agency_id' => $agencyId,
+                    ':booking_id' => $bookingId,
+                    ':rating' => $rating,
+                    ':comment' => $comment
+                ]);
+
+                // 4. Redirect with success
+                header("Location: /traveller/dashboard?success=agency_reviewed");
+                exit;
+
+            } catch (PDOException $e) {
+                error_log("Agency Review Error: " . $e->getMessage());
+                // If they already reviewed this exact booking, the UNIQUE constraint will trigger an error
+                header("Location: /traveller/dashboard?error=review_failed");
+                exit;
+            }
+        }
+    }
+
     
 }
 ?>
