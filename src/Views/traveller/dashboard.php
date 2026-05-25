@@ -10,17 +10,6 @@ $userEmail = ($traveller && isset($traveller['email']))
 
 <div class="sg-page" style="min-height: 100vh; padding: 100px 2rem 4rem; width: 100%; max-width: 1800px; margin: 0 auto;">
 
-    <?php if (isset($_GET['status'])): ?>
-        <?php if ($_GET['status'] === 'booking_cancelled'): ?>
-        <div class="glass-heavy" style="border-left: 4px solid #ff3b30; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem;">
-            <div style="width: 10px; height: 10px; border-radius: 50%; background: #ff3b30; box-shadow: 0 0 10px #ff3b30;"></div>
-            <div style="color: var(--text-main);">
-                <strong style="color: #ff3b30;">Expedition Aborted:</strong> Your booking has been successfully cancelled.
-            </div>
-        </div>
-        <?php endif; ?>
-    <?php endif; ?>
-
     <?php if (isset($_GET['error']) && $_GET['error'] === 'unauthorized_cluster'): ?>
         <div class="glass-heavy" style="border-left: 4px solid #ff3b30; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem;">
             <div style="width: 10px; height: 10px; border-radius: 50%; background: #ff3b30; box-shadow: 0 0 10px #ff3b30;"></div>
@@ -96,26 +85,51 @@ $userEmail = ($traveller && isset($traveller['email']))
 
                         <?php 
                             $intel = !empty($trip['prep_notes']) ? json_decode($trip['prep_notes'], true) : null; 
-                            if ($intel && isset($intel['packing_list']) && isset($intel['etiquette'])): 
+                            if ($intel && (isset($intel['itinerary']) || isset($intel['packing_list']) || isset($intel['etiquette']))): 
                         ?>
                             <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px dashed rgba(255,255,255,0.1);">
                                 <h4 style="font-family: var(--font-code); color: var(--ocean); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem;">// Mission Intel Acquired</h4>
+                                
+                                <?php if (!empty($intel['fallback_reason'])): ?>
+                                    <div style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.85rem;"> <?= htmlspecialchars($intel['fallback_reason']) ?> </div>
+                                <?php endif; ?>
+
+                                <?php if (!empty($intel['itinerary']) && is_array($intel['itinerary'])): ?>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <strong style="color: var(--text-main); font-size: 0.9rem;">Trip Itinerary:</strong>
+                                        <ul style="list-style-type: none; padding: 0; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-soft);">
+                                            <?php foreach ($intel['itinerary'] as $day): ?>
+                                                <li style="margin-bottom: 0.4rem; line-height: 1.4;">
+                                                    > <span style="color: var(--text-main); font-weight: 700;">Day <?= htmlspecialchars($day['day'] ?? '') ?>:</span>
+                                                    <?= htmlspecialchars($day['title'] ?? 'Planned activity') ?>
+                                                    <?php if (!empty($day['description'])): ?>
+                                                        - <?= htmlspecialchars($day['description']) ?>
+                                                    <?php endif; ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                <?php endif; ?>
                                 
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                                     <div>
                                         <strong style="color: var(--text-main); font-size: 0.9rem;">Required Gear:</strong>
                                         <ul style="list-style-type: none; padding: 0; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-soft);">
-                                            <?php foreach ($intel['packing_list'] as $item): ?>
-                                                <li style="margin-bottom: 0.4rem; line-height: 1.4;">> <?= htmlspecialchars($item) ?></li>
-                                            <?php endforeach; ?>
+                                            <?php if (!empty($intel['packing_list']) && is_array($intel['packing_list'])): ?>
+                                                <?php foreach ($intel['packing_list'] as $item): ?>
+                                                    <li style="margin-bottom: 0.4rem; line-height: 1.4;">> <?= htmlspecialchars($item) ?></li>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
                                         </ul>
                                     </div>
                                     <div>
                                         <strong style="color: var(--text-main); font-size: 0.9rem;">Local Protocols:</strong>
                                         <ul style="list-style-type: none; padding: 0; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-soft);">
-                                            <?php foreach ($intel['etiquette'] as $tip): ?>
-                                                <li style="margin-bottom: 0.4rem; line-height: 1.4;">> <?= htmlspecialchars($tip) ?></li>
-                                            <?php endforeach; ?>
+                                            <?php if (!empty($intel['etiquette']) && is_array($intel['etiquette'])): ?>
+                                                <?php foreach ($intel['etiquette'] as $tip): ?>
+                                                    <li style="margin-bottom: 0.4rem; line-height: 1.4;">> <?= htmlspecialchars($tip) ?></li>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
                                         </ul>
                                     </div>
                                 </div>

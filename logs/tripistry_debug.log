@@ -62,3 +62,27 @@
   }
 }
 
+[25-May-2026 22:40:01 UTC] [TRIPISTRY][AI] API call failed. HTTP Status: 403. Body: {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[25-May-2026 22:41:31 UTC] [TRIPISTRY][AI] API call failed. HTTP Status: 403. Body: {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[25-May-2026 22:48:53 UTC] [TRIPISTRY][AI] GEMINI_API_KEY is not configured. Using local fallback itinerary.
+[25-May-2026 22:48:53 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mb_substr() in /home/shak/COS221/COS221_PA5/src/Controllers/BookingController.php:193
+Stack trace:
+#0 /home/shak/COS221/COS221_PA5/src/Controllers/BookingController.php(84): BookingController->buildFallbackTripIntel()
+#1 /home/shak/COS221/COS221_PA5/src/Controllers/BookingController.php(51): BookingController->generateTripIntel()
+#2 /home/shak/COS221/COS221_PA5/public/index.php(105): BookingController->processBooking()
+#3 {main}
+  thrown in /home/shak/COS221/COS221_PA5/src/Controllers/BookingController.php on line 193

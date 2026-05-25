@@ -288,7 +288,6 @@
     <div class="loading-wrap">
 
         <div class="loading-logo">
-            <span class="logo-dot"></span>
             Tripistry
         </div>
 
