@@ -1,138 +1,166 @@
 # Tripistry
 
-Tripistry is a PHP MVC travel booking application for browsing packages, confirming bookings, and viewing trip intel on the traveller dashboard.
+Tripistry is a small PHP MVC travel booking application that lets travellers browse packages, confirm bookings, and view generated trip intel on their dashboard.
 
-## What It Does
-- Browse curated travel packages from the landing page and traveller views.
-- Book a package and generate trip intel containing an itinerary, required gear, and local protocols.
-- Fall back to a local Cape Town-aware itinerary if the Gemini request fails or returns unusable data.
-- Manage traveller and agency dashboards, reviews, favourites, and group trips.
+What follows is a compact README organized exactly as requested.
+
+## What it does
+- Browse curated travel packages and view destination details from the landing page.
+- Book packages (traveller flow) and manage packages (agency flow).
+- Generate trip intelligence (itinerary, required gear, local protocols) after booking using Google Generative Language (Gemini) when available.
+- If Gemini is unavailable or returns an error, the app deterministically generates a fallback trip intel JSON and still stores it with the booking.
 
 ## Requirements
-- PHP 7.4+ with PDO
+- PHP 7.4 or later
 - MySQL or MariaDB
-- A web server such as Apache/Nginx, or the PHP built-in server for local testing
+- PHP extensions: `pdo_mysql` (required), `mbstring` (recommended), `curl`, `json`
+- A web server (Nginx/Apache) or PHP built-in server for development
 
-`mbstring` is optional. The current booking fallback code works even when it is not installed.
+## Environment Setup + All Configuration
+Follow these steps to configure a development environment and run Tripistry locally.
 
-## Configuration
-1. Set up the database connection in `config/database.php`.
-2. Provide your Gemini key through the `GEMINI_API_KEY` environment variable.
-3. If you want to use a `.env` file, you must load it yourself first. PHP does not read `.env` files automatically.
+1) Install system packages (Debian/Ubuntu example):
 
-Example shell session:
+```bash
+sudo apt update
+sudo apt install -y php php-cli php-mysql php-xml php-gd php-mbstring php-curl php-zip mysql-client mysql-server
+```
+
+2) Database import
+
+```bash
+# create DB and user as appropriate, then import
+mysql -u root -p < Tripistry_dump.sql
+# or use sample population data
+mysql -u root -p < PopulateData.sql
+```
+
+3) Configure environment variables
+
+- Required for AI features: `GEMINI_API_KEY`. Set it in your shell, php-fpm pool, or via `.env` (optional).
+
+Temporary (current shell):
 
 ```bash
 export GEMINI_API_KEY="your_real_key_here"
 ```
 
-## Database Setup
-Import the provided schema or sample data into your MySQL database:
+Persistent (example):
 
 ```bash
-mysql -u youruser -p yourdatabase < Tripistry_dump.sql
-# or
-mysql -u youruser -p yourdatabase < PopulateData.sql
+echo 'export GEMINI_API_KEY="your_real_key_here"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
-## Run Locally
-From the project root, start the PHP built-in server from the `public/` folder:
+4) Optional `.env` support
+
+PHP does not load `.env` automatically. To use a `.env` file, install `vlucas/phpdotenv` and load it in `public/index.php` before any config reads:
+
+```bash
+composer require vlucas/phpdotenv
+```
+
+Add to `public/index.php` near the top:
+
+```php
+require_once __DIR__ . '/../vendor/autoload.php';
+Dotenv\Dotenv::createImmutable(__DIR__ . '/..')->safeLoad();
+```
+
+Create a `.env` (DO NOT commit) with keys such as:
+
+```
+GEMINI_API_KEY=your_real_key_here
+DB_HOST=127.0.0.1
+DB_USER=tripistry_user
+DB_PASS=secret
+DB_NAME=tripistry
+```
+
+5) Web server (development)
 
 ```bash
 cd public
 php -S localhost:8000
 ```
 
-Then open `http://localhost:8000` in your browser.
+For production, set `public/` as your document root and provide the `GEMINI_API_KEY` to the php-fpm process (pool config) or the service environment.
 
-If you are using Apache or Nginx, point the document root to `public/` so `public/index.php` acts as the front controller.
+6) File permissions
 
-## Booking And AI Flow
-When a traveller confirms a booking, `src/Controllers/BookingController.php`:
-- creates the booking,
-- asks Gemini for trip intel,
-- stores the result in `bookings.prep_notes`,
-- falls back to a locally generated itinerary if the API call fails.
+```bash
+sudo chown -R www-data:www-data logs/
+sudo chmod -R 750 logs/
+```
 
-The traveller dashboard reads `prep_notes` and displays:
-- Trip Itinerary
-- Required Gear
-- Local Protocols
+7) Recommended php.ini settings
 
-## Troubleshooting
-- If the API key was leaked or revoked, Gemini requests will fail with `403` and the app will use the fallback itinerary.
-- If the dashboard shows no trip intel, confirm that `prep_notes` is being written for the booking and that the traveller is viewing the booking on the dashboard.
-- If a booking cancellation message appears and you do not want it, the dashboard no longer shows the cancelled-booking alert.
+```
+memory_limit = 256M
+post_max_size = 20M
+upload_max_filesize = 10M
+date.timezone = "UTC"
+```
 
-## Full Folder Structure
+8) Quick environment checks
+
+```bash
+php -v
+php -m | grep pdo_mysql
+php -r "echo getenv('GEMINI_API_KEY');"
+php -l src/Controllers/BookingController.php
+```
+
+If the `GEMINI_API_KEY` check prints nothing, set the var via one of the listed methods or load it via `.env` as shown.
+
+## Traveller and Agency Flow
+This section explains the common user flows and where AI integration happens.
+
+- Traveller booking flow (high level):
+  1. Traveller selects a package and completes booking from the UI.
+  2. `src/Controllers/BookingController.php` creates the booking row in the `bookings` table.
+  3. The controller attempts to call Gemini (if `GEMINI_API_KEY` configured) to generate `prep_notes` JSON containing:
+     - `itinerary` (array of day/activities),
+     - `packing_list` (array of items),
+     - `etiquette` (short local protocols/tips).
+  4. If the Gemini request fails or returns unusable data, the controller uses a deterministic fallback generator and still writes a valid JSON blob into `bookings.prep_notes`.
+  5. Traveller dashboard reads `prep_notes` and renders Itinerary, Required Gear, and Local Protocols.
+
+- Agency flow (high level):
+  - Agencies can create/manage packages via `src/Views/agency/*` views and corresponding controllers.
+  - Package changes do not automatically regenerate `prep_notes` for existing bookings; `prep_notes` is generated at booking time.
+
+Notes:
+- The app logs AI errors to `logs/tripistry_debug.log`. Common failures include API key errors (403) and service availability (503); the fallback ensures bookings remain usable.
+
+## Folder Structure
+Top-level layout of the project (relevant files and folders):
+
 ```
 PopulateData.sql
-README.md
-StyleGuide.html
 Tripistry_dump.sql
+README.md
 config/
     database.php
     secrets.php
 logs/
 public/
     index.php
-    test.php
-    assets/
-        icons/
-            building.png:Zone.Identifier
-            global-icon.png:Zone.Identifier
-    css/
-        StyleGuide.css
+    css/StyleGuide.css
     images/
-        SunsetImage.jpg:Zone.Identifier
     js/
 src/
     Controllers/
-        AgencyController.php
-        AuthController.php
-        BookingController.php
-        DataController.php
-        HomeController.php
-        RegistrationController.php
-        TravellerController.php
     Models/
-        AgencyModel.php
-        BookingModel.php
-        FavouriteModel.php
-        GroupModel.php
-        PackageModel.php
-        ReviewModel.php
-        UserModel.php
     Views/
-        Landing.php
-        layout.php
-        loading.php
-        agency/
-            create_package.html
-            create_package.php
-            dashboard.php
-            edit_package.php
-            group_management.php
-            manage_data.php
-        auth/
-            login.php
-            register.php
-        traveller/
-            accommodations.php
-            attractions.php
-            checkout.php
-            compare.php
-            dashboard.php
-            destinations.php
-            details.php
-            flights.php
-            forYou.php
-            group.php
-            packages.php
-            restaurants.php
 ```
 
-## Notes For Markers
-- The landing page and layout use custom CSS in `public/css/StyleGuide.css` and page-scoped styles in `src/Views/Landing.php`.
-- AI output is intentionally resilient: if Gemini is unavailable, the booking still succeeds and saves a fallback itinerary.
-- The dashboard itinerary display has been simplified to match the style used for Required Gear.
+See the repository for the full, exact layout — the `src/Views` and `src/Controllers` folders contain the page templates and business logic respectively.
+
+---
+
+If you'd like, I can also:
+- add a `.env.example` file with the environment variables (safe to commit), or
+- add a short troubleshooting checklist or CI/run scripts.
+
+
