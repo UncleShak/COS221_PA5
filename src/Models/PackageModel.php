@@ -16,6 +16,7 @@ class PackageModel {
                        p.base_price as price, 
                        p.duration_days,
                        p.cover_image_url as image_url,
+                       p.favouritable_id,
                        a.agency_name as agency_name,
                        COALESCE(AVG(r.rating), 0) as avg_rating,
                        COUNT(DISTINCT r.review_id) as review_count
@@ -40,6 +41,7 @@ class PackageModel {
                        p.base_price as price, 
                        p.duration_days,
                        p.cover_image_url as image_url,
+                       p.favouritable_id,
                        a.agency_name as agency_name,
                        1 as verified,
                        COALESCE(AVG(r.rating), 0) as avg_rating
@@ -68,6 +70,7 @@ class PackageModel {
     }
     
     public function getFilteredPackages($filters = [], $sort = 'price_asc', $limit = 12, $offset = 0) {
+
         $sql = "SELECT p.package_id as id, 
                        p.title, 
                        p.description,
@@ -75,15 +78,29 @@ class PackageModel {
                        p.base_price as price, 
                        p.duration_days,
                        p.cover_image_url as image_url,
+                       p.favouritable_id,
                        a.agency_name as agency_name,
                        COALESCE(AVG(r.rating), 0) as avg_rating,
-                       COUNT(DISTINCT r.review_id) as review_count
+                       COUNT(DISTINCT r.review_id) as review_count,
+                       CASE 
+                           WHEN f.favourite_id IS NOT NULL THEN 1
+                           ELSE 0
+                       END AS is_favourite
+
                 FROM packages p
+
                 LEFT JOIN agencies a ON p.agency_id = a.user_id
                 LEFT JOIN packagereviews r ON p.package_id = r.package_id
+                LEFT JOIN favourites f 
+                    ON p.favouritable_id = f.favouritable_id
+                    AND f.traveller_id = ?
+
                 WHERE p.status = 'active'";
         
         $params = [];
+
+        $travellerId = $_SESSION['user_id'] ?? 0;
+        $params[] = $travellerId;
         
         if (!empty($filters['search'])) {
             $sql .= " AND (p.title LIKE ? OR p.description LIKE ?)";
@@ -103,6 +120,7 @@ class PackageModel {
             $sql .= " AND p.base_price >= ?";
             $params[] = (float)$filters['min_price'];
         }
+
         if (!empty($filters['max_price'])) {
             $sql .= " AND p.base_price <= ?";
             $params[] = (float)$filters['max_price'];
@@ -114,19 +132,24 @@ class PackageModel {
             case 'price_asc':
                 $sql .= " ORDER BY p.base_price ASC";
                 break;
+
             case 'price_desc':
                 $sql .= " ORDER BY p.base_price DESC";
                 break;
+
             case 'rating_desc':
                 $sql .= " ORDER BY avg_rating DESC, review_count DESC";
                 break;
+
             default:
                 $sql .= " ORDER BY p.base_price ASC";
         }
         
         $sql .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params); 
+
         return $stmt->fetchAll();
     }
     
@@ -156,6 +179,7 @@ class PackageModel {
             $sql .= " AND p.base_price >= ?";
             $params[] = (float)$filters['min_price'];
         }
+
         if (!empty($filters['max_price'])) {
             $sql .= " AND p.base_price <= ?";
             $params[] = (float)$filters['max_price'];
@@ -163,7 +187,9 @@ class PackageModel {
         
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
+
         $result = $stmt->fetch();
+
         return $result['total'] ?? 0;
     }
     
@@ -223,13 +249,18 @@ class PackageModel {
     
     public function getFilterOptions() {
         $options = [];
+
         $stmt = $this->pdo->query("SELECT MIN(base_price) as min_price, MAX(base_price) as max_price FROM packages WHERE status = 'active'");
         $priceRange = $stmt->fetch();
+
         $options['min_price'] = floor($priceRange['min_price'] ?? 0);
         $options['max_price'] = ceil($priceRange['max_price'] ?? 10000);
+
         $stmt = $this->pdo->query("SELECT DISTINCT duration_days FROM packages WHERE status = 'active' ORDER BY duration_days");
         $options['durations'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
         $options['destinations'] = [];
+
         return $options;
     }
     
@@ -239,8 +270,10 @@ class PackageModel {
                 JOIN destinations d ON pd.destination_id = d.destination_id
                 WHERE pd.package_id = ? 
                 ORDER BY pd.day_number ASC, pd.visit_order ASC";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$packageId]);
+
         return $stmt->fetchAll();
     }
     
@@ -251,34 +284,50 @@ class PackageModel {
                       FROM packageaccommodations pa
                       JOIN accommodations a ON pa.accommodation_id = a.accommodation_id
                       WHERE pa.package_id = ?";
+
         $stmtHotels = $this->pdo->prepare($sqlHotels);
         $stmtHotels->execute([$packageId]);
-        foreach ($stmtHotels->fetchAll() as $item) $inclusions['hotel'][] = $item;
+
+        foreach ($stmtHotels->fetchAll() as $item) {
+            $inclusions['hotel'][] = $item;
+        }
 
         $sqlFlights = "SELECT 'flight' as type, CONCAT(f.airline_name, ' - ', f.flight_number) as name, 
                               CONCAT(f.departure_airport, ' to ', f.arrival_airport) as description 
                        FROM packageflights pf
                        JOIN flights f ON pf.flight_id = f.flight_id
                        WHERE pf.package_id = ?";
+
         $stmtFlights = $this->pdo->prepare($sqlFlights);
         $stmtFlights->execute([$packageId]);
-        foreach ($stmtFlights->fetchAll() as $item) $inclusions['flight'][] = $item;
+
+        foreach ($stmtFlights->fetchAll() as $item) {
+            $inclusions['flight'][] = $item;
+        }
 
         $sqlAttractions = "SELECT 'attraction' as type, a.name, a.description 
                            FROM packageattractions pa
                            JOIN attractions a ON pa.attraction_id = a.attraction_id
                            WHERE pa.package_id = ? AND pa.is_included = 1";
+
         $stmtAttractions = $this->pdo->prepare($sqlAttractions);
         $stmtAttractions->execute([$packageId]);
-        foreach ($stmtAttractions->fetchAll() as $item) $inclusions['attraction'][] = $item;
+
+        foreach ($stmtAttractions->fetchAll() as $item) {
+            $inclusions['attraction'][] = $item;
+        }
 
         $sqlRestaurants = "SELECT 'restaurant' as type, r.name, r.description 
                            FROM packagerestaurants pr
                            JOIN restaurants r ON pr.restaurant_id = r.restaurant_id
                            WHERE pr.package_id = ?";
+
         $stmtRestaurants = $this->pdo->prepare($sqlRestaurants);
         $stmtRestaurants->execute([$packageId]);
-        foreach ($stmtRestaurants->fetchAll() as $item) $inclusions['restaurant'][] = $item;
+
+        foreach ($stmtRestaurants->fetchAll() as $item) {
+            $inclusions['restaurant'][] = $item;
+        }
 
         return $inclusions;
     }
@@ -288,8 +337,10 @@ class PackageModel {
                 FROM packagereviews r
                 JOIN users u ON r.traveller_id = u.user_id
                 WHERE r.package_id = ?";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$packageId]);
+
         return $stmt->fetchAll();
     }   
 }

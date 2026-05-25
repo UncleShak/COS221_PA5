@@ -88,6 +88,36 @@ $currentPage = $currentPage ?? 1;
                                 <div class="pkg-card-price">
                                     R <?= number_format($pkg['price'], 2) ?> <span>/ person</span>
                                 </div>
+                                <?php if (!empty($pkg['favouritable_id']) && isset($_SESSION['user_id'])): ?>
+
+                                <form action="/traveller/favourite" method="POST" onclick="event.stopPropagation();" style="margin: 0;">
+
+                                    <input type="hidden" name="favouritable_id" value="<?= htmlspecialchars($pkg['favouritable_id']) ?>">
+
+                                    <input type="hidden"
+                                            name="action" 
+                                            value="<?= !empty($pkg['is_favourite']) ? 'remove' : 'add' ?>">
+
+                                    <input type="hidden" name="redirect" value="/traveller/packages">
+
+                                    <button type="submit"
+                                        title="<?= !empty($pkg['is_favourite']) ? 'Remove from favourites' : 'Save to favourites' ?>"
+                                        style="
+                                            background: none;
+                                            border: none;
+                                            cursor: pointer;
+                                            font-size: 1.2rem;
+                                            color: <?= !empty($pkg['is_favourite']) ? 'var(--coral)' : 'var(--text-muted)' ?>;
+                                            padding: 0.2rem;
+                                        ">
+
+                                        <?= !empty($pkg['is_favourite']) ? '♥' : '♡' ?>
+
+                                    </button>
+
+                                </form>
+
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

@@ -4,8 +4,6 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . '/../config/secrets.php';
-
 // 1. BYPASS FOR STATIC FILES (CSS, Images, etc.)
 $filePath = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (is_file($filePath)) {
@@ -131,6 +129,16 @@ switch($route){
         require_once __DIR__ . '/../src/Controllers/TravellerController.php';
         $controller = new TravellerController($pdo); 
         $controller->groupHub();
+        break;
+
+    case '/traveller/favourite':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database(); $pdo = $database->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo);
+        $controller->toggleFavourite();
         break;
 
     case 'traveller/send-message':
