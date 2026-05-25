@@ -79,9 +79,7 @@ class AuthController{
         }
     }
 
-    // THE FIX: Much more forgiving regex that allows ANY special character
     public static function isPasswordStrong($password) {
-        // Requires: 8+ chars, 1 uppercase, 1 lowercase, 1 number, 1 special character (ANY non-alphanumeric)
         $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/';
         return preg_match($pattern, $password);
     }

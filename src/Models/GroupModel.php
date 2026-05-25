@@ -5,7 +5,6 @@ class GroupModel {
     public function __construct($pdo) {
         $this->pdo = $pdo;
     }
-// 1. Fetch the main group details and join with the package name
     public function getGroupDetails($groupTripId) {
         $sql = "SELECT g.*, p.title as package_name
                 FROM grouptrips g

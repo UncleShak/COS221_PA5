@@ -1,42 +1,28 @@
-/* ============================================================
-   TRIPISTRY · CSS VARIABLES (ALPINE SUNSET)
-   Inspired by: mountain range at golden hour — coral peaks,
-   deep indigo valleys, warm rose midtones, slate sky
-   ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
 :root {
-  /* ── CORE PALETTE · Alpine Sunset ── */
-  --bg-main:       #fdf6f0;          /* warm parchment */
-  --bg-secondary:  #f5ece4;          /* blush sand */
+  --bg-main:       #fdf6f0;
+  --bg-secondary:  #f5ece4;
 
-  /* TEXT */
-  --text-main:     #2a1f35;          /* deep indigo-plum */
+  --text-main:     #2a1f35;
   --text-soft:     rgba(42, 31, 53, 0.68);
   --text-muted:    rgba(42, 31, 53, 0.42);
   --text-white:    #ffffff;
 
-  /* SUNSET ACCENTS (sampled from mountain image) */
-  --coral:         #e8614a;          /* lit peak — vivid coral-red */
-  --rose:          #c9516e;          /* warm rose midtone */
-  --amber:         #d97b3a;          /* golden glow */
-  --blush:         #e8a89c;          /* soft pink snow */
-  --indigo:        #3d4a7a;          /* deep valley blue */
-  --slate:         #6b7db3;          /* atmospheric sky */
-  --dusk:          #8f6fa8;          /* twilight purple */
-  --ice:           #c3cde6;          /* cool upper sky */
+  --coral:         #e8614a;
+  --rose:          #c9516e;
+  --amber:         #d97b3a;
+  --blush:         #e8a89c;
+  --indigo:        #3d4a7a;
+  --slate:         #6b7db3;
+  --dusk:          #8f6fa8;
+  --ice:           #c3cde6;
 
-  /* ============================================================
-     SOLID "GRADIENT" TOKENS (keeps original variable names)
-     NOTE: kept names like --gradient-warm to avoid breaking pages.
-     ============================================================ */
   --gradient-main: var(--coral);
   --gradient-sky:  var(--indigo);
   --gradient-warm: var(--amber);
   --gradient-cool: var(--ice);
 
-  /* ── LIQUID GLASS ── */
-  /* FROSTED — moderate opacity white tint, strong blur (pricing cards, sidebars) */
   --glass-bg:      rgba(255, 248, 244, 0.45);
   --glass-bg-mid:  rgba(255, 248, 244, 0.62);
   --glass-bg-hi:   rgba(255, 255, 255, 0.82);
@@ -51,37 +37,28 @@
   --glass-blur-sm: blur(12px) saturate(140%);
   --glass-blur-lg: blur(40px) saturate(220%);
 
-  /* ── STATUS ── */
   --success: #22a06b;
   --warning: #e8a528;
-  --danger:  #e8614a;   /* reuses coral */
+  --danger:  #e8614a;
   --info:    #3d4a7a;
 
-  /* ── SPACING / RADII ── */
   --r-sm:   10px;
   --r-md:   16px;
   --r-lg:   22px;
   --r-xl:   30px;
   --r-pill: 100px;
 
-  /* ── MOTION ── */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* ── TYPOGRAPHY ── */
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'DM Sans', system-ui, sans-serif;
   --font-code:    'DM Mono', monospace;
 
-  /* Extra neutral surfaces (new variables, no class name changes required) */
-  --surface-1: rgba(255,255,255,0.82);  /* cards */
-  --surface-2: rgba(255,255,255,0.62);  /* rows */
-  --surface-3: rgba(255,255,255,0.45);  /* subtle overlays */
+  --surface-1: rgba(255,255,255,0.82);
+  --surface-2: rgba(255,255,255,0.62);
+  --surface-3: rgba(255,255,255,0.45);
 }
 
-/* ============================================================
-   DARK THEME OVERRIDES
-   Controlled by: <html data-theme="dark">
-   ============================================================ */
 html[data-theme="dark"] {
   --bg-main:       #0f0c14;
   --bg-secondary:  #171120;
@@ -91,7 +68,6 @@ html[data-theme="dark"] {
   --text-muted:    rgba(255, 248, 244, 0.46);
   --text-white:    #ffffff;
 
-  /* Accents (slightly brighter for dark backgrounds) */
   --coral:         #ff6b55;
   --rose:          #e35b83;
   --amber:         #ff9a4b;
@@ -102,13 +78,11 @@ html[data-theme="dark"] {
   --dusk:          #b48ad0;
   --ice:           #cfd7ff;
 
-  /* Keep "gradient" token names but remain SOLID */
   --gradient-main: var(--coral);
   --gradient-sky:  #2c2a4a;
   --gradient-warm: var(--amber);
   --gradient-cool: rgba(207, 215, 255, 0.90);
 
-  /* Glass on dark */
   --glass-bg:        rgba(255, 255, 255, 0.08);
   --glass-bg-mid:    rgba(255, 255, 255, 0.12);
   --glass-bg-hi:     rgba(255, 255, 255, 0.16);
@@ -124,14 +98,10 @@ html[data-theme="dark"] {
   --surface-3: rgba(255,255,255,0.06);
 }
 
-/* Smooth-ish transitions on theme switch (optional) */
 html, body, .sg-nav, .demo-cell, .pkg-card, .stat-card, .filter-bar, .filter-panel, .input-field {
   transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -145,26 +115,20 @@ body {
   overflow-x: hidden;
 }
 
-/* Typography utility (keeps original class name) */
 .font-fraunces {
   font-family: var(--font-display);
   font-weight: 400;
   font-style: italic;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 7px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(201, 81, 110, 0.22); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(201, 81, 110, 0.45); }
 
-/* ============================================================
-   AMBIENT BACKGROUND (Sunset Orbs)
-   ============================================================ */
-/* Ambient background disabled for solid-background preview */
 .ambient-bg {
   position: fixed; inset: 0; z-index: -4; pointer-events: none;
-  background-image: none; /* removed radial/orb gradients for preview */
+  background-image: none;
 }
 html[data-theme="dark"] .ambient-bg {
   background-image: none;
@@ -177,9 +141,6 @@ html[data-theme="dark"] .orb { display: none; }
 @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(-55px,-70px)} }
 @keyframes drift3 { from{transform:translate(0,0) scale(1)} to{transform:translate(-30px,20px) scale(1.15)} }
 
-/* ============================================================
-   LAYOUT & NAVIGATION
-   ============================================================ */
 .content { position: relative; z-index: 1; }
 
 .sg-nav {
@@ -187,7 +148,6 @@ html[data-theme="dark"] .orb { display: none; }
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 3rem; height: 68px;
 
-  /* Make nav follow theme instead of hard-coded light rgba */
   background: rgba(253, 246, 240, 0.70);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -208,18 +168,16 @@ html[data-theme="dark"] .sg-nav {
 .sg-nav-links a { color: var(--text-soft); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
 .sg-nav-links a:hover { color: var(--coral); }
 
-/* Right side container (new, doesn't affect old classes) */
 .sg-nav-right { display: flex; align-items: center; gap: 0.9rem; }
 
 .sg-nav-pill {
-  /* was gradient; now solid via variable */
   background: var(--gradient-warm); color: #fff;
   font-size: 0.72rem; font-weight: 700; padding: 0.32rem 1rem;
   border-radius: var(--r-pill); letter-spacing: 0.08em; text-transform: uppercase;
   box-shadow: 0 4px 14px rgba(232, 97, 74, 0.28);
 }
 
-/* Theme toggle button (uses original navbar area; no existing class renamed) */
+
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -263,7 +221,7 @@ html[data-theme="dark"] .theme-toggle {
 
 .sg-page { padding-top: 68px; }
 
-/* Section layout */
+
 .sg-section {
   padding: 6rem 4rem;
   border-top: 1px solid rgba(232, 97, 74, 0.1);
@@ -281,7 +239,7 @@ html[data-theme="dark"] .theme-toggle {
   font-size: 1.05rem; color: var(--text-soft); max-width: 600px; line-height: 1.75; margin-bottom: 3rem;
 }
 
-/* Sticky section header */
+
 .sg-sticky {
   position: sticky; top: 68px; z-index: 50;
   background: rgba(253, 246, 240, 0.80);
@@ -308,16 +266,14 @@ html[data-theme="dark"] .sg-sticky-tag {
   border: 1px solid rgba(255,255,255,0.14);
 }
 
-/* ============================================================
-   HERO
-   ============================================================ */
+
 .sg-hero {
   min-height: 100vh; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   text-align: center; padding: 8rem 2rem 5rem;
   position: relative; overflow: hidden;
 
-  /* was a gradient; now solid */
+  
   background: var(--bg-secondary);
 }
 html[data-theme="dark"] .sg-hero {
@@ -339,7 +295,7 @@ html[data-theme="dark"] .sg-hero {
   animation: fadeUp 0.9s 0.1s var(--ease) both; color: var(--text-main);
 }
 
-/* was gradient text; now solid accent */
+
 .sg-hero h1 span {
   color: var(--coral);
   -webkit-text-fill-color: currentColor;
@@ -356,18 +312,15 @@ html[data-theme="dark"] .sg-hero {
   font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--text-muted); animation: bob 2.5s ease-in-out infinite;
 }
-/* was a gradient line; now solid */
+
 .hero-scroll-line { width: 1px; height: 36px; background: var(--coral); opacity: 0.55; }
 
 @keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(10px)} }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ============================================================
-   LIQUID GLASS MIXIN CLASSES
-   All three variants from the reference image
-   ============================================================ */
 
-/* FROSTED — moderate blur, warm white tint (primary cards, pricing) */
+
+
 .glass-frosted {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -377,7 +330,7 @@ html[data-theme="dark"] .sg-hero {
   border-radius: var(--r-xl);
 }
 
-/* CLEAR — high transparency, background shows through (iOS style) */
+
 .glass-clear {
   background: rgba(255, 255, 255, 0.14);
   backdrop-filter: var(--glass-blur-sm);
@@ -387,7 +340,7 @@ html[data-theme="dark"] .sg-hero {
   border-radius: var(--r-lg);
 }
 
-/* BLUR / HEAVY — opaque blur base for navbars, modals (One UI style) */
+
 .glass-heavy {
   background: var(--glass-bg-hi);
   backdrop-filter: var(--glass-blur-lg);
@@ -397,7 +350,7 @@ html[data-theme="dark"] .sg-hero {
   border-radius: var(--r-xl);
 }
 
-/* ACTIVE / SELECTED state (was gradient; now solid tint) */
+
 .glass-active {
   background: rgba(232, 97, 74, 0.12);
   border: 1px solid rgba(232, 97, 74, 0.30);
@@ -405,18 +358,14 @@ html[data-theme="dark"] .sg-hero {
   border-radius: var(--r-lg);
 }
 
-/* ============================================================
-   01 · COLOUR PALETTE
-   ============================================================ */
+
 .palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 1.4rem; margin-bottom: 3rem; }
 .pal-card { padding: 1.2rem; border-radius: var(--r-xl); background: var(--glass-bg-hi); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
 .pal-swatch { height: 88px; border-radius: var(--r-md); margin-bottom: 1rem; }
 .pal-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; font-style: italic; color: var(--text-main); }
 .pal-hex { font-size: 0.73rem; font-family: var(--font-code); color: var(--text-muted); margin-top: 0.2rem; }
 
-/* ============================================================
-   02 · TYPOGRAPHY
-   ============================================================ */
+
 .type-specimens { display: flex; flex-direction: column; gap: 0.85rem; }
 .type-row {
   display: grid; grid-template-columns: 140px 1fr 180px; align-items: center; gap: 2rem;
@@ -437,9 +386,7 @@ html[data-theme="dark"] .sg-hero {
 .code-block .cv { color: var(--blush); }
 .code-block .cs { color: var(--ice); }
 
-/* ============================================================
-   03 · COMPONENT DEMO GRID
-   ============================================================ */
+
 .demo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
 .demo-cell {
   border-radius: var(--r-xl); padding: 2.4rem; background: var(--surface-2); backdrop-filter: var(--glass-blur-sm);
@@ -452,9 +399,7 @@ html[data-theme="dark"] .sg-hero {
 }
 .demo-cell-label::after { content: ''; flex: 1; height: 1px; background: rgba(232,97,74,0.12); }
 
-/* ============================================================
-   NAVBAR COMPONENT
-   ============================================================ */
+
 .navbar-demo {
   border-radius: var(--r-pill); overflow: hidden;
   background: var(--glass-bg-hi); backdrop-filter: var(--glass-blur-lg);
@@ -473,9 +418,7 @@ html[data-theme="dark"] .sg-hero {
 }
 .nb-icon-btn:hover { background: var(--surface-1); color: var(--coral); box-shadow: 0 4px 12px rgba(232,97,74,0.18); }
 
-/* ============================================================
-   SIDE MENU
-   ============================================================ */
+
 .sidemenu-demo {
   width: 256px; border-radius: var(--r-xl); background: var(--glass-bg-hi); backdrop-filter: var(--glass-blur-lg);
   -webkit-backdrop-filter: var(--glass-blur-lg);
@@ -491,9 +434,7 @@ html[data-theme="dark"] .sg-hero {
 .sm-badge { margin-left: auto; background: rgba(255,255,255,0.35); color: inherit; font-size: 0.73rem; font-weight: 700; padding: 0.18rem 0.6rem; border-radius: 12px; }
 html[data-theme="dark"] .sm-badge { background: rgba(255,255,255,0.12); }
 
-/* ============================================================
-   BUTTONS
-   ============================================================ */
+
 .btn-group { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
 
 .btn-primary {
@@ -525,9 +466,7 @@ html[data-theme="dark"] .btn-danger { background: rgba(232,97,74,0.14); border-c
 
 .btn-sm { padding: 0.5rem 1.2rem; font-size: 0.85rem; }
 
-/* ============================================================
-   CARDS / PACKAGE CARDS
-   ============================================================ */
+
 .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
 .pkg-card {
   border-radius: var(--r-xl); overflow: hidden; background: var(--surface-1);
@@ -550,7 +489,7 @@ html[data-theme="dark"] .pkg-card-footer { border-top: 1px solid rgba(255,255,25
 .pkg-card-price { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 1.4rem; color: var(--coral); }
 .pkg-card-price span { font-size: 0.85rem; font-weight: 500; font-family: var(--font-body); font-style: normal; color: var(--text-muted); }
 
-/* Stat cards */
+
 .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
 .stat-card { padding: 1.8rem; border-radius: var(--r-xl); background: var(--surface-1); border: 1px solid rgba(232,97,74,0.1); box-shadow: var(--glass-shadow); transition: transform 0.2s; }
 .stat-card:hover { transform: translateY(-5px); }
@@ -558,9 +497,7 @@ html[data-theme="dark"] .pkg-card-footer { border-top: 1px solid rgba(255,255,25
 .stat-val { font-family: var(--font-display); font-style: italic; font-size: 2.6rem; font-weight: 700; color: var(--coral); line-height: 1; }
 .stat-change { font-size: 0.85rem; color: var(--success); margin-top: 0.8rem; font-weight: 500; }
 
-/* ============================================================
-   FILTER BAR & SIDE PANEL
-   ============================================================ */
+
 .filter-bar {
   display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 0.78rem 1.5rem;
   border-radius: var(--r-pill); background: var(--surface-1); border: 1px solid rgba(42,31,53,0.08); box-shadow: var(--glass-shadow);
@@ -578,7 +515,7 @@ html[data-theme="dark"] .filter-chip { border: 1px solid rgba(255,255,255,0.12);
 .filter-chip:hover { background: var(--surface-1); color: var(--coral); }
 .filter-chip.active { background: var(--gradient-warm); color: #fff; border: none; box-shadow: 0 4px 14px rgba(232,97,74,0.28); }
 
-/* Side filter panel */
+
 .filter-panel {
   width: 258px; border-radius: var(--r-xl); background: var(--surface-1); backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -595,13 +532,11 @@ html[data-theme="dark"] .filter-panel { border: 1px solid rgba(255,255,255,0.10)
 .fp-checkbox.checked { background: var(--coral); border-color: var(--coral); }
 .fp-checkbox.checked::after { content: '✓'; color: #fff; font-size: 0.78rem; font-weight: 800; }
 .fp-range-track { height: 5px; background: var(--bg-secondary); border-radius: 3px; position: relative; margin: 1rem 0; }
-/* was gradient fill; now solid */
+
 .fp-range-fill { height: 100%; background: var(--coral); width: 60%; border-radius: 3px; }
 .fp-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--surface-1); border: 2px solid var(--coral); position: absolute; right: 40%; top: -7px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
 
-/* ============================================================
-   INPUT FIELDS
-   ============================================================ */
+
 .input-stack { display: flex; flex-direction: column; gap: 1.2rem; }
 .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
 .input-label { font-size: 0.84rem; font-weight: 600; color: var(--text-soft); }
@@ -626,9 +561,7 @@ html[data-theme="dark"] .input-field option {
 .input-field.success { border-color: var(--success); background: rgba(34,160,107,0.10); }
 .input-hint { font-size: 0.79rem; color: var(--text-muted); }
 
-/* ============================================================
-   MODAL / TOAST / LOADING
-   ============================================================ */
+
 .modal-demo {
   padding: 3rem 2.5rem; border-radius: var(--r-xl); text-align: center; max-width: 420px;
   background: var(--surface-1); box-shadow: var(--glass-shadow-hi); position: relative; margin: 0 auto;
@@ -658,9 +591,7 @@ html[data-theme="dark"] .toast { border: 1px solid rgba(255,255,255,0.10); }
 .skeleton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent); animation: shimmer 1.6s infinite; }
 @keyframes shimmer { 100% { transform: translateX(100%); } }
 
-/* ============================================================
-   BADGES & STATUS
-   ============================================================ */
+
 .badge { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.05em; padding: 0.33rem 0.8rem; border-radius: var(--r-pill); }
 .badge-blue { background: rgba(61,74,122,0.10); color: var(--indigo); }
 .badge-green { background: rgba(34,160,107,0.16); color: var(--success); }
@@ -669,9 +600,7 @@ html[data-theme="dark"] .status-pill { border: 1px solid rgba(255,255,255,0.10);
 
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px rgba(34, 160, 107, 0.5); }
 
-/* ============================================================
-   ANIMATIONS SHOWCASE
-   ============================================================ */
+
 .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 .reveal-delay-1 { transition-delay: 0.1s; }
@@ -686,9 +615,7 @@ html[data-theme="dark"] .status-pill { border: 1px solid rgba(255,255,255,0.10);
 .neon-tick-item { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-code); font-size: 0.84rem; color: var(--text-soft); }
 .neon-tick-item span { color: var(--coral); font-weight: 600; }
 
-/* ============================================================
-   LANDING PAGE PREVIEW (from sketches)
-   ============================================================ */
+
 .lp-preview {
   border-radius: var(--r-xl); overflow: hidden;
   border: 1px solid rgba(42,31,53,0.08); box-shadow: var(--glass-shadow-hi);
@@ -698,7 +625,7 @@ html[data-theme="dark"] .lp-preview { border: 1px solid rgba(255,255,255,0.10); 
 .lp-hero {
   min-height: 400px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 5rem 3rem 4rem;
-  background: var(--gradient-sky); color: #fff; /* solid now */
+  background: var(--gradient-sky); color: #fff; 
 }
 .lp-hero-nav { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.18); }
 .lp-logo { font-family: var(--font-display); font-weight: 700; font-style: italic; font-size: 1.3rem; color: #fff; }
@@ -725,7 +652,7 @@ html[data-theme="dark"] .lp-dashboard { border-top: 1px solid rgba(255,255,255,0
 .lp-dash-chart { background: var(--bg-secondary); border-radius: var(--r-lg); height: 200px; display:flex; align-items:flex-end; padding:1.5rem; gap:14px; }
 .bar { flex:1; background: rgba(42,31,53,0.08); border-radius: 5px 5px 0 0; }
 html[data-theme="dark"] .bar { background: rgba(255,255,255,0.12); }
-.bar.hi { background: var(--gradient-warm); } /* solid */
+.bar.hi { background: var(--gradient-warm); } 
 
 .pkg-builder { padding: 2.5rem; border-top: 1px solid rgba(42,31,53,0.07); background: var(--bg-secondary); }
 html[data-theme="dark"] .pkg-builder { border-top: 1px solid rgba(255,255,255,0.08); }
@@ -737,9 +664,7 @@ html[data-theme="dark"] .pb-item { border: 1.5px solid rgba(255,255,255,0.10); }
 .pb-item:hover { border-color: rgba(232,97,74,0.25); color: var(--coral); }
 .pb-item.selected { background: var(--surface-1); border-color: var(--coral); color: var(--coral); box-shadow: 0 0 0 3px rgba(232,97,74,0.10); }
 
-/* ============================================================
-   RESPONSIVE HELPERS
-   ============================================================ */
+
 @media (max-width: 900px) {
   .sg-section { padding: 4rem 2rem; }
   .card-grid { grid-template-columns: 1fr 1fr; }

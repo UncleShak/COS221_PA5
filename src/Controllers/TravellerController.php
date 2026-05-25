@@ -1,5 +1,4 @@
 <?php
-// Pull in the Model
 require_once __DIR__ . '/../Models/BookingModel.php';
 
 class TravellerController {
@@ -80,21 +79,18 @@ class TravellerController {
             $packageId   = $_POST['package_id'] ?? null;
             $agencyId    = $_POST['agency_id'] ?? null;
             
-            // Package review fields
             $packageRating  = $_POST['package_rating'] ?? null;
             $packageComment = $_POST['package_comment'] ?? '';
-            
-            // Agency review fields
+
             $agencyRating  = $_POST['agency_rating'] ?? null;
             $agencyComment = $_POST['agency_comment'] ?? '';
-            
+
             require_once __DIR__ . '/../../config/database.php';
             $db = new Database();
             $pdo = $db->getConnection();
-            
+
             $allSuccess = true;
-            
-            // Submit package review if rating is provided
+
             if ($bookingId && $packageId && $packageRating) {
                 try {
                     $sql = "INSERT INTO packagereviews (traveller_id, package_id, booking_id, rating, comment, created_at) 
@@ -113,8 +109,7 @@ class TravellerController {
                     $allSuccess = false;
                 }
             }
-            
-            // Submit agency review if rating is provided
+
             if ($bookingId && $agencyId && $agencyRating) {
                 try {
                     $sql = "INSERT INTO agencyreviews (agency_id, traveller_id, booking_id, rating, comment, created_at)
@@ -133,7 +128,7 @@ class TravellerController {
                     $allSuccess = false;
                 }
             }
-            
+
             if ($allSuccess && ($packageRating || $agencyRating)) {
                 header("Location: /traveller/dashboard?status=review_submitted");
                 exit();
@@ -182,7 +177,6 @@ class TravellerController {
         $currentPage = max(1, (int)($_GET['page'] ?? 1));
         $offset      = ($currentPage - 1) * $perPage;
         $packages      = $packageModel->getFilteredPackages($filters, $currentSort, $perPage, $offset);
-        // Add favourite states to packages
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -193,13 +187,10 @@ class TravellerController {
 
             $favModel = new FavouriteModel($this->pdo);
 
-            // Get user's favourite package IDs
             $favouritePackages = $favModel->getFavouritePackages($_SESSION['user_id']);
 
-            // Extract IDs into simple array
             $favouriteIds = array_column($favouritePackages, 'favouritable_id');
 
-            // Mark packages as favourited or not
             foreach ($packages as &$pkg) {
                 $pkg['is_favourite'] = in_array($pkg['favouritable_id'], $favouriteIds);
             }
@@ -207,7 +198,7 @@ class TravellerController {
             unset($pkg);
         }
 
-        $totalPackages = $packageModel->getFilteredCount($filters); //booby
+        $totalPackages = $packageModel->getFilteredCount($filters);
         $totalPages    = max(1, (int)ceil($totalPackages / $perPage));
         $filterOptions  = $packageModel->getFilterOptions();
         $currentFilters = $filters;
@@ -330,8 +321,6 @@ class TravellerController {
             header("Location: /traveller/group?id=" . $groupId); exit();
         }
     }
-
-    // ── Read-Only Entity Browsers ──────────────────────────────────────────
 
     public function destinations() {
         $stmt = $this->pdo->query("SELECT * FROM destinations");

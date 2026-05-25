@@ -1,16 +1,13 @@
 <?php
-// public/index.php
 session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// 1. BYPASS FOR STATIC FILES (CSS, Images, etc.)
 $filePath = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (is_file($filePath)) {
     return false; 
 }
 
-// 2. Get the clean URL path
 $route = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $baseDir = '/COS221/COS221_PA5/public';
 if (strpos($route, $baseDir) === 0) {
@@ -18,7 +15,6 @@ if (strpos($route, $baseDir) === 0) {
 }
 $route = rtrim($route, '/') ?: '/';
 
-// 3. Route the request to the correct controller/view
 switch($route){
     
     case '/':
@@ -32,7 +28,6 @@ switch($route){
         $homeController->index();
         break;
     
-    // --- Auth Routes ---
     case '/login':
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         $auth= new AuthController();
@@ -50,7 +45,6 @@ switch($route){
         $controller->register();
         break;
 
-    // --- Traveller Routes ---
     case '/traveller/dashboard':
         require_once __DIR__ . '/../config/database.php';
         $database = new Database();
@@ -159,7 +153,6 @@ switch($route){
         $travellerController->sendMessage();
         break;
 
-    // --- Read-Only Entity Browsers ---
     case '/traveller/destinations':
     case '/traveller/flights':
     case '/traveller/accommodations':
@@ -176,7 +169,6 @@ switch($route){
         $controller->$action();
         break;
 
-    // --- Agency Routes ---
     case '/agency/dashboard':
         require_once __DIR__ . '/../config/database.php';
         $database = new Database();
@@ -265,7 +257,6 @@ switch($route){
         $controller->removeGroupParticipant();
         break;
 
-    // --- System Routes ---
     case '/agency/manage-data':
         require_once __DIR__ . '/../src/Controllers/AuthController.php';
         AuthController::checkRole('agency');
@@ -297,7 +288,6 @@ switch($route){
         $authController->logout();
         break;
 
-    // --- Fallback ---
     default:
         http_response_code(404);
         $title = '404 Not Found · Tripistry';

@@ -1,5 +1,4 @@
 <?php
-// src/Views/agency/dashboard.php
 function hsc(mixed $val): string
 {
     return htmlspecialchars((string) $val, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

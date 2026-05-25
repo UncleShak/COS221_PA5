@@ -5,7 +5,7 @@
 -- ============================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
-START TRANSACTION;
+
 
 -- ============================================================
 -- 1. LOCATIONS
@@ -381,5 +381,5 @@ INSERT IGNORE INTO agencyreviews (review_id, traveller_id, agency_id, booking_id
 INSERT IGNORE INTO packagereviews (review_id, traveller_id, package_id, booking_id, rating, comment, created_at) VALUES
 (1, 1, 1, 1, 5, 'The Paris Escape package was everything I dreamed of. The Eiffel Tower visit at night was magical, and Hotel Le Marais had incredible character. Highly recommend!', '2026-06-21 11:00:00');
 
-COMMIT;
+
 SET FOREIGN_KEY_CHECKS = 1;

@@ -13,8 +13,6 @@ class DataController{
             $uploadType = $_POST['upload_type'] ?? '';
 
             try{
-                // FLIGHT UPLOAD
-
                 if($uploadType === 'flight'){
                     $query = "INSERT INTO flights (airline_name, flight_number, departure_airport, arrival_airport, 
                                departure_location_id, arrival_location_id, flight_class, 
@@ -37,7 +35,6 @@ class DataController{
                     header("Location: /manage-data?success=flight_added");
                     exit;
                 }
-                // ACCOMODATION UPLOAD
                 elseif ($uploadType === 'accommodation') {
                     $query = "INSERT INTO accommodations 
                               (name, location_id, type, star_rating, price_per_night, description, address) 
@@ -49,7 +46,7 @@ class DataController{
                     $stmt->execute([
                         ':name'   => htmlspecialchars($_POST['name']),
                         ':loc_id' => (int)$_POST['location_id'],
-                        ':type'   => $_POST['type'], // Safe enum from our dropdown
+                        ':type'   => $_POST['type'],
                         ':rating' => !empty($_POST['star_rating']) ? (int)$_POST['star_rating'] : null,
                         ':price'  => (float)$_POST['price_per_night'],
                         ':desc'   => htmlspecialchars($_POST['description']),

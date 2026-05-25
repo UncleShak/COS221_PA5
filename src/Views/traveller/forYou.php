@@ -1,5 +1,4 @@
 <?php
-//Personalized recommendations page
 
 $page_title = 'For You - Personalized Recommendations - Tripistry';
 ?>

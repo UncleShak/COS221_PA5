@@ -109,7 +109,6 @@ $currentPage = $currentPage ?? 1;
                 <?php for ($p = 1; $p <= $totalPages; $p++): ?>
                     <?php
                         $pageParams = array_merge($_GET, ['page' => $p]);
-                        // THE FIX: Links directly to the clean router path
                         $pageUrl = '/traveller/packages?' . http_build_query($pageParams);
                     ?>
                     <a href="<?= htmlspecialchars($pageUrl) ?>" class="<?= $p === $currentPage ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 0.5rem 1rem; min-width: 2.5rem; text-align: center;">

@@ -1,7 +1,4 @@
 <?php
-// src/Models/AgencyModel.php
-// Handles all database queries for the Agency role.
-// All queries are scoped to the authenticated agency's own data.
 
 class AgencyModel
 {
@@ -12,14 +9,7 @@ class AgencyModel
         $this->db = $db;
     }
 
-    // ---------------------------------------------------------------
-    // AGENCY PROFILE
-    // ---------------------------------------------------------------
 
-    /**
-     * Fetch agency profile (joined with Users table).
-     * Agencies PK is user_id (not agency_id); column is website_url and is_verified.
-     */
     public function getAgencyProfile(int $agencyId): array|false
     {
         $stmt = $this->db->prepare('
@@ -39,14 +29,7 @@ class AgencyModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // ---------------------------------------------------------------
-    // DASHBOARD STATS
-    // ---------------------------------------------------------------
 
-    /**
-     * Returns aggregate statistics for the agency dashboard.
-     * Status ENUM uses 'active' not 'published'.
-     */
     public function getDashboardStats(int $agencyId): array
     {
         $stmtPkg = $this->db->prepare('
@@ -87,13 +70,7 @@ class AgencyModel
         return array_merge($pkgStats, $bookStats, $ratingStats);
     }
 
-    // ---------------------------------------------------------------
-    // PACKAGES — READ
-    // ---------------------------------------------------------------
 
-    /**
-     * List all packages owned by this agency (summary for dashboard table).
-     */
     public function getPackagesByAgency(int $agencyId): array
     {
         $stmt = $this->db->prepare('
@@ -122,10 +99,6 @@ class AgencyModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Fetch a single package with ownership check.
-     * Returns false if not found or not owned by this agency.
-     */
     public function getPackageById(int $packageId, int $agencyId): array|false
     {
         $stmt = $this->db->prepare('
@@ -137,14 +110,7 @@ class AgencyModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // ---------------------------------------------------------------
-    // PACKAGES — CREATE / UPDATE / DELETE
-    // ---------------------------------------------------------------
 
-    /**
-     * Insert a new package. Returns the new package_id.
-     * Column is max_capacity (not max_participants) in the Packages table.
-     */
     public function createPackage(int $agencyId, array $data): int
     {
         $stmt = $this->db->prepare('
@@ -168,10 +134,6 @@ class AgencyModel
         return (int) $this->db->lastInsertId();
     }
 
-    /**
-     * Update an existing package. Ownership is verified via agency_id.
-     * Returns affected row count (0 = not found / not owned).
-     */
     public function updatePackage(int $packageId, int $agencyId, array $data): int
     {
         $stmt = $this->db->prepare('
@@ -200,9 +162,6 @@ class AgencyModel
         return $stmt->rowCount();
     }
 
-    /**
-     * Soft-delete: set status to 'archived'. Ownership enforced.
-     */
     public function archivePackage(int $packageId, int $agencyId): int
     {
         $stmt = $this->db->prepare('
@@ -215,9 +174,6 @@ class AgencyModel
         return $stmt->rowCount();
     }
 
-    // ---------------------------------------------------------------
-    // JUNCTION TABLES — link/unlink components to a package
-    // ---------------------------------------------------------------
 
     public function clearPackageDestinations(int $packageId): void
     {
@@ -300,9 +256,6 @@ class AgencyModel
         }
     }
 
-    // ---------------------------------------------------------------
-    // GROUP TRIPS
-    // ---------------------------------------------------------------
 
     public function getGroupTrip(int $packageId): array|false
     {
@@ -313,14 +266,6 @@ class AgencyModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Upsert group trip record.
-     * GroupTrips has a composite PK (group_trip_id AUTO_INCREMENT, package_id),
-     * so ON DUPLICATE KEY UPDATE would never trigger on re-edit — each INSERT
-     * generates a new group_trip_id and never conflicts. We check for an existing
-     * record first, then UPDATE or INSERT explicitly.
-     * Also includes return_date which is NOT NULL in the schema.
-     */
     public function upsertGroupTrip(int $packageId, array $data): void
     {
         $existing = $this->getGroupTrip($packageId);
@@ -361,9 +306,6 @@ class AgencyModel
                  ->execute([':id' => $packageId]);
     }
 
-    // ---------------------------------------------------------------
-    // AVAILABLE COMPONENTS (dropdowns / multi-selects for the form)
-    // ---------------------------------------------------------------
 
     public function getAllDestinations(): array
     {
@@ -376,10 +318,6 @@ class AgencyModel
         ')->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Correct column names: airline_name, base_price,
-     * departure_location_id, arrival_location_id.
-     */
     public function getAllFlights(): array
     {
         return $this->db->query('
@@ -399,9 +337,6 @@ class AgencyModel
         ')->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Correct column name: star_rating (not stars).
-     */
     public function getAllAccommodations(): array
     {
         return $this->db->query('
@@ -435,9 +370,6 @@ class AgencyModel
         ')->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ---------------------------------------------------------------
-    // SELECTED COMPONENTS for a package (used to pre-fill edit form)
-    // ---------------------------------------------------------------
 
     public function getPackageDestinationIds(int $packageId): array
     {
@@ -474,14 +406,7 @@ class AgencyModel
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    // ---------------------------------------------------------------
-    // RECENT BOOKINGS for dashboard activity feed
-    // ---------------------------------------------------------------
 
-    /**
-     * b.created_at aliased as booking_date (schema has no booking_date column).
-     * JOIN Travellers on t.user_id (Travellers PK), not t.traveller_id.
-     */
     public function getRecentBookings(int $agencyId, int $limit = 5): array
     {
         $stmt = $this->db->prepare('
@@ -504,9 +429,6 @@ class AgencyModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ---------------------------------------------------------------
-    // GROUP TRIPS
-    // ---------------------------------------------------------------
 
     public function getGroupTripsByAgency(int $agencyId): array
     {

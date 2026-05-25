@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Tripistry Resort' ?></title>
 
-    <!-- Apply saved theme BEFORE CSS loads to avoid flashing -->
     <script>
       (function () {
         try {
@@ -14,7 +13,6 @@
           const theme = stored || (prefersDark ? 'dark' : 'light');
           document.documentElement.setAttribute('data-theme', theme);
         } catch (e) {
-          // If storage is blocked, fall back to default.
         }
       })();
     </script>
@@ -97,7 +95,6 @@
           }
         }
 
-        // Initialize from current html attribute (already set by the head script)
         const current = document.documentElement.getAttribute('data-theme') || 'light';
         applyTheme(current);
 

@@ -80,7 +80,6 @@ function stars($ratingOutOf5) {
     <h2 class="sg-section-title">Packages, side-by-side.</h2>
   </div>
 
-  <!-- QUICK PICK (UI-ONLY) -->
   <div class="glass-clear" style="padding: 1.5rem; margin-bottom: 2.5rem;">
     <div class="demo-cell-label" style="margin-bottom: 1rem;">Compare Inputs</div>
     <form method="GET" action="" class="input-stack" style="max-width: 900px;">
@@ -116,10 +115,8 @@ function stars($ratingOutOf5) {
     </form>
   </div>
 
-  <!-- COMPARISON GRID -->
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; width: 100%;">
     
-    <!-- LEFT PACKAGE -->
     <div class="glass-frosted" style="padding: 2rem;">
       <div style="display:flex; justify-content: space-between; gap: 1rem; align-items: flex-start; margin-bottom: 1.2rem;">
         <div>
@@ -208,7 +205,6 @@ function stars($ratingOutOf5) {
       </div>
     </div>
 
-    <!-- RIGHT PACKAGE -->
     <div class="glass-frosted" style="padding: 2rem;">
       <div style="display:flex; justify-content: space-between; gap: 1rem; align-items: flex-start; margin-bottom: 1.2rem;">
         <div>

@@ -1,5 +1,4 @@
 <?php
-// Safely extract group variables
 $title = $groupDetails['package_name'] ?? 'Classified Expedition';
 $destination = $groupDetails['destination'] ?? 'Unknown Vector';
 $departureDate = $groupDetails['departure_date'] ?? 'TBA';
@@ -96,7 +95,6 @@ $maxParticipants = $groupDetails['max_participants'] ?? 0;
                 <?php if (!empty($messages)): ?>
                     <?php foreach ($messages as $msg): ?>
                         <?php 
-                            // Check if the current user sent this message
                             $isMe = ($msg['traveller_id'] == $_SESSION['user_id']); 
                         ?>
                         

@@ -315,7 +315,6 @@ $userEmail = ($traveller && isset($traveller['email']))
             document.getElementById('modalAgencyId').value = agencyId;
             document.getElementById('modalTripName').innerText = tripName;
             
-            // Prefill package review if exists
             if (pkgRating) {
                 document.querySelector('select[name="package_rating"]').value = pkgRating;
                 document.querySelector('textarea[name="package_comment"]').value = pkgComment || '';
@@ -324,7 +323,6 @@ $userEmail = ($traveller && isset($traveller['email']))
                 document.querySelector('textarea[name="package_comment"]').value = '';
             }
             
-            // Prefill agency review if exists
             if (agencyRating) {
                 document.querySelector('select[name="agency_rating"]').value = agencyRating;
                 document.querySelector('textarea[name="agency_comment"]').value = agencyComment || '';
@@ -340,7 +338,6 @@ $userEmail = ($traveller && isset($traveller['email']))
             document.getElementById('reviewModalOverlay').style.display = 'none';
         }
 
-        // Cancel Modal Logic
         function openCancelModal(button) {
             const bookingId = button.getAttribute('data-booking');
             const tripName = button.getAttribute('data-name');
@@ -356,7 +353,6 @@ $userEmail = ($traveller && isset($traveller['email']))
         }
     </script>
 
-    <!-- Favourites Section -->
     <?php if (!empty($favouritePackages)): ?>
     <div style="margin-top: 4rem;">
         <p class="sg-section-label" style="margin-bottom: 1.5rem;">Saved for later</p>

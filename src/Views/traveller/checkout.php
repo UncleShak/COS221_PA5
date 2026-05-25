@@ -140,7 +140,6 @@ if ($traveller) {
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 1. DYNAMIC PRICING LOGIC ---
     const partyInput = document.getElementById('party-size');
     const multiplierDisplay = document.getElementById('summary-multiplier');
     const taxesDisplay = document.getElementById('summary-taxes');
@@ -168,13 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 2. REDIRECT TO LOADING PAGE ON SUBMIT ---
     document.querySelector('form#checkout-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        // Serialize form data and store in sessionStorage
         const formData = new FormData(this);
         sessionStorage.setItem('checkoutFormData', JSON.stringify(Object.fromEntries(formData)));
-        // Redirect to loading page
         window.location.href = '/loading';
     });
 });

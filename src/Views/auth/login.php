@@ -1,5 +1,4 @@
 <?php
-// src/Views/auth/login.php
 ?>
 <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem; padding-top: 120px;">
     

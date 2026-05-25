@@ -1,5 +1,4 @@
 <?php
-// Handles all package database queries
 
 class PackageModel {
     private $pdo;
@@ -110,13 +109,11 @@ class PackageModel {
             $params[] = $searchTerm;
         }
 
-        // Destination filter (match packages that are linked to the selected destination name)
         if (!empty($filters['destination'])) {
             $sql .= " AND EXISTS (SELECT 1 FROM packagedestinations pd JOIN destinations d ON pd.destination_id = d.destination_id WHERE pd.package_id = p.package_id AND d.name = ?)";
             $params[] = $filters['destination'];
         }
 
-        // Duration filter (exact match in days)
         if (!empty($filters['duration'])) {
             $sql .= " AND p.duration_days = ?";
             $params[] = (int)$filters['duration'];
@@ -134,7 +131,6 @@ class PackageModel {
         
         $sql .= " GROUP BY p.package_id";
         
-        // Rating filters need to be applied after aggregation
         $having = [];
         $havingParams = [];
         if (!empty($filters['min_rating'])) {
@@ -144,7 +140,6 @@ class PackageModel {
 
         if (!empty($having)) {
             $sql .= " HAVING " . implode(' AND ', $having);
-            // append having params to main params so execute order matches
             foreach ($havingParams as $hp) $params[] = $hp;
         }
         
@@ -294,7 +289,6 @@ class PackageModel {
         $stmt = $this->pdo->query("SELECT DISTINCT duration_days FROM packages WHERE status = 'active' ORDER BY duration_days");
         $options['durations'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        // Populate destinations that are linked to active packages via packagedestinations
         try {
             $destStmt = $this->pdo->query("SELECT DISTINCT d.name FROM packagedestinations pd JOIN destinations d ON pd.destination_id = d.destination_id JOIN packages p ON pd.package_id = p.package_id WHERE p.status = 'active' ORDER BY d.name");
             $options['destinations'] = $destStmt->fetchAll(PDO::FETCH_COLUMN);

@@ -8,11 +8,9 @@ class Database {
     public $conn;
 
     public function __construct() {
-        // Look for the .env file in the root directory
         $envPath = __DIR__ . '/../.env';
         
         if (file_exists($envPath)) {
-            // Parse the native INI format into an array
             $envVars = parse_ini_file($envPath);
             
             $this->host     = $envVars['DB_HOST'] ?? '127.0.0.1';

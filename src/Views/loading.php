@@ -71,7 +71,6 @@
             overflow: hidden;
         }
 
-        /* ── Ambient orbs ── */
         .orb {
             position: fixed; border-radius: 50%;
             filter: blur(120px); pointer-events: none; z-index: 0;
@@ -98,7 +97,6 @@
         @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(-50px,-60px)} }
         @keyframes drift3 { from{transform:translate(0,0) scale(1)} to{transform:translate(-25px,18px) scale(1.12)} }
 
-        /* ── Wrapper ── */
         .loading-wrap {
             position: relative; z-index: 1;
             display: flex; flex-direction: column;
@@ -107,7 +105,6 @@
             animation: screenFadeIn 0.6s 0.1s var(--ease) forwards;
         }
 
-        /* ── Logo ── */
         .loading-logo {
             font-family: var(--font-display);
             font-weight: 700; font-style: italic;
@@ -124,7 +121,6 @@
             box-shadow: 0 0 10px var(--rose);
         }
 
-        /* ── Steps list ── */
         .steps {
             display: flex;
             flex-direction: column;
@@ -132,7 +128,6 @@
             width: 340px;
         }
 
-        /* ── Individual step ── */
         .step {
             display: flex;
             align-items: flex-start;
@@ -141,13 +136,11 @@
             transform: translateY(16px);
         }
 
-        /* Staggered entrance for each step */
         .step-1 { animation: fadeUp 0.65s 0.7s  var(--ease) forwards; }
         .step-2 { animation: fadeUp 0.65s 1.55s var(--ease) forwards; }
         .step-3 { animation: fadeUp 0.65s 2.4s  var(--ease) forwards; }
         .step-4 { animation: fadeUp 0.65s 3.25s var(--ease) forwards; }
 
-        /* ── Left column: dot + connector ── */
         .step-track {
             display: flex;
             flex-direction: column;
@@ -166,7 +159,6 @@
             transition: all 0.4s var(--ease);
             position: relative;
         }
-        /* Inner pulse ring */
         .step-dot::after {
             content: '';
             position: absolute;
@@ -175,7 +167,6 @@
             border: 1.5px solid transparent;
         }
 
-        /* Active dot — solid fill and pulses */
         .step.active .step-dot {
             background: var(--coral);
             border-color: transparent;
@@ -186,7 +177,6 @@
             animation: ringPulse 1.4s ease-out infinite;
         }
 
-        /* Done dot — solid coral, checkmark */
         .step.done .step-dot {
             background: var(--amber);
             border-color: transparent;
@@ -204,7 +194,6 @@
             100% { transform: scale(1.7); opacity: 0; }
         }
 
-        /* ── Connector line between steps ── */
         .step-connector {
             width: 1px;
             height: 52px;
@@ -224,7 +213,6 @@
             transform-origin: top;
         }
 
-        /* Line between step 1 and 2 draws in after step 1 appears */
         .connector-1::before { animation: drawLine 0.5s 1.2s var(--ease) forwards; }
         .connector-2::before { animation: drawLine 0.5s 2.05s var(--ease) forwards; }
         .connector-3::before { animation: drawLine 0.5s 2.9s var(--ease) forwards; }
@@ -234,7 +222,6 @@
             to   { transform: scaleY(1); }
         }
 
-        /* ── Step text ── */
         .step-body {
             padding-bottom: 0;
         }
@@ -264,7 +251,6 @@
         .step.active .step-name { color: var(--coral); }
         .step.done   .step-name { color: var(--text-soft); }
 
-        /* ── Footer tagline ── */
         .loading-footer {
             margin-top: 3.5rem;
             font-family: var(--font-code);
@@ -283,7 +269,6 @@
             background: var(--text-muted);
         }
 
-        /* ── Shared keyframes ── */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(16px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -309,7 +294,6 @@
 
         <div class="steps">
 
-            <!-- Step 1 -->
             <div class="step step-1" id="s1">
                 <div class="step-track">
                     <div class="step-dot"></div>
@@ -321,7 +305,6 @@
                 </div>
             </div>
 
-            <!-- Step 2 -->
             <div class="step step-2" id="s2">
                 <div class="step-track">
                     <div class="step-dot"></div>
@@ -333,7 +316,6 @@
                 </div>
             </div>
 
-            <!-- Step 3 -->
             <div class="step step-3" id="s3">
                 <div class="step-track">
                     <div class="step-dot"></div>
@@ -345,7 +327,6 @@
                 </div>
             </div>
 
-            <!-- Step 4 -->
             <div class="step step-4" id="s4">
                 <div class="step-track">
                     <div class="step-dot"></div>
@@ -363,8 +344,6 @@
     </div>
 
     <script>
-        // Steps activate sequentially, matching the CSS animation delays.
-        // Each step becomes "active" when it fades in, then "done" when the next one activates.
         const timings = [
             { id: 's1', activeAt: 700  },
             { id: 's2', activeAt: 1550 },
@@ -373,12 +352,10 @@
         ];
 
         timings.forEach((t, i) => {
-            // Mark step active when it fades in
             setTimeout(() => {
                 document.getElementById(t.id).classList.add('active');
             }, t.activeAt);
 
-            // Mark previous step as done when this one activates
             if (i > 0) {
                 setTimeout(() => {
                     document.getElementById(timings[i - 1].id).classList.remove('active');
@@ -387,7 +364,6 @@
             }
         });
 
-        // After all steps complete, submit the booking form data
         setTimeout(async () => {
             const formDataJson = sessionStorage.getItem('checkoutFormData');
             if (formDataJson) {
@@ -404,10 +380,8 @@
                     });
                     
                     if (response.ok) {
-                        // Booking successful - redirect to dashboard
                         window.location.href = '/traveller/dashboard?success=booking_confirmed';
                     } else {
-                        // Error - redirect to packages with error
                         window.location.href = '/traveller/packages?error=booking_failed';
                     }
                 } catch (error) {

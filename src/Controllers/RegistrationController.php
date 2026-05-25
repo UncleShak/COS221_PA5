@@ -64,12 +64,10 @@ class RegistrationController{
 
                 $conn->commit();
 
-                // THE FIX: Automatically log the user in
                 if (session_status() === PHP_SESSION_NONE) session_start();
                 $_SESSION['user_id'] = $newUserId;
                 $_SESSION['user_type'] = 'traveller';
 
-                // Send them straight to the storefront!
                 header("Location: /traveller/packages?success=account_created");
                 exit;
 

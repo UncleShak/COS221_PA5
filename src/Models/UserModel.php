@@ -23,14 +23,11 @@ class UserModel{
             
             if (password_verify($password, $user['password_hash'])) {
                 unset($user['password_hash']);
-                // THE FIX: Return a specific success code
                 return ['status' => 'success', 'user' => $user];
             } else {
-                // THE FIX: Specific wrong password code
                 return ['status' => 'wrong_password'];
             }
         }
-        // THE FIX: Specific user not found code
         return ['status' => 'not_found'];
     }
 }

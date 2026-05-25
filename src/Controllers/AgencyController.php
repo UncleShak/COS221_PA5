@@ -164,7 +164,6 @@ class AgencyController{
                 $selectedRestaurants = $stmt->fetchAll(PDO::FETCH_COLUMN);
             }
 
-            // THE FIX: Raw Queries to bypass Prince's broken schema assumptions
             $destStmt = $this->conn->query("SELECT * FROM destinations");
             $allDestinations = $destStmt->fetchAll(PDO::FETCH_ASSOC);
 

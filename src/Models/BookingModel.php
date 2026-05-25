@@ -14,7 +14,6 @@ class BookingModel {
             $paymentRef = 'TRP-' . strtoupper(substr(uniqid(), -6));
             $groupTripId = null;
 
-            // 2. THE SEARCH ALGORITHM
             $findSql = "SELECT group_trip_id, current_participants, max_participants 
                         FROM grouptrips 
                         WHERE package_id = :package_id 
@@ -81,7 +80,6 @@ class BookingModel {
                 ':payment_reference' => $paymentRef
             ]);
 
-            // THE FIX: Grab the exact ID of the booking we just created!
             $newBookingId = $this->pdo->lastInsertId();
 
             $rosterSql = "INSERT INTO grouptripparticipants (traveller_id, group_trip_id, package_id, status, joined_at) 
@@ -97,14 +95,11 @@ class BookingModel {
 
             $this->pdo->commit();
             
-            // THE FIX: Return the ID instead of just a boolean
             return $newBookingId;
 
         } catch (Exception $e) {
-            // 6. FAILURE: Something broke. Revert all changes instantly.
             $this->pdo->rollBack();
             
-            // Trapdoor for Relentless Testing
             echo "<br><div style='padding: 1rem; background: #ffebee; color: #c62828; border: 2px solid #c62828; z-index: 999; position: relative;'>";
             echo "<strong>MATCHING ALGORITHM ERROR:</strong><br>" . $e->getMessage();
             echo "</div><br>";
@@ -116,7 +111,6 @@ class BookingModel {
         try {
             $this->pdo->beginTransaction();
 
-            // 1. Fetch the booking details first so we know which group to update
             $findSql = "SELECT group_trip_id, num_travellers FROM bookings WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
             $findStmt = $this->pdo->prepare($findSql);
             $findStmt->execute([
@@ -130,7 +124,6 @@ class BookingModel {
                 return false;
             }
 
-            // 2. Cancel the main booking
             $sql = "UPDATE bookings 
                     SET status = 'cancelled' 
                     WHERE booking_id = :booking_id AND traveller_id = :traveller_id";
@@ -140,7 +133,6 @@ class BookingModel {
                 ':traveller_id' => $travellerId
             ]);
 
-            // 3. Remove them from the active group roster
             if (!empty($booking['group_trip_id'])) {
                 $rosterSql = "UPDATE grouptripparticipants 
                               SET status = 'cancelled' 
@@ -151,7 +143,6 @@ class BookingModel {
                     ':group_trip_id' => $booking['group_trip_id']
                 ]);
 
-                // 4. Subtract their party size from the group headcount
                 $countSql = "UPDATE grouptrips 
                              SET current_participants = current_participants - :num 
                              WHERE group_trip_id = :group_trip_id";
@@ -174,7 +165,6 @@ class BookingModel {
 
     public function getTravellerBookings($travellerId) {
         try {
-            // THE FIX: Join through grouptrips to find the connection
             $sql = "SELECT 
                         b.*, 
                         p.title AS package_name, 
@@ -202,7 +192,6 @@ class BookingModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
-            // Keep your existing error handling
             echo "<div style='padding: 2rem; background: #111; color: #ff4b4b; border: 2px solid #ff4b4b;'>";
             echo "<h3>MARIADB SELECT ERROR:</h3>" . $e->getMessage();
             echo "</div>";

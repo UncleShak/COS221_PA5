@@ -1,73 +1,5 @@
 <?php
-/**
- * src/Views/Landing.php
- * -----------------------------------------------------------------------
- * Tripistry · Public Landing Page
- *
- * HOW THIS FILE IS USED:
- *   This view is loaded by a controller (or directly from public/index.php)
- *   via output buffering. The resulting HTML string is injected into
- *   src/Views/layout.php as $content.
- *
- *   Example in public/index.php (switch block):
- *       case '/':
- *       case '/home':
- *           // ── DATABASE QUERIES ────────────────────────────────────────
- *           // TOP-RATED PACKAGES (highest average rating, limit 5)
- *           // TODO: replace the empty arrays below with real DB queries.
- *           //
- *           //  $topRated = $db->query("
- *           //      SELECT p.id, p.name, p.destination, p.price_per_person,
- *           //             p.image_filename, ROUND(AVG(r.stars), 1) AS avg_rating
- *           //      FROM   packages p
- *           //      LEFT JOIN reviews r ON r.package_id = p.id
- *           //      GROUP  BY p.id
- *           //      ORDER  BY avg_rating DESC
- *           //      LIMIT  5
- *           //  ")->fetchAll(PDO::FETCH_ASSOC);
- *           //
- *           // MOST POPULAR PACKAGES (most bookings, limit 5)
- *           //  $mostPopular = $db->query("
- *           //      SELECT p.id, p.name, p.destination, p.price_per_person,
- *           //             p.image_filename, COUNT(b.id) AS booking_count
- *           //      FROM   packages p
- *           //      LEFT JOIN bookings b ON b.package_id = p.id
- *           //      GROUP  BY p.id
- *           //      ORDER  BY booking_count DESC
- *           //      LIMIT  5
- *           //  ")->fetchAll(PDO::FETCH_ASSOC);
- *           //
- *           // Then pass those arrays to this view before requiring it:
- *           //  $topRated    = $topRated    ?? [];
- *           //  $mostPopular = $mostPopular ?? [];
- *           //
- *           ob_start();
- *           require __DIR__ . '/../src/Views/Landing.php';
- *           $content = ob_get_clean();
- *           require __DIR__ . '/../src/Views/layout.php';
- *           break;
- *
- * -----------------------------------------------------------------------
- * IMPORTANT NOTE FOR TK (layout.php integration):
- *   layout.php already injects the <nav>, ambient orbs, StyleGuide.css link,
- *   and wraps everything in <body>. This file therefore contains ONLY the
- *   page-specific content that goes inside <?= $content ?>.
- *
- *   HOWEVER — the hero section needs a full-bleed background image, which
- *   means the hero must NOT be constrained by any layout.php wrapper padding.
- *   Make sure layout.php's content wrapper has no horizontal padding/margin
- *   on the hero, or apply `margin: 0 -Xrem` to override it.
- *
- *   The nav rendered by layout.php is HIDDEN on this page via CSS
- *   (.landing-page .sg-nav { display: none }) because the landing page
- *   uses its own minimal hero-nav with just Log In / Sign Up.
- * -----------------------------------------------------------------------
- */
 
-// ── PLACEHOLDER DATA (remove once DB queries above are wired up) ─────────
-// Each package array needs: id, name, destination, price_per_person,
-// image_filename (relative to /images/), avg_rating (optional).
-// Replace with real $topRated / $mostPopular from the controller.
 
 $topRated = $topRated ?? [
     ['id'=>1, 'name'=>'Drakensberg Escape',  'destination'=>'South Africa',  'price_per_person'=>18500, 'image_filename'=>'pkg-drakensberg.jpg',  'avg_rating'=>4.9],
@@ -85,7 +17,6 @@ $mostPopular = $mostPopular ?? [
     ['id'=>8,  'name'=>'Maldives Luxury',    'destination'=>'Maldives',      'price_per_person'=>32000, 'image_filename'=>'pkg-maldives.jpg',     'booking_count'=>175],
 ];
 
-// ── GRADIENT FALLBACKS (shown if package image is missing) ───────────────
 $gradients = [
     'linear-gradient(135deg,#e8614a,#c9516e,#8f6fa8)',
     'linear-gradient(160deg,#3d4a7a,#6b7db3,#c3cde6)',
@@ -101,14 +32,10 @@ $gradients = [
    They do NOT override any existing class — they extend for this page.
    ═══════════════════════════════════════════════════════════════ */ ?>
 <style>
-/* ── Hide the global nav on this page (landing uses its own hero-nav) ── */
 .sg-nav { display: none !important; }
 
-/* ── Reset layout.php wrapper so hero can be full-bleed ── */
-/* If layout.php wraps $content in a div with padding, add:
    .content, .sg-page { padding: 0 !important; } */
 
-/* ════════════════════════════════════════
    HERO
    ════════════════════════════════════════ */
 .lp-full-hero {
@@ -119,7 +46,6 @@ $gradients = [
     overflow: hidden;
 }
 
-/* Background image — SunsetImage.jpg from /images/ folder */
 .lp-full-hero::before {
     content: '';
     position: absolute;
@@ -130,17 +56,14 @@ $gradients = [
     z-index: 0;
 }
 
-/* Gradient overlay so text stays legible over the photo */
 .lp-full-hero::after {
     content: '';
     position: absolute;
     inset: 0;
-    /* Removed the dark gradient overlay so the hero image displays normally */
     background: none;
     z-index: 1;
 }
 
-/* ── Hero nav (Log In / Sign Up only) ── */
 .lp-hero-nav {
     position: relative;
     z-index: 10;
@@ -170,7 +93,6 @@ $gradients = [
     align-items: center;
 }
 
-/* Log In — ghost/outline style */
 .btn-hero-login {
     background: transparent;
     color: #fff;
@@ -190,7 +112,6 @@ $gradients = [
     border-color: rgba(255, 255, 255, 0.85);
 }
 
-/* Sign Up — solid coral */
 .btn-hero-signup {
     background: var(--gradient-warm);
     color: #fff;
@@ -211,7 +132,6 @@ $gradients = [
     box-shadow: 0 10px 28px rgba(232, 97, 74, 0.50);
 }
 
-/* ── Hero centre content ── */
 .lp-hero-body {
     position: relative;
     z-index: 10;
@@ -245,7 +165,6 @@ $gradients = [
     animation: fadeUp 1s 0.15s var(--ease) both;
 }
 
-/* Inline search bar */
 .lp-search-bar {
     display: flex;
     align-items: center;
@@ -274,7 +193,6 @@ $gradients = [
     border-right: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-/* Scroll cue */
 .lp-scroll-cue {
     position: absolute;
     bottom: 2.5rem;
@@ -299,7 +217,6 @@ $gradients = [
     background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
 }
 
-/* ════════════════════════════════════════
    PACKAGES SECTION
    ════════════════════════════════════════ */
 .lp-packages-section {
@@ -334,13 +251,6 @@ $gradients = [
     margin: 0;
 }
 
-/* ── "View All" button ── */
-/*
- * TODO: update the href below to the correct packages listing route.
- * Based on the router in public/index.php, the route will be something like:
- *   href="/packages"   (if you add a 'packages' case in the switch)
- * Ask the controller owner what route handles the full packages page.
- */
 .btn-view-all {
     background: transparent;
     color: var(--coral);
@@ -363,7 +273,6 @@ $gradients = [
     border-color: var(--coral);
 }
 
-/* ── Carousel wrapper ── */
 .carousel-outer {
     position: relative;
 }
@@ -380,7 +289,6 @@ $gradients = [
     will-change: transform;
 }
 
-/* Each card takes up 1/3 of the visible area (3 visible at a time) */
 .carousel-card {
     flex: 0 0 calc((100% - 2 * 1.4rem) / 3);
     min-width: 0;
@@ -425,7 +333,6 @@ html[data-theme="dark"] .carousel-card {
     display: block;
 }
 
-/* Fallback gradient shown when no image is available */
 .carousel-card-img .img-fallback {
     position: absolute;
     inset: 0;
@@ -515,7 +422,6 @@ html[data-theme="dark"] .carousel-card-footer {
     border-top: 1px solid rgba(255, 255, 255, 0.10);
 }
 
-/* ── Arrow buttons ── */
 .carousel-btn {
     position: absolute;
     top: 50%;
@@ -550,7 +456,6 @@ html[data-theme="dark"] .carousel-card-footer {
     pointer-events: none;
 }
 
-/* ── Dot indicators ── */
 .carousel-dots {
     display: flex;
     justify-content: center;
@@ -573,10 +478,8 @@ html[data-theme="dark"] .carousel-card-footer {
     background: var(--coral);
 }
 
-/* Spacer between the two carousels */
 .carousel-spacer { height: 4rem; }
 
-/* ── Responsive ── */
 @media (max-width: 900px) {
     .lp-packages-section { padding: 4rem 1.5rem; }
     .lp-hero-nav { padding: 1.2rem 1.5rem; }
@@ -652,10 +555,6 @@ html[data-theme="dark"] .carousel-card-footer {
             <h2>Top-Rated Packages</h2>
         </div>
         <?php /*
-         * TODO: Update href to the correct packages listing route.
-         * e.g. href="/packages?sort=rating" or just href="/packages"
-         * depending on how the packages controller handles sorting.
-         */ ?>
         <a href="/traveller/packages" class="btn-view-all">View All →</a>
     </div>
 
@@ -665,15 +564,6 @@ html[data-theme="dark"] .carousel-card-footer {
             <div class="carousel-track" id="track-top-rated">
 
                 <?php
-                /*
-                 * ── DATA SOURCE ──────────────────────────────────────────
-                 * $topRated is populated at the top of this file (placeholder)
-                 * OR passed in from the controller (real data). It is an
-                 * array of up to 5 associative arrays, each with:
-                 *   id, name, destination, price_per_person,
-                 *   image_filename, avg_rating
-                 * ─────────────────────────────────────────────────────────
-                 */
                 foreach ($topRated as $i => $pkg):
                     if (!is_array($pkg)) {
                         continue;
@@ -686,10 +576,6 @@ html[data-theme="dark"] .carousel-card-footer {
                     $rating  = isset($pkg['avg_rating']) ? number_format((float)$pkg['avg_rating'], 1) : '—';
                 ?>
                     <?php /*
-                     * TODO: update href to the individual package detail route.
-                     * e.g. href="/packages/<?= $pkg['id'] ?>"
-                     * (add a 'packages/{id}' case in public/index.php's switch)
-                     */ ?>
                     <a href="/traveller/details?id=<?= (int)$pkg['id'] ?>" class="carousel-card">
                         <div class="carousel-card-img" style="background:<?= $grad ?>;">
                             <?php if (!empty($pkg['image_filename']) || !empty($pkg['cover_image_url'])): ?>
@@ -740,9 +626,6 @@ html[data-theme="dark"] .carousel-card-footer {
             <h2>Most Popular Packages</h2>
         </div>
         <?php /*
-         * todo: Update href to packages listing sorted by popularity.
-         * e.g. href="/packages?sort=popular" or href="/packages"
-         */ ?>
         <a href="/traveller/packages" class="btn-view-all">View All →</a>
     </div>
 
@@ -752,15 +635,6 @@ html[data-theme="dark"] .carousel-card-footer {
             <div class="carousel-track" id="track-most-popular">
 
                 <?php
-                /*
-                 * ── DATA SOURCE ──────────────────────────────────────────
-                 * $mostPopular is populated at the top of this file (placeholder)
-                 * OR passed in from the controller (real data). It is an
-                 * array of up to 5 associative arrays, each with:
-                 *   id, name, destination, price_per_person,
-                 *   image_filename, booking_count
-                 * ─────────────────────────────────────────────────────────
-                 */
                 foreach ($mostPopular as $i => $pkg):
                     if (!is_array($pkg)) {
                         continue;
@@ -819,20 +693,14 @@ html[data-theme="dark"] .carousel-card-footer {
    ═══════════════════════════════════════════════════ */ ?>
 <script>
 (function () {
-    // State: current index per carousel id
     const state = {};
 
-    /**
-     * Calculate how many pixels to translate the track
-     * so that `index` is the first visible card.
-     */
     function getOffset(trackId, index) {
         const track = document.getElementById('track-' + trackId);
         if (!track) return 0;
         const cards = track.querySelectorAll('.carousel-card');
         if (!cards.length) return 0;
 
-        // Gap between cards (matches CSS gap: 1.4rem)
         const gap = parseFloat(getComputedStyle(track).gap) || 22;
         const cardWidth = cards[0].getBoundingClientRect().width;
         return index * (cardWidth + gap);
@@ -842,7 +710,6 @@ html[data-theme="dark"] .carousel-card-footer {
         const track = document.getElementById('track-' + trackId);
         if (!track) return 0;
         const total = track.querySelectorAll('.carousel-card').length;
-        // Show 3 at a time; max start index = total - 3
         return Math.max(0, total - 3);
     }
 
@@ -857,14 +724,12 @@ html[data-theme="dark"] .carousel-card-footer {
             track.style.transform = `translateX(-${getOffset(id, idx)}px)`;
         }
 
-        // Update dots (dot 0 = index 0, dot 1 = index 1, dot 2 = index 2+)
         dots.forEach((dot, i) => {
             dot.classList.toggle('active',
                 i === Math.min(idx, dots.length - 1)
             );
         });
 
-        // Disable arrows at boundaries
         if (btnPrev) btnPrev.disabled = (idx === 0);
         if (btnNext) btnNext.disabled = (idx >= maxIndex(id));
     }
@@ -884,14 +749,12 @@ html[data-theme="dark"] .carousel-card-footer {
         updateCarousel(id);
     };
 
-    // Initialise both carousels on load
     document.addEventListener('DOMContentLoaded', function () {
         ['top-rated', 'most-popular'].forEach(function (id) {
             state[id] = 0;
             updateCarousel(id);
         });
 
-        // Smooth scroll for the scroll-cue arrow
         const scrollCue = document.querySelector('.lp-scroll-cue');
         if (scrollCue) {
             scrollCue.addEventListener('click', function (e) {
@@ -901,10 +764,8 @@ html[data-theme="dark"] .carousel-card-footer {
         }
     });
 
-    // Re-calculate on resize (card widths change)
     window.addEventListener('resize', function () {
         ['top-rated', 'most-popular'].forEach(function (id) {
-            // Clamp state to new maxIndex in case viewport shrank
             state[id] = Math.min(state[id] || 0, maxIndex(id));
             updateCarousel(id);
         });
