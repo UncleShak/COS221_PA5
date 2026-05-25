@@ -359,4 +359,31 @@ $userEmail = ($traveller && isset($traveller['email']))
             document.getElementById('cancelModalOverlay').style.display = 'none';
         }
     </script>
+
+    <!-- Favourites Section -->
+    <?php if (!empty($favouritePackages)): ?>
+    <div style="margin-top: 4rem;">
+        <p class="sg-section-label" style="margin-bottom: 1.5rem;">Saved for later</p>
+        <h3 class="sg-section-title" style="margin-bottom: 2rem; font-size: 1.8rem;">Your Favourites</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+            <?php foreach ($favouritePackages as $fav): ?>
+            <div class="glass-frosted" style="border-radius: var(--r-xl); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <h4 style="font-family: var(--font-display); font-style: italic; font-size: 1.3rem; color: var(--text-main); margin: 0 0 0.3rem;"><?= htmlspecialchars($fav['title']) ?></h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;"><?= htmlspecialchars($fav['duration_days']) ?> Days &middot; R <?= number_format($fav['base_price'], 2) ?></p>
+                </div>
+                <div style="display: flex; gap: 0.8rem; margin-top: auto;">
+                    <a href="/traveller/details?id=<?= htmlspecialchars($fav['package_id']) ?>" class="btn-primary" style="flex: 1; text-align: center; text-decoration: none; padding: 0.6rem 1rem; font-size: 0.85rem;">View</a>
+                    <form action="/traveller/favourite" method="POST" style="margin: 0;">
+                        <input type="hidden" name="favouritable_id" value="<?= htmlspecialchars($fav['favouritable_id'] ?? '') ?>">
+                        <input type="hidden" name="action" value="remove">
+                        <input type="hidden" name="redirect" value="/traveller/dashboard">
+                        <button type="submit" class="btn-secondary" style="padding: 0.6rem 1rem; font-size: 0.85rem;" title="Remove from favourites">♡ Remove</button>
+                    </form>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>

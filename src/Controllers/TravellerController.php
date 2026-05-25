@@ -32,13 +32,18 @@ class TravellerController {
             if ($booking['travel_date'] < $currentDate) { $pastTrips[] = $booking; }
             else { $upcomingTrips[] = $booking; }
         }
+        require_once __DIR__ . '/../Models/FavouriteModel.php';
+        $favModel        = new FavouriteModel($this->pdo);
+        $favouritePackages = $favModel->getFavouritePackages($userId);
+
         $this->render('traveller/dashboard', [
-            'title'            => 'Traveller Dashboard | Tripistry',
-            'traveller'        => $traveller,
-            'upcomingTrips'    => $upcomingTrips,
-            'pastTrips'        => $pastTrips,
-            'hasPastTrips'     => !empty($pastTrips),
-            'totalExpeditions' => count($allBookings)
+            'title'             => 'Traveller Dashboard | Tripistry',
+            'traveller'         => $traveller,
+            'upcomingTrips'     => $upcomingTrips,
+            'pastTrips'         => $pastTrips,
+            'hasPastTrips'      => !empty($pastTrips),
+            'totalExpeditions'  => count($allBookings),
+            'favouritePackages' => $favouritePackages,
         ]);
     }
 
@@ -175,7 +180,32 @@ class TravellerController {
         $currentPage = max(1, (int)($_GET['page'] ?? 1));
         $offset      = ($currentPage - 1) * $perPage;
         $packages      = $packageModel->getFilteredPackages($filters, $currentSort, $perPage, $offset);
-        $totalPackages = $packageModel->getFilteredCount($filters);
+        // Add favourite states to packages
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (isset($_SESSION['user_id'])) {
+
+            require_once __DIR__ . '/../Models/FavouriteModel.php';
+
+            $favModel = new FavouriteModel($this->pdo);
+
+            // Get user's favourite package IDs
+            $favouritePackages = $favModel->getFavouritePackages($_SESSION['user_id']);
+
+            // Extract IDs into simple array
+            $favouriteIds = array_column($favouritePackages, 'favouritable_id');
+
+            // Mark packages as favourited or not
+            foreach ($packages as &$pkg) {
+                $pkg['is_favourite'] = in_array($pkg['favouritable_id'], $favouriteIds);
+            }
+
+            unset($pkg);
+        }
+
+        $totalPackages = $packageModel->getFilteredCount($filters); //booby
         $totalPages    = max(1, (int)ceil($totalPackages / $perPage));
         $filterOptions  = $packageModel->getFilterOptions();
         $currentFilters = $filters;
@@ -297,6 +327,31 @@ class TravellerController {
             'title'       => 'Restaurants - Tripistry',
             'restaurants' => $restaurants,
         ]);
+    }
+
+    public function toggleFavourite() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
+            header("Location: /login"); exit();
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $travellerId    = $_SESSION['user_id'];
+            $favouritableId = $_POST['favouritable_id'] ?? null;
+            $action         = $_POST['action'] ?? 'add'; // 'add' or 'remove'
+            $redirect       = $_POST['redirect'] ?? '/traveller/dashboard';
+
+            if ($favouritableId) {
+                require_once __DIR__ . '/../Models/FavouriteModel.php';
+                $favModel = new FavouriteModel($this->pdo);
+                if ($action === 'remove') {
+                    $favModel->removeFavourite($travellerId, $favouritableId);
+                } else {
+                    $favModel->addFavourite($travellerId, $favouritableId);
+                }
+            }
+            header("Location: " . $redirect); exit();
+        }
+        header("Location: /traveller/dashboard"); exit();
     }
 }
 ?>
