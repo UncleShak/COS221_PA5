@@ -33,8 +33,8 @@
             --slate:          #6b7db3;
             --dusk:           #8f6fa8;
             --ice:            #c3cde6;
-            --gradient-main:  linear-gradient(135deg, #e8614a 0%, #c9516e 45%, #8f6fa8 100%);
-            --gradient-warm:  linear-gradient(135deg, #d97b3a 0%, #e8614a 60%, #c9516e 100%);
+            --gradient-main:  #e8614a;
+            --gradient-warm:  #d97b3a;
             --font-display:   'Playfair Display', Georgia, serif;
             --font-body:      'DM Sans', system-ui, sans-serif;
             --font-code:      'DM Mono', monospace;
@@ -78,19 +78,19 @@
         }
         .orb-1 {
             width: 500px; height: 500px;
-            background: var(--blush); opacity: 0.4;
+            background: rgba(232, 168, 156, 0.35); opacity: 0.4;
             top: -160px; left: -120px;
             animation: drift1 22s ease-in-out infinite alternate;
         }
         .orb-2 {
             width: 380px; height: 380px;
-            background: var(--ice); opacity: 0.35;
+            background: rgba(195, 205, 230, 0.35); opacity: 0.35;
             bottom: -100px; right: -80px;
             animation: drift2 28s ease-in-out infinite alternate;
         }
         .orb-3 {
             width: 300px; height: 300px;
-            background: var(--amber); opacity: 0.18;
+            background: rgba(217, 123, 58, 0.18); opacity: 0.18;
             top: 40%; right: 10%;
             animation: drift3 19s ease-in-out infinite alternate;
         }
@@ -175,7 +175,7 @@
             border: 1.5px solid transparent;
         }
 
-        /* Active dot — fills with gradient and pulses */
+        /* Active dot — solid fill and pulses */
         .step.active .step-dot {
             background: var(--coral);
             border-color: transparent;
@@ -219,13 +219,7 @@
             left: 0; top: 0;
             width: 1px;
             height: 100%;
-            background: repeating-linear-gradient(
-                to bottom,
-                rgba(232, 97, 74, 0.28) 0px,
-                rgba(232, 97, 74, 0.28) 4px,
-                transparent 4px,
-                transparent 10px
-            );
+            background: rgba(232, 97, 74, 0.28);
             transform: scaleY(0);
             transform-origin: top;
         }

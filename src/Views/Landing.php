@@ -693,7 +693,7 @@ html[data-theme="dark"] .carousel-card-footer {
                                      decoding="async"
                                      onerror="this.style.display='none'">
                             <?php endif; ?>
-                            <span class="carousel-card-badge">★ <?= $rating ?></span>
+                            <span class="carousel-card-badge">Rating <?= $rating ?></span>
                         </div>
                         <div class="carousel-card-body">
                             <div class="carousel-card-dest"><?= htmlspecialchars($pkg['destination']) ?></div>
@@ -703,7 +703,7 @@ html[data-theme="dark"] .carousel-card-footer {
                                     R <?= number_format($pkg['price_per_person']) ?>
                                     <span>/ person</span>
                                 </div>
-                                <div class="carousel-card-meta">★ <?= $rating ?></div>
+                                <div class="carousel-card-meta">Rating <?= $rating ?></div>
                             </div>
                         </div>
                     </a>
@@ -779,7 +779,7 @@ html[data-theme="dark"] .carousel-card-footer {
                                     R <?= number_format($pkg['price_per_person']) ?>
                                     <span>/ person</span>
                                 </div>
-                                <div class="carousel-card-meta">🔥 <?= $count ?> bookings</div>
+                                <div class="carousel-card-meta"><?= $count ?> bookings</div>
                             </div>
                         </div>
                     </a>

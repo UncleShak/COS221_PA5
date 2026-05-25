@@ -161,27 +161,17 @@ body {
 /* ============================================================
    AMBIENT BACKGROUND (Sunset Orbs)
    ============================================================ */
+/* Ambient background disabled for solid-background preview */
 .ambient-bg {
   position: fixed; inset: 0; z-index: -4; pointer-events: none;
-  /* subtle warm noise texture overlay (solid colours; still radial, but not a gradient token system) */
-  background-image:
-    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(232, 97, 74, 0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 90% 85%, rgba(61, 74, 122, 0.06) 0%, transparent 70%);
+  background-image: none; /* removed radial/orb gradients for preview */
 }
 html[data-theme="dark"] .ambient-bg {
-  background-image:
-    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(255, 107, 85, 0.10) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 90% 85%, rgba(109, 122, 214, 0.10) 0%, transparent 70%);
+  background-image: none;
 }
 
-.orb {
-  position: fixed; border-radius: 50%; filter: blur(130px); opacity: 0.45; z-index: -3; pointer-events: none;
-}
-html[data-theme="dark"] .orb { opacity: 0.35; }
-
-.orb-1 { width: 520px; height: 520px; background: var(--blush);  top: -180px; left: -120px;  animation: drift1 22s ease-in-out infinite alternate; }
-.orb-2 { width: 420px; height: 420px; background: var(--ice);    bottom: -130px; right: -100px; animation: drift2 28s ease-in-out infinite alternate; }
-.orb-3 { width: 360px; height: 360px; background: var(--amber);  top: 38%; right: 12%; animation: drift3 19s ease-in-out infinite alternate; opacity: 0.25; }
+.orb { display: none; }
+html[data-theme="dark"] .orb { display: none; }
 
 @keyframes drift1 { from{transform:translate(0,0)} to{transform:translate(70px,55px)} }
 @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(-55px,-70px)} }
@@ -235,13 +225,15 @@ html[data-theme="dark"] .sg-nav {
   align-items: center;
   gap: 0.55rem;
 
-  border-radius: var(--r-pill);
-  padding: 0.45rem 0.9rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  padding: 0;
 
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur-sm);
-  -webkit-backdrop-filter: var(--glass-blur-sm);
+  background: transparent;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 
   color: var(--text-soft);
   cursor: pointer;
@@ -249,18 +241,24 @@ html[data-theme="dark"] .sg-nav {
   font-size: 0.85rem;
   font-weight: 600;
 
-  transition: transform 0.2s, border-color 0.2s, color 0.2s, background-color 0.2s;
+  transition: transform 0.2s, color 0.2s, opacity 0.2s;
 }
 html[data-theme="dark"] .theme-toggle {
-  background: rgba(255, 255, 255, 0.10);
+  background: transparent;
 }
 .theme-toggle:hover {
   color: var(--coral);
-  border-color: rgba(232, 97, 74, 0.25);
   transform: translateY(-1px);
+  opacity: 0.9;
 }
 .theme-toggle:active { transform: translateY(0); }
-.theme-toggle-icon { width: 1.2rem; text-align: center; }
+.theme-toggle-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 .theme-toggle-text { letter-spacing: 0.02em; }
 
 .sg-page { padding-top: 68px; }

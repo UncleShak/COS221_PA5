@@ -100,13 +100,13 @@ $page_title = 'For You - Personalized Recommendations - Tripistry';
                                          loading="lazy"
                                          decoding="async"
                                          style="width:100%; height:180px; object-fit:cover;">
-                                    <span class="recommendation-badge">⭐ Recommended</span>
-                                    ${pkg.avg_rating > 0 ? `<span style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:#fbbf24; padding:4px 8px; border-radius:20px;">★ ${pkg.avg_rating}</span>` : ''}
+                                    <span class="recommendation-badge">Recommended</span>
+                                    ${pkg.avg_rating > 0 ? `<span style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:#fbbf24; padding:4px 8px; border-radius:20px;">Rating ${pkg.avg_rating}</span>` : ''}
                                 </div>
                                 <div style="padding: 1rem;">
                                     <h3>${escapeHtml(pkg.title)}</h3>
-                                    <p>📍 ${escapeHtml(pkg.destination)}</p>
-                                    <p>🗓️ ${pkg.duration_days} days</p>
+                                    <p>Destination: ${escapeHtml(pkg.destination)}</p>
+                                    <p>Duration: ${pkg.duration_days} days</p>
                                     <p style="font-size:1.25rem; font-weight:bold; color:#2563eb;">$${Number(pkg.price).toLocaleString()}</p>
                                     <a href="index.php?route=traveller/details&id=${pkg.id}" 
                                        style="display:inline-block; background:#2563eb; color:white; padding:8px 16px; border-radius:8px; text-decoration:none; margin-top:8px;">View Details</a>

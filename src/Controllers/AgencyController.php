@@ -12,35 +12,12 @@ class AgencyController{
             $agencyId = $_SESSION['user_id'];
             $flash = null; 
 
-            $statsQuery = "
-                SELECT 
-                    COUNT(p.package_id) as total_packages,
-                    (SELECT COUNT(*) FROM agencyreviews WHERE agency_id = :agency_id) as review_count,
-                    (SELECT AVG(rating) FROM agencyreviews WHERE agency_id = :agency_id) as avg_rating
-                FROM packages p 
-                WHERE p.agency_id = :agency_id
-            ";
-            $stmt = $this->conn->prepare($statsQuery);
-            $stmt->execute([':agency_id' => $agencyId]);
-            $stats = $stmt->fetch(PDO::FETCH_ASSOC);
+            require_once __DIR__ . '/../Models/AgencyModel.php';
+            $agencyModel = new AgencyModel($this->conn);
 
-            if (!$stats) {
-                $stats = ['total_packages' => 0, 'review_count' => 0, 'avg_rating' => null];
-            }
-
-            $pkgQuery = "
-                SELECT 
-                    p.*,
-                    (SELECT COUNT(*) FROM bookings b WHERE b.package_id = p.package_id AND b.status != 'cancelled') as booking_count,
-                    (SELECT AVG(rating) FROM packagereviews pr WHERE pr.package_id = p.package_id) as average_rating,
-                    EXISTS(SELECT 1 FROM grouptrips gt WHERE gt.package_id = p.package_id) as is_group_trip
-                FROM packages p
-                WHERE p.agency_id = :agency_id
-                ORDER BY p.created_at DESC
-            ";
-            $stmt = $this->conn->prepare($pkgQuery);
-            $stmt->execute([':agency_id' => $agencyId]);
-            $packages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stats = $agencyModel->getDashboardStats($agencyId);
+            $packages = $agencyModel->getPackagesByAgency($agencyId);
+            $recentBookings = $agencyModel->getRecentBookings($agencyId);
 
             $title = 'Agency Command Center · Tripistry';
             ob_start();
@@ -52,6 +29,58 @@ class AgencyController{
             error_log("Dashboard Fetch Error: " . $e->getMessage());
             echo "A database error occurred while loading the command center.";
         }
+    }
+
+    public function groupManagement() {
+        try {
+            $agencyId = $_SESSION['user_id'];
+            $flash = null;
+
+            require_once __DIR__ . '/../Models/AgencyModel.php';
+            $agencyModel = new AgencyModel($this->conn);
+
+            $groupTrips = $agencyModel->getGroupTripsByAgency($agencyId);
+            foreach ($groupTrips as &$trip) {
+                $trip['participants'] = $agencyModel->getGroupTripParticipants((int) $trip['group_trip_id']);
+            }
+            unset($trip);
+
+            $title = 'Group Trip Management · Tripistry';
+            ob_start();
+            require_once __DIR__ . '/../Views/agency/group_management.php';
+            $content = ob_get_clean();
+            require_once __DIR__ . '/../Views/layout.php';
+        } catch (PDOException $e) {
+            error_log('Group Management Fetch Error: ' . $e->getMessage());
+            echo 'A database error occurred while loading group management.';
+        }
+    }
+
+    public function removeGroupParticipant() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /agency/dashboard?error=invalid_method');
+            exit;
+        }
+
+        $groupTripId = (int) ($_POST['group_trip_id'] ?? 0);
+        $travellerId = (int) ($_POST['traveller_id'] ?? 0);
+
+        if (!$groupTripId || !$travellerId) {
+            header('Location: /agency/dashboard?error=missing_group_participant');
+            exit;
+        }
+
+        require_once __DIR__ . '/../Models/AgencyModel.php';
+        $agencyModel = new AgencyModel($this->conn);
+        $removed = $agencyModel->removeGroupParticipant((int) $_SESSION['user_id'], $groupTripId, $travellerId);
+
+        if ($removed) {
+            header('Location: /agency/dashboard?success=participant_removed');
+            exit;
+        }
+
+        header('Location: /agency/dashboard?error=participant_remove_failed');
+        exit;
     }
 
     public function archivePackage() {

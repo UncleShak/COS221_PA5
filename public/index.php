@@ -243,6 +243,28 @@ switch($route){
         $controller->activatePackage();
         break;
 
+    case '/agency/groups':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($pdo);
+        $controller->groupManagement();
+        break;
+
+    case '/agency/group/remove-participant':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('agency');
+        require_once __DIR__ . '/../src/Controllers/AgencyController.php';
+        $controller = new AgencyController($pdo);
+        $controller->removeGroupParticipant();
+        break;
+
     // --- System Routes ---
     case '/agency/manage-data':
         require_once __DIR__ . '/../src/Controllers/AuthController.php';

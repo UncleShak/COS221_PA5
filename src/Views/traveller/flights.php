@@ -22,7 +22,7 @@
                             <div style="font-size: 0.85rem; color: var(--text-soft);"><?= htmlspecialchars($f['departure_time'] ?? '--') ?></div>
                         </div>
                         <div style="flex: 1; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
-                            ✈️ <?= $f['duration_minutes'] ? floor($f['duration_minutes']/60).'h '.($f['duration_minutes']%60).'m' : '' ?>
+                            Flight time: <?= $f['duration_minutes'] ? floor($f['duration_minutes']/60).'h '.($f['duration_minutes']%60).'m' : '' ?>
                             <div style="border-top: 1px dashed var(--glass-border); margin: 0.3rem 0;"></div>
                         </div>
                         <div style="text-align: center;">

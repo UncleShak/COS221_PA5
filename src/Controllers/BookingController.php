@@ -26,8 +26,20 @@ class BookingController {
         require_once __DIR__ . '/../Models/BookingModel.php';
         $bookingModel = new BookingModel($this->pdo);
 
+        $stmt = $this->pdo->prepare("SELECT title, description, base_price FROM packages WHERE package_id = ?");
+        $stmt->execute([$packageId]);
+        $pkgData = $stmt->fetch();
+
+        if (!$pkgData) {
+            ob_end_clean();
+            header("Location: /traveller/packages?error=package_not_found");
+            exit;
+        }
+
+        $totalPrice = (float) $pkgData['base_price'] * (int) $partySize;
+
         $bookingId = $bookingModel->processGroupBooking(
-            $travellerId, $packageId, $travelDate, $partySize, $specialRequests
+            $travellerId, $packageId, $travelDate, $partySize, $specialRequests, $totalPrice
         );
 
         if (!$bookingId) {
@@ -35,10 +47,6 @@ class BookingController {
             header("Location: /traveller/packages?error=booking_failed");
             exit;
         }
-
-        $stmt = $this->pdo->prepare("SELECT title, description FROM packages WHERE package_id = ?");
-        $stmt->execute([$packageId]);
-        $pkgData = $stmt->fetch();
 
         $aiJson = $this->generateAIPrepKit(
             $pkgData['title'],

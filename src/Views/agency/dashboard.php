@@ -22,8 +22,7 @@ function hsc(mixed $val): string
       <div>
         <p class="sg-section-label" style="margin-bottom:0.5rem;">Agency Portal</p>
         <h2 class="sg-section-title" style="margin:0; font-size:clamp(2rem,4vw,3rem); line-height:1.1;">
-          Welcome back,<br>
-          <em style="font-style:italic; color:var(--ocean);"><?= hsc($agency['agency_name'] ?? 'Agency') ?></em>
+          Welcome back...
         </h2>
       </div>
       <a href="/agency/package/create" class="btn-primary" style="border-radius:var(--r-pill); padding:0.8rem 2rem; text-decoration:none;">+ New Package</a>
@@ -140,5 +139,6 @@ function hsc(mixed $val): string
         <?php endif; ?>
       </div>
     </div>
+
   </div>
 </div>

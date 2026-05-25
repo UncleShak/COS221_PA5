@@ -1,6 +1,4 @@
 <?php
-// src/Views/traveller/compare.php
-// Compare Packages view.
 
 $leftId  = isset($leftId) ? (int)$leftId : (int)($_GET['left'] ?? 1);
 $rightId = isset($rightId) ? (int)$rightId : (int)($_GET['right'] ?? 2);
@@ -131,7 +129,6 @@ function stars($ratingOutOf5) {
             Hosted by <strong style="color: var(--text-main);"><?= htmlspecialchars($left['agency']) ?></strong>
           </div>
         </div>
-        <span class="badge badge-green">LEFT</span>
       </div>
 
       <div class="glass-clear" style="padding: 1.4rem; margin-bottom: 1.5rem;">
@@ -189,7 +186,7 @@ function stars($ratingOutOf5) {
           <div class="input-stack">
             <?php foreach ($left['highlights'] as $h): ?>
               <div class="sm-item" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
-                <strong style="color: var(--coral);">•</strong> <?= htmlspecialchars($h) ?>
+               <?= htmlspecialchars($h) ?>
               </div>
             <?php endforeach; ?>
           </div>
@@ -199,7 +196,7 @@ function stars($ratingOutOf5) {
           <div class="demo-cell-label" style="margin-bottom: 0.9rem;">What's Included</div>
           <div style="display:flex; flex-wrap: wrap; gap: 0.7rem;">
             <?php foreach ($left['includes'] as $inc): ?>
-              <span class="status-pill"><span class="status-dot"></span> <?= htmlspecialchars($inc) ?></span>
+              <span class="status-pill"> <?= htmlspecialchars($inc) ?></span>
             <?php endforeach; ?>
           </div>
         </div>
@@ -221,7 +218,6 @@ function stars($ratingOutOf5) {
             Hosted by <strong style="color: var(--text-main);"><?= htmlspecialchars($right['agency']) ?></strong>
           </div>
         </div>
-        <span class="badge badge-blue">RIGHT</span>
       </div>
 
       <div class="glass-clear" style="padding: 1.4rem; margin-bottom: 1.5rem;">
@@ -279,7 +275,7 @@ function stars($ratingOutOf5) {
           <div class="input-stack">
             <?php foreach ($right['highlights'] as $h): ?>
               <div class="sm-item" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
-                <strong style="color: var(--coral);">•</strong> <?= htmlspecialchars($h) ?>
+                 <?= htmlspecialchars($h) ?>
               </div>
             <?php endforeach; ?>
           </div>
@@ -289,7 +285,7 @@ function stars($ratingOutOf5) {
           <div class="demo-cell-label" style="margin-bottom: 0.9rem;">What's Included</div>
           <div style="display:flex; flex-wrap: wrap; gap: 0.7rem;">
             <?php foreach ($right['includes'] as $inc): ?>
-              <span class="status-pill"><span class="status-dot"></span> <?= htmlspecialchars($inc) ?></span>
+              <span class="status-pill"><?= htmlspecialchars($inc) ?></span>
             <?php endforeach; ?>
           </div>
         </div>

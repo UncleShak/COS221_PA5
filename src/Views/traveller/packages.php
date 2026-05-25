@@ -50,18 +50,18 @@ $currentPage = $currentPage ?? 1;
                                      style="width: 100%; height: 100%; object-fit: cover; display: block;"
                                      onerror="this.style.display='none'">
                             <?php else: ?>
-                                🌴
+                                    No image
                             <?php endif; ?>
-                            <?php if ($pkg['avg_rating'] > 0): ?>
-                                <span class="pkg-card-badge">★ <?= number_format($pkg['avg_rating'], 1) ?> (<?= $pkg['review_count'] ?>)</span>
+                                <?php if ($pkg['avg_rating'] > 0): ?>
+                                    <span class="pkg-card-badge">Rating <?= number_format($pkg['avg_rating'], 1) ?> (<?= $pkg['review_count'] ?>)</span>
                             <?php endif; ?>
                         </div>
                         <div class="pkg-card-body">
                             <div class="pkg-card-dest"><?= htmlspecialchars($pkg['destination'] ?? 'Global') ?></div>
                             <div class="pkg-card-name"><?= htmlspecialchars($pkg['title']) ?></div>
                             <div class="pkg-card-meta">
-                                <span>🗓️ <?= htmlspecialchars($pkg['duration_days']) ?> Days</span>
-                                <span>🏢 <?= htmlspecialchars($pkg['agency_name']) ?></span>
+                                    <span>Duration: <?= htmlspecialchars($pkg['duration_days']) ?> days</span>
+                                    <span>Agency: <?= htmlspecialchars($pkg['agency_name']) ?></span>
                             </div>
                             <div class="pkg-card-footer">
                                 <div class="pkg-card-price">

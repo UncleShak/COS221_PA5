@@ -2,6 +2,8 @@
 
 ?>
 
+<?php $detailImage = trim($package['image_url'] ?? ''); ?>
+
 <main class="container" style="padding: 100px 2rem 4rem; width: 100%; max-width: 1200px; margin: 0 auto;">
     <div class="package-detail">
         
@@ -23,13 +25,24 @@
         <div class="detail-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
             
             <div class="detail-left">
-                <div class="main-image" style="margin-bottom: 3rem; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--glass-shadow-hi);">
-                    <img src="<?= htmlspecialchars($package['image_url'] ?? '/images/placeholder-large.jpg') ?>" 
-                         alt="<?= htmlspecialchars($package['title'] ?? 'Image') ?>"
-                        loading="lazy"
-                        decoding="async"
-                         style="width: 100%; height: 400px; object-fit: cover;"
-                         onerror="this.src='/images/placeholder-large.jpg'">
+                <div class="main-image" style="margin-bottom: 3rem; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--glass-shadow-hi); min-height: 400px; background: var(--surface-2);">
+                    <?php if (!empty($detailImage)): ?>
+                        <img src="<?= htmlspecialchars($detailImage) ?>" 
+                             alt="<?= htmlspecialchars($package['title'] ?? 'Package image') ?>"
+                             loading="lazy"
+                             decoding="async"
+                             style="width: 100%; height: 400px; object-fit: cover; display: block;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="display:none; width:100%; height:400px; align-items:center; justify-content:center; flex-direction:column; gap:0.5rem; background: var(--surface-2); color: var(--text-soft); text-align:center; padding: 2rem;">
+                            <div style="font-family: var(--font-display); font-style: italic; font-size: 1.6rem; color: var(--text-main);">No image available</div>
+                            <div style="font-size: 0.95rem; max-width: 24rem;">This package does not have a preview image yet.</div>
+                        </div>
+                    <?php else: ?>
+                        <div style="width:100%; height:400px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:0.5rem; background: var(--surface-2); color: var(--text-soft); text-align:center; padding: 2rem;">
+                            <div style="font-family: var(--font-display); font-style: italic; font-size: 1.6rem; color: var(--text-main);">No image available</div>
+                            <div style="font-size: 0.95rem; max-width: 24rem;">This package does not have a preview image yet.</div>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="itinerary-section glass-clear" style="padding: 2.5rem; margin-bottom: 3rem; border-radius: var(--r-xl);">
@@ -64,7 +77,7 @@
                                 <div class="glass-clear" style="padding: 1.5rem; border-radius: var(--r-md); display: flex; gap: 2rem; align-items: center;">
                                     <div style="min-width: 140px; border-right: 1px solid rgba(42,31,53,0.1); padding-right: 1rem;">
                                         <strong style="display: block; color: var(--text-main); font-size: 0.95rem;"><?= htmlspecialchars(explode('@', $review['username'])[0]) ?></strong>
-                                        <span style="color: #fbbf24; font-size: 0.9rem;">★ <?= number_format($review['rating'], 1) ?></span>
+                                        <span style="color: #fbbf24; font-size: 0.9rem;">Rating <?= number_format($review['rating'], 1) ?></span>
                                     </div>
                                     <p style="color: var(--text-soft); font-size: 0.95rem; font-style: italic; margin: 0; flex: 1;">"<?= htmlspecialchars($review['comment']) ?>"</p>
                                 </div>
@@ -77,7 +90,7 @@
             <div class="detail-right" style="position: sticky; top: 100px; align-self: start;">
                 <div class="price-card glass-frosted" style="padding: 2.5rem; text-align: center; border-radius: var(--r-xl); margin-bottom: 2rem;">
                     <div class="duration-info" style="color: var(--text-soft); margin-bottom: 1rem; font-weight: 600;">
-                        🗓️ <?= htmlspecialchars($package['duration_days'] ?? 0) ?> Days of Exploration
+                        Duration: <?= htmlspecialchars($package['duration_days'] ?? 0) ?> days of exploration
                     </div>
                     
                     <div class="price-large" style="font-family: var(--font-display); font-style: italic; font-size: 2.8rem; color: var(--coral); margin-bottom: 1.5rem; line-height: 1;">
@@ -86,7 +99,7 @@
                     </div>
                     
                     <div class="rating-summary" style="margin-bottom: 2rem; color: #fbbf24; font-size: 1.2rem; letter-spacing: 2px;">
-                        ★ <?= number_format($package['avg_rating'] ?? 0, 1) ?>
+                        Rating <?= number_format($package['avg_rating'] ?? 0, 1) ?>
                     </div>
                     
                     <?php if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'traveller'): ?>

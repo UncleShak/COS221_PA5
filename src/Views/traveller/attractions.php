@@ -16,7 +16,7 @@
             <div class="glass-frosted" style="border-radius: var(--r-xl); overflow: hidden;">
                 <div style="height: 180px; background: <?= !empty($a['image_url']) ? "url('" . htmlspecialchars($a['image_url']) . "') center/cover" : "linear-gradient(135deg, var(--ocean), var(--blush))" ?>; display: flex; align-items: flex-end; padding: 1rem;">
                     <?php if (empty($a['image_url'])): ?>
-                        <span style="font-size: 3rem; margin: auto 0;">🗺️</span>
+                        <span style="font-size: 1rem; margin: auto 0; color: var(--text-muted);">No image</span>
                     <?php endif; ?>
                     <span style="background: rgba(0,0,0,0.5); color: #fff; padding: 0.2rem 0.7rem; border-radius: var(--r-pill); font-size: 0.8rem; text-transform: capitalize; margin-left: auto;">
                         <?= htmlspecialchars(str_replace('_', ' ', $a['category'])) ?>
@@ -25,7 +25,7 @@
                 <div style="padding: 1.5rem;">
                     <h3 style="margin: 0 0 0.5rem; font-family: var(--font-display); font-style: italic;"><?= htmlspecialchars($a['name']) ?></h3>
                     <?php if (!empty($a['opening_hours'])): ?>
-                        <p style="margin: 0 0 0.5rem; color: var(--text-muted); font-size: 0.85rem;">🕐 <?= htmlspecialchars($a['opening_hours']) ?></p>
+                        <p style="margin: 0 0 0.5rem; color: var(--text-muted); font-size: 0.85rem;">Hours: <?= htmlspecialchars($a['opening_hours']) ?></p>
                     <?php endif; ?>
                     <?php if (!empty($a['description'])): ?>
                         <p style="margin: 0 0 1rem; color: var(--text-soft); font-size: 0.9rem; line-height: 1.6;">

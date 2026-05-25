@@ -7,7 +7,7 @@ class BookingModel {
         $this->pdo = $pdo;
     }
 
-    public function processGroupBooking($travellerId, $packageId, $travelDate, $partySize, $specialRequests) {
+    public function processGroupBooking($travellerId, $packageId, $travelDate, $partySize, $specialRequests, $totalPrice = null) {
         try {
             $this->pdo->beginTransaction();
 
@@ -58,13 +58,15 @@ class BookingModel {
                 ]);
                 $groupTripId = $this->pdo->lastInsertId();
             }
+            $totalPrice = $totalPrice ?? 0;
+
             $insertBookingSql = "INSERT INTO bookings (
                         traveller_id, package_id, group_trip_id, travel_date, num_travellers, 
                         special_requests, status, total_price, currency, payment_reference
                     ) 
                     VALUES (
                         :traveller_id, :package_id, :group_trip_id, :travel_date, :num_travellers, 
-                        :special_requests, 'confirmed', 19700.00, 'ZAR', :payment_reference
+                        :special_requests, 'confirmed', :total_price, 'ZAR', :payment_reference
                     )";
             
             $bookStmt = $this->pdo->prepare($insertBookingSql);
@@ -75,6 +77,7 @@ class BookingModel {
                 ':travel_date'       => $travelDate,
                 ':num_travellers'    => $partySize, 
                 ':special_requests'  => $specialRequests,
+                ':total_price'       => $totalPrice,
                 ':payment_reference' => $paymentRef
             ]);
 

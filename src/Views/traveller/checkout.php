@@ -29,14 +29,13 @@ if ($traveller) {
             
             <div style="display: flex; gap: 1.5rem; align-items: center; padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: var(--r-md); border: 1px solid var(--glass-border);">
                <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--coral), #ff8a66); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 0 15px rgba(255, 111, 97, 0.3);">
-                   👤
                </div>
                <div>
                   <div style="font-weight: 600; color: var(--text-main); font-size: 1.1rem; letter-spacing: 0.02em;"><?= htmlspecialchars($userName) ?></div>
                   <div style="color: var(--text-soft); font-size: 0.9rem; margin-top: 0.2rem;"><?= htmlspecialchars($userEmail) ?></div>
                </div>
                <div style="margin-left: auto;">
-                   <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.4rem 0.8rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">✓ Authenticated</span>
+                   <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.4rem 0.8rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;"> Authenticated</span>
                </div>
             </div>
           </div>
@@ -95,7 +94,7 @@ if ($traveller) {
           
           <div class="pkg-card-img" style="<?= !empty($package['image_url']) ? "background-image: url('" . htmlspecialchars($package['image_url']) . "'); background-size: cover; background-position: center;" : "" ?>">
              <?php if (empty($package['image_url'])): ?>
-                 ✈️
+                 Flight
              <?php endif; ?>
           </div>
           
@@ -128,7 +127,7 @@ if ($traveller) {
             </div>
             
             <div style="margin-top: 1.5rem; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
-              🔒 Secure 256-bit SSL Encryption
+             Secure 256-bit SSL Encryption
             </div>
           </div>
         </div>

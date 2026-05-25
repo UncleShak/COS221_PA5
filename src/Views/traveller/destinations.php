@@ -16,7 +16,7 @@
             <div class="glass-frosted" style="border-radius: var(--r-xl); overflow: hidden;">
                 <div style="height: 180px; background: <?= !empty($d['image_url']) ? "url('" . htmlspecialchars($d['image_url']) . "') center/cover" : "linear-gradient(135deg, var(--ocean), var(--ice))" ?>; display: flex; align-items: flex-end;">
                     <?php if (empty($d['image_url'])): ?>
-                        <span style="font-size: 3rem; margin: auto;">🌍</span>
+                        <span style="font-size: 1rem; margin: auto; color: var(--text-muted);">No image</span>
                     <?php endif; ?>
                 </div>
                 <div style="padding: 1.5rem;">
@@ -28,7 +28,7 @@
                     <?php endif; ?>
                     <?php if (!empty($d['average_temperature_celsius'])): ?>
                         <span style="font-size: 0.8rem; background: rgba(100,180,255,0.12); color: var(--ocean); padding: 0.2rem 0.7rem; border-radius: var(--r-pill); margin-left: 0.4rem;">
-                            🌡️ <?= htmlspecialchars($d['average_temperature_celsius']) ?>°C
+                            Avg temperature: <?= htmlspecialchars($d['average_temperature_celsius']) ?>°C
                         </span>
                     <?php endif; ?>
                     <?php if (!empty($d['description'])): ?>

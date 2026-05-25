@@ -43,8 +43,8 @@ $maxParticipants = $groupDetails['max_participants'] ?? 0;
                     <?php else: ?>
                         <?php foreach ($roster as $member): ?>
                             <div style="display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                <div style="width: 45px; height: 45px; border-radius: 50%; background: var(--gradient-main); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 0 10px rgba(0, 166, 199, 0.2);">
-                                    👤
+                                <div style="width: 45px; height: 45px; border-radius: 50%; background: var(--gradient-main); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; box-shadow: 0 0 10px rgba(0, 166, 199, 0.2);">
+                                    Member
                                 </div>
                                 <div>
                                     <div style="font-weight: 600; color: var(--text-main); font-size: 1rem;">
@@ -102,8 +102,8 @@ $maxParticipants = $groupDetails['max_participants'] ?? 0;
                         
                         <div style="display: flex; gap: 1rem; max-width: 80%; <?= $isMe ? 'align-self: flex-end; flex-direction: row-reverse;' : '' ?>">
                             <?php if (!$isMe): ?>
-                                <div style="width: 35px; height: 35px; border-radius: 50%; background: rgba(0, 166, 199, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
-                                    👤
+                                <div style="width: 35px; height: 35px; border-radius: 50%; background: rgba(0, 166, 199, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; flex-shrink: 0;">
+                                    Member
                                 </div>
                             <?php endif; ?>
                             

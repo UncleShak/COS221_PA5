@@ -40,7 +40,6 @@ $userEmail = ($traveller && isset($traveller['email']))
         <div class="glass-frosted" style="flex: 1; min-width: 300px; padding: 3rem 2rem; display: flex; flex-direction: column; text-align: center;">
             <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--gradient-main); margin: 0 auto 1.5rem; padding: 4px; box-shadow: var(--glass-shadow-hi);">
                 <div style="width: 100%; height: 100%; border-radius: 50%; background: var(--glass-bg-hi); display: flex; align-items: center; justify-content: center; font-size: 3rem;">
-                    🌴
                 </div>
             </div>
             
@@ -56,9 +55,6 @@ $userEmail = ($traveller && isset($traveller['email']))
                     <span class="input-label">Account Status</span>
                     <span class="status-pill"><div class="status-dot"></div> Active</span>
                 </div>
-                <button class="btn-secondary" style="width: 100%;">
-                    Edit Profile
-                </button>
             </div>
         </div>
 
@@ -134,7 +130,7 @@ $userEmail = ($traveller && isset($traveller['email']))
                                 <a href="/traveller/group?id=<?= htmlspecialchars($trip['group_trip_id']) ?>" 
                                    class="btn-primary" 
                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 100%;">
-                                    🌐 Access Hub #<?= htmlspecialchars($trip['group_trip_id']) ?>
+                                    Group #<?= htmlspecialchars($trip['group_trip_id']) ?>
                                 </a>
                             <?php else: ?>
                                 <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem; white-space: nowrap;">
@@ -378,7 +374,7 @@ $userEmail = ($traveller && isset($traveller['email']))
                         <input type="hidden" name="favouritable_id" value="<?= htmlspecialchars($fav['favouritable_id'] ?? '') ?>">
                         <input type="hidden" name="action" value="remove">
                         <input type="hidden" name="redirect" value="/traveller/dashboard">
-                        <button type="submit" class="btn-secondary" style="padding: 0.6rem 1rem; font-size: 0.85rem;" title="Remove from favourites">♡ Remove</button>
+                        <button type="submit" class="btn-secondary" style="padding: 0.6rem 1rem; font-size: 0.85rem;" title="Remove from favourites">Remove</button>
                     </form>
                 </div>
             </div>
