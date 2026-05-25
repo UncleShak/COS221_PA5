@@ -34,10 +34,8 @@ $gradients = [
 <style>
 .sg-nav { display: none !important; }
 
-   .content, .sg-page { padding: 0 !important; } */
-
-   HERO
-   ════════════════════════════════════════ */
+/* .content, .sg-page { padding: 0 !important; } */
+/* HERO */
 .lp-full-hero {
     position: relative;
     min-height: 100vh;
@@ -217,8 +215,7 @@ $gradients = [
     background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
 }
 
-   PACKAGES SECTION
-   ════════════════════════════════════════ */
+/* PACKAGES SECTION */
 .lp-packages-section {
     padding: 6rem 3rem;
     background: var(--bg-main);
@@ -554,7 +551,6 @@ html[data-theme="dark"] .carousel-card-footer {
             <div class="section-eyebrow">Highest Rated</div>
             <h2>Top-Rated Packages</h2>
         </div>
-        <?php /*
         <a href="/traveller/packages" class="btn-view-all">View All →</a>
     </div>
 
@@ -575,7 +571,6 @@ html[data-theme="dark"] .carousel-card-footer {
                     $imgPath = htmlspecialchars($pkg['image_filename'] ?? $pkg['cover_image_url'] ?? '');
                     $rating  = isset($pkg['avg_rating']) ? number_format((float)$pkg['avg_rating'], 1) : '—';
                 ?>
-                    <?php /*
                     <a href="/traveller/details?id=<?= (int)$pkg['id'] ?>" class="carousel-card">
                         <div class="carousel-card-img" style="background:<?= $grad ?>;">
                             <?php if (!empty($pkg['image_filename']) || !empty($pkg['cover_image_url'])): ?>
@@ -625,7 +620,6 @@ html[data-theme="dark"] .carousel-card-footer {
             <div class="section-eyebrow">Most Booked</div>
             <h2>Most Popular Packages</h2>
         </div>
-        <?php /*
         <a href="/traveller/packages" class="btn-view-all">View All →</a>
     </div>
 
