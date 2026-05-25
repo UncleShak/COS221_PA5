@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Tripistry Resort' ?></title>
+
+    <!-- Apply saved theme BEFORE CSS loads to avoid flashing -->
+    <script>
+      (function () {
+        try {
+          const stored = localStorage.getItem('tripistry-theme');
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const theme = stored || (prefersDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          // If storage is blocked, fall back to default.
+        }
+      })();
+    </script>
+
     <link rel="stylesheet" href="/css/StyleGuide.css">
+
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,11 +30,10 @@
     <div class="orb orb-3"></div>
 
     <nav class="sg-nav">
-      <a href="/home" class="sg-nav-logo" style="text-decoration: none; color: inherit;">
-         TRIPISTRY
-      </a>
-      
+      <div class="sg-nav-logo"><span class="logo-dot"></span> TRIPISTRY</div>
+
       <ul class="sg-nav-links">
+<<<<<<< HEAD
         <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
         <?php if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] === 'traveller'): ?>
             <li><a href="/traveller/packages">Packages</a></li>
@@ -29,25 +44,57 @@
             <li><a href="/traveller/attractions">Attractions</a></li>
             <li><a href="/traveller/restaurants">Restaurants</a></li>
         <?php endif; ?>
+=======
+        <li><a href="/traveller/dashboard">Dashboard</a></li>
+        <li><a href="/traveller/details">Packages</a></li>
+>>>>>>> 950266797b58517d273de54fda275636a324dc3b
       </ul>
 
-      <div style="display: flex; align-items: center; gap: 1.5rem;">
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <a href="/logout" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;">Sign Out</a>
-            <?php if ($_SESSION['user_type'] === 'traveller'): ?>
-                <a href="/traveller/dashboard" class="btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 99px; text-decoration: none;">My Hub</a>
-            <?php else: ?>
-                <a href="/agency/dashboard" class="btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 99px; text-decoration: none;">Command Center</a>
-            <?php endif; ?>
-        <?php else: ?>
-            <a href="/login" style="text-decoration: none; font-size: 0.9rem; font-weight: 600; color: var(--text-main);">Sign In</a>
-            <a href="/register" class="btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 99px; text-decoration: none;">Get Started</a>
-        <?php endif; ?>
+      <div class="sg-nav-right">
+        <button
+          type="button"
+          class="theme-toggle"
+          id="themeToggle"
+          aria-pressed="false"
+          title="Toggle light/dark mode"
+        >
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+          <span class="theme-toggle-text">Theme</span>
+        </button>
+
+        <span class="sg-nav-pill">Traveller View</span>
       </div>
     </nav>
 
     <div class="content">
         <?= $content ?>
     </div>
+
+    <script>
+      (function () {
+        const btn = document.getElementById('themeToggle');
+        if (!btn) return;
+
+        function applyTheme(theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+          try { localStorage.setItem('tripistry-theme', theme); } catch (e) {}
+
+          const pressed = theme === 'dark';
+          btn.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+
+          const icon = btn.querySelector('.theme-toggle-icon');
+          if (icon) icon.textContent = pressed ? '🌙' : '☀️';
+        }
+
+        // Initialize from current html attribute (already set by the head script)
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        applyTheme(current);
+
+        btn.addEventListener('click', function () {
+          const now = document.documentElement.getAttribute('data-theme') || 'light';
+          applyTheme(now === 'dark' ? 'light' : 'dark');
+        });
+      })();
+    </script>
 </body>
 </html>
