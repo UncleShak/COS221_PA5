@@ -31,9 +31,8 @@
 
     <nav class="sg-nav">
       <div class="sg-nav-logo"><span class="logo-dot"></span> TRIPISTRY</div>
-
-      <ul class="sg-nav-links">
-<<<<<<< HEAD
+        
+    <ul class="sg-nav-links">
         <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
         <?php if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] === 'traveller'): ?>
             <li><a href="/traveller/packages">Packages</a></li>
@@ -44,11 +43,8 @@
             <li><a href="/traveller/attractions">Attractions</a></li>
             <li><a href="/traveller/restaurants">Restaurants</a></li>
         <?php endif; ?>
-=======
-        <li><a href="/traveller/dashboard">Dashboard</a></li>
-        <li><a href="/traveller/details">Packages</a></li>
->>>>>>> 950266797b58517d273de54fda275636a324dc3b
-      </ul>
+     
+    </ul>
 
       <div class="sg-nav-right">
         <button
