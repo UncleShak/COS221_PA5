@@ -1,9 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Processing · Tripistry</title>
+        <script>
+            (function () {
+                try {
+                    const stored = localStorage.getItem('tripistry-theme');
+                    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    const theme = stored || (prefersDark ? 'dark' : 'light');
+                    document.documentElement.setAttribute('data-theme', theme);
+                } catch (e) {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            })();
+        </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -29,10 +41,27 @@
             --ease:           cubic-bezier(0.22, 1, 0.36, 1);
         }
 
+        html[data-theme="dark"] {
+            --bg-main:        #0f0c14;
+            --bg-secondary:   #171120;
+            --text-main:      rgba(255, 248, 244, 0.92);
+            --text-soft:      rgba(255, 248, 244, 0.72);
+            --text-muted:     rgba(255, 248, 244, 0.46);
+            --coral:          #ff6b55;
+            --rose:           #e35b83;
+            --amber:          #ff9a4b;
+            --blush:          #ffb7aa;
+            --indigo:         #6d7ad6;
+            --ice:            #cfd7ff;
+            --gradient-main:  var(--coral);
+            --gradient-warm:  var(--amber);
+        }
+
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background: var(--bg-main);
+            color: var(--text-main);
             font-family: var(--font-body);
             min-height: 100vh;
             display: flex;
@@ -148,7 +177,7 @@
 
         /* Active dot — fills with gradient and pulses */
         .step.active .step-dot {
-            background: var(--gradient-main);
+            background: var(--coral);
             border-color: transparent;
             box-shadow: 0 0 0 5px rgba(232, 97, 74, 0.12);
         }
@@ -159,7 +188,7 @@
 
         /* Done dot — solid coral, checkmark */
         .step.done .step-dot {
-            background: var(--gradient-warm);
+            background: var(--amber);
             border-color: transparent;
         }
         .step.done .step-dot::before {
@@ -234,20 +263,12 @@
             font-style: italic;
             font-size: 1.35rem;
             font-weight: 400;
-            color: rgba(42, 31, 53, 0.3);
+            color: var(--text-muted);
             line-height: 1.2;
             transition: color 0.4s var(--ease);
         }
-        .step.active .step-name { color: var(--text-main); }
+        .step.active .step-name { color: var(--coral); }
         .step.done   .step-name { color: var(--text-soft); }
-
-        /* Shimmer on active step name */
-        .step.active .step-name {
-            background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
 
         /* ── Footer tagline ── */
         .loading-footer {
@@ -265,7 +286,7 @@
         .loading-footer::after {
             content: '';
             width: 24px; height: 1px;
-            background: rgba(42, 31, 53, 0.15);
+            background: var(--text-muted);
         }
 
         /* ── Shared keyframes ── */

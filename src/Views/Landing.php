@@ -386,7 +386,9 @@ $gradients = [
     min-width: 0;
     border-radius: var(--r-xl);
     overflow: hidden;
-    background: #fff;
+    background: var(--surface-1);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid rgba(42, 31, 53, 0.07);
     box-shadow: var(--glass-shadow);
     cursor: pointer;
@@ -395,9 +397,16 @@ $gradients = [
     display: block;
     color: inherit;
 }
+.carousel-card, .carousel-card * { color: inherit; }
 .carousel-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 18px 45px rgba(42, 31, 53, 0.11);
+}
+
+html[data-theme="dark"] .carousel-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
 }
 
 .carousel-card-img {
@@ -495,6 +504,17 @@ $gradients = [
     gap: 0.3rem;
 }
 
+html[data-theme="dark"] .carousel-card-name,
+html[data-theme="dark"] .carousel-card-price,
+html[data-theme="dark"] .carousel-card-meta,
+html[data-theme="dark"] .carousel-card-price span {
+    color: var(--text-main);
+}
+
+html[data-theme="dark"] .carousel-card-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
 /* ── Arrow buttons ── */
 .carousel-btn {
     position: absolute;
@@ -587,7 +607,9 @@ $gradients = [
         <a href="/" class="lp-hero-brand">Tripistry</a>
         <div class="lp-hero-nav-actions">
             <?php if (!empty($_SESSION['user_id'])): ?>
-                <a href="<?= $_SESSION['user_type'] === 'agency' ? '/agency/dashboard' : '/traveller/dashboard' ?>" class="btn-hero-signup">View Dashboard</a>
+                <?php $dashboardUrl = $_SESSION['user_type'] === 'agency' ? '/agency/dashboard' : '/traveller/dashboard'; ?>
+                <a href="<?= $dashboardUrl ?>" class="btn-hero-signup" onclick="window.location.href=this.href; return false;">View Dashboard</a>
+                <a href="/logout" class="btn-hero-login">Logout</a>
             <?php else: ?>
                 <a href="/login"  class="btn-hero-login">Log In</a>
                 <a href="/register" class="btn-hero-signup">Sign Up</a>
@@ -667,6 +689,8 @@ $gradients = [
                             <?php if (!empty($pkg['image_filename'])): ?>
                                 <img src="<?= $imgPath ?>"
                                      alt="<?= htmlspecialchars($pkg['name']) ?>"
+                                     loading="lazy"
+                                     decoding="async"
                                      onerror="this.style.display='none'">
                             <?php endif; ?>
                             <span class="carousel-card-badge">★ <?= $rating ?></span>
@@ -741,6 +765,8 @@ $gradients = [
                             <?php if (!empty($pkg['image_filename'])): ?>
                                 <img src="<?= $imgPath ?>"
                                      alt="<?= htmlspecialchars($pkg['name']) ?>"
+                                     loading="lazy"
+                                     decoding="async"
                                      onerror="this.style.display='none'">
                             <?php endif; ?>
                             <span class="carousel-card-badge"><?= $count ?> booked</span>

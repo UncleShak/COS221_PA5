@@ -303,39 +303,4 @@ function stars($ratingOutOf5) {
 
   </div>
 
-  <!-- BOTTOM: "WINNER" / SUMMARY STRIP -->
-  <div class="glass-heavy" style="margin-top: 2.5rem; padding: 1.8rem 2rem;">
-    <div class="demo-cell-label" style="margin-bottom: 0.8rem;">Recommendation (UI-only)</div>
-
-    <?php
-      $leftTotal  = $left['price_pp'] + $left['taxes_fees'];
-      $rightTotal = $right['price_pp'] + $right['taxes_fees'];
-
-      $cheaper = $leftTotal < $rightTotal ? 'left' : 'right';
-      $bestRating = $left['rating'] > $right['rating'] ? 'left' : 'right';
-    ?>
-
-    <div style="display:flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; align-items: center;">
-      <div style="color: var(--text-soft); font-size: 0.95rem; max-width: 1000px;">
-        <strong style="color: var(--text-main);">Best price:</strong>
-        <span class="badge <?= $cheaper === 'left' ? 'badge-green' : 'badge-blue' ?>">
-          <?= strtoupper($cheaper) ?>
-        </span>
-        &nbsp;·&nbsp;
-        <strong style="color: var(--text-main);">Best rating:</strong>
-        <span class="badge <?= $bestRating === 'left' ? 'badge-green' : 'badge-blue' ?>">
-          <?= strtoupper($bestRating) ?>
-        </span>
-        <div class="input-hint" style="margin-top: 0.5rem;">
-          This is a visual demo strip. Replace with real decision rules (availability, seasonality, activities match) later.
-        </div>
-      </div>
-
-      <div style="display:flex; gap: 1rem; flex-wrap: wrap;">
-        <a class="btn-secondary" href="/traveller/dashboard">Back to Dashboard</a>
-        <a class="btn-primary" href="/traveller/checkout?package_id=<?= htmlspecialchars((string)$left['package_id']) ?>">Proceed to Checkout</a>
-      </div>
-    </div>
-  </div>
-
 </div>

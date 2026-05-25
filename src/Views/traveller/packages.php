@@ -19,70 +19,20 @@ $currentPage = $currentPage ?? 1;
         <p class="sg-section-sub" style="margin: 0 auto 2rem;">Explore thousands of travel packages from trusted agencies worldwide.</p>
         
         <form id="search-form" class="hero-search" method="GET" action="/traveller/packages" style="width: 100%; max-width: 700px; margin: 0 auto;">
-            <div style="display: flex; background: rgba(255, 255, 255, 0.95); padding: 0.5rem; border-radius: var(--r-pill); box-shadow: var(--glass-shadow-hi); border: 1px solid var(--glass-border);">
+            <div class="glass-clear" style="display: flex; padding: 0.5rem; border-radius: var(--r-pill); box-shadow: var(--glass-shadow-hi); border: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); background: var(--surface-1);">
                 <input type="text" name="search" id="search-input" placeholder="Where do you want to go?" value="<?= htmlspecialchars($currentFilters['search'] ?? '') ?>" style="flex: 1; border: none; outline: none; background: transparent; padding: 0.5rem 1.5rem; font-family: var(--font-body); font-size: 1rem; color: var(--text-main);">
                 <button type="submit" class="btn-primary" style="padding: 0.8rem 2.5rem;">Search</button>
             </div>
         </form>
     </section>
     
-    <div class="dashboard-layout" style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem;">
-        <aside class="filters-sidebar glass-clear" style="padding: 1.5rem; position: sticky; top: 120px; align-self: start; max-height: calc(100vh - 140px); overflow-y: auto;">
-            <h3>Filter Packages</h3>
-            <form id="filter-form" method="GET" action="/traveller/packages">
-                <div class="filter-group" style="margin-bottom: 1rem;">
-                    <label for="destination" class="input-label">Destination</label>
-                    <select name="destination" id="destination" class="input-field">
-                        <option value="">All Destinations</option>
-                        <?php foreach ($filterOptions['destinations'] as $dest): ?>
-                            <option value="<?= htmlspecialchars($dest) ?>" <?= (isset($currentFilters['destination']) && $currentFilters['destination'] == $dest) ? 'selected' : '' ?>><?= htmlspecialchars($dest) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                
-                <div class="filter-group" style="margin-bottom: 1rem;">
-                    <label for="duration" class="input-label">Duration (days)</label>
-                    <select name="duration" id="duration" class="input-field">
-                        <option value="">Any</option>
-                        <?php foreach ($filterOptions['durations'] as $d): ?>
-                            <option value="<?= htmlspecialchars((string)$d) ?>" <?= (isset($currentFilters['duration']) && (string)$currentFilters['duration'] === (string)$d) ? 'selected' : '' ?>><?= htmlspecialchars($d) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="filter-group" style="margin-bottom: 1rem;">
-                    <label for="min_rating" class="input-label">Minimum Rating</label>
-                    <select name="min_rating" id="min_rating" class="input-field">
-                        <option value="">Any</option>
-                        <?php for ($r = 5; $r >= 1; $r--): ?>
-                            <option value="<?= $r ?>" <?= (isset($currentFilters['min_rating']) && (string)$currentFilters['min_rating'] === (string)$r) ? 'selected' : '' ?>><?= $r ?>+ stars</option>
-                        <?php endfor; ?>
-                    </select>
-                </div>
-
-                <div class="filter-group" style="margin-bottom: 1.5rem;">
-                    <label for="sort" class="input-label">Sort By</label>
-                    <select name="sort" id="sort" class="input-field">
-                        <option value="price_asc" <?= ($currentSort == 'price_asc') ? 'selected' : '' ?>>Price: Low to High</option>
-                        <option value="price_desc" <?= ($currentSort == 'price_desc') ? 'selected' : '' ?>>Price: High to Low</option>
-                        <option value="rating_desc" <?= ($currentSort == 'rating_desc') ? 'selected' : '' ?>>Rating: High to Low</option>
-                        <option value="rating_asc" <?= ($currentSort == 'rating_asc') ? 'selected' : '' ?>>Rating: Low to High</option>
-                        <option value="duration_asc" <?= ($currentSort == 'duration_asc') ? 'selected' : '' ?>>Duration: Short to Long</option>
-                        <option value="duration_desc" <?= ($currentSort == 'duration_desc') ? 'selected' : '' ?>>Duration: Long to Short</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 0.5rem;">Apply Filters</button>
-                <a href="/traveller/packages" class="btn-secondary" style="width: 100%; text-align: center; display: inline-block;">Reset All</a>
-            </form>
-        </aside>
-        
-        <div class="packages-main">
+    <div class="dashboard-layout" style="display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-areas: 'main sidebar'; gap: 2rem;">
+        <div class="packages-main" style="grid-area: main;">
             <div class="results-header" style="margin-bottom: 1.5rem;">
                 <h2>Available Packages</h2>
                 <p id="results-count" style="color: var(--text-soft);"><?= $totalPackages ?> packages found</p>
             </div>
-            
+
             <div id="packages-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
                 <?php if (empty($packages)): ?>
                     <div class="glass-clear" style="padding: 2rem; text-align: center; grid-column: 1 / -1; color: var(--text-muted);">
@@ -92,7 +42,16 @@ $currentPage = $currentPage ?? 1;
                     <?php foreach ($packages as $pkg): ?>
                     <div class="pkg-card glass-frosted" onclick="window.location.href='/traveller/details?id=<?= htmlspecialchars($pkg['id']) ?>'">
                         <div class="pkg-card-img" style="<?= !empty($pkg['image_url']) ? "background-image: url('" . htmlspecialchars($pkg['image_url']) . "'); background-size: cover; background-position: center;" : "" ?>">
-                            <?php if (empty($pkg['image_url'])): ?> 🌴 <?php endif; ?>
+                            <?php if (!empty($pkg['image_url'])): ?>
+                                <img src="<?= htmlspecialchars($pkg['image_url']) ?>"
+                                     alt="<?= htmlspecialchars($pkg['title']) ?>"
+                                     loading="lazy"
+                                     decoding="async"
+                                     style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                                     onerror="this.style.display='none'">
+                            <?php else: ?>
+                                🌴
+                            <?php endif; ?>
                             <?php if ($pkg['avg_rating'] > 0): ?>
                                 <span class="pkg-card-badge">★ <?= number_format($pkg['avg_rating'], 1) ?> (<?= $pkg['review_count'] ?>)</span>
                             <?php endif; ?>
@@ -160,5 +119,54 @@ $currentPage = $currentPage ?? 1;
             </div>
             <?php endif; ?>
         </div>
+
+        <aside class="filters-sidebar glass-clear" style="grid-area: sidebar; padding: 1.5rem; position: sticky; top: 120px; align-self: start; max-height: calc(100vh - 140px); overflow-y: auto;">
+            <h3>Filter Packages</h3>
+            <form id="filter-form" method="GET" action="/traveller/packages">
+                <div class="filter-group" style="margin-bottom: 1rem;">
+                    <label for="destination" class="input-label">Destination</label>
+                    <select name="destination" id="destination" class="input-field">
+                        <option value="">All Destinations</option>
+                        <?php foreach ($filterOptions['destinations'] as $dest): ?>
+                            <option value="<?= htmlspecialchars($dest) ?>" <?= (isset($currentFilters['destination']) && $currentFilters['destination'] == $dest) ? 'selected' : '' ?>><?= htmlspecialchars($dest) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <div class="filter-group" style="margin-bottom: 1rem;">
+                    <label for="duration" class="input-label">Duration (days)</label>
+                    <select name="duration" id="duration" class="input-field">
+                        <option value="">Any</option>
+                        <?php foreach ($filterOptions['durations'] as $d): ?>
+                            <option value="<?= htmlspecialchars((string)$d) ?>" <?= (isset($currentFilters['duration']) && (string)$currentFilters['duration'] === (string)$d) ? 'selected' : '' ?>><?= htmlspecialchars($d) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="filter-group" style="margin-bottom: 1rem;">
+                    <label for="min_rating" class="input-label">Minimum Rating</label>
+                    <select name="min_rating" id="min_rating" class="input-field">
+                        <option value="">Any</option>
+                        <?php for ($r = 5; $r >= 1; $r--): ?>
+                            <option value="<?= $r ?>" <?= (isset($currentFilters['min_rating']) && (string)$currentFilters['min_rating'] === (string)$r) ? 'selected' : '' ?>><?= $r ?>+ stars</option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+
+                <div class="filter-group" style="margin-bottom: 1.5rem;">
+                    <label for="sort" class="input-label">Sort By</label>
+                    <select name="sort" id="sort" class="input-field">
+                        <option value="price_asc" <?= ($currentSort == 'price_asc') ? 'selected' : '' ?>>Price: Low to High</option>
+                        <option value="price_desc" <?= ($currentSort == 'price_desc') ? 'selected' : '' ?>>Price: High to Low</option>
+                        <option value="rating_desc" <?= ($currentSort == 'rating_desc') ? 'selected' : '' ?>>Rating: High to Low</option>
+                        <option value="rating_asc" <?= ($currentSort == 'rating_asc') ? 'selected' : '' ?>>Rating: Low to High</option>
+                        <option value="duration_asc" <?= ($currentSort == 'duration_asc') ? 'selected' : '' ?>>Duration: Short to Long</option>
+                        <option value="duration_desc" <?= ($currentSort == 'duration_desc') ? 'selected' : '' ?>>Duration: Long to Short</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 0.5rem;">Apply Filters</button>
+                <a href="/traveller/packages" class="btn-secondary" style="width: 100%; text-align: center; display: inline-block;">Reset All</a>
+            </form>
     </div>
 </main>

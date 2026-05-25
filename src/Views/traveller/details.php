@@ -26,6 +26,8 @@
                 <div class="main-image" style="margin-bottom: 3rem; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--glass-shadow-hi);">
                     <img src="<?= htmlspecialchars($package['image_url'] ?? '/images/placeholder-large.jpg') ?>" 
                          alt="<?= htmlspecialchars($package['title'] ?? 'Image') ?>"
+                        loading="lazy"
+                        decoding="async"
                          style="width: 100%; height: 400px; object-fit: cover;"
                          onerror="this.src='/images/placeholder-large.jpg'">
                 </div>

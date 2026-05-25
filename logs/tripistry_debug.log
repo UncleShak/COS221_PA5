@@ -14,3 +14,19 @@
   }
 }
 
+[25-May-2026 17:56:59 UTC] [TRIPISTRY][AI] API call failed. HTTP Status: 403. Body: {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[25-May-2026 18:00:11 UTC] [TRIPISTRY][AI] API call failed. HTTP Status: 403. Body: {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+

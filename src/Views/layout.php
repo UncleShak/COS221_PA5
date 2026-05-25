@@ -30,7 +30,7 @@
     <div class="orb orb-3"></div>
 
     <nav class="sg-nav">
-      <div class="sg-nav-logo"><span class="logo-dot"></span> TRIPISTRY</div>
+      <a href="/home" class="sg-nav-logo" style="text-decoration: none;"><span class="logo-dot"></span> TRIPISTRY</a>
         
     <ul class="sg-nav-links">
         <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
@@ -47,6 +47,15 @@
     </ul>
 
       <div class="sg-nav-right">
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <?php $dashboardUrl = $_SESSION['user_type'] === 'agency' ? '/agency/dashboard' : '/traveller/dashboard'; ?>
+          <a href="<?= $dashboardUrl ?>" class="btn-secondary" style="padding: 0.55rem 1.2rem; font-size: 0.85rem; text-decoration: none;" onclick="window.location.href=this.href; return false;">Dashboard</a>
+          <a href="/logout" class="btn-ghost" style="padding: 0.55rem 1.2rem; font-size: 0.85rem; text-decoration: none;">Logout</a>
+        <?php else: ?>
+          <a href="/login" class="btn-secondary" style="padding: 0.55rem 1.2rem; font-size: 0.85rem; text-decoration: none;">Log In</a>
+          <a href="/register" class="btn-primary" style="padding: 0.55rem 1.2rem; font-size: 0.85rem; text-decoration: none;">Sign Up</a>
+        <?php endif; ?>
+
         <button
           type="button"
           class="theme-toggle"
@@ -58,7 +67,6 @@
           <span class="theme-toggle-text">Theme</span>
         </button>
 
-        <span class="sg-nav-pill">Traveller View</span>
       </div>
     </nav>
 
