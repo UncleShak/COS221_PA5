@@ -1,6 +1,7 @@
 <?php
 // Pull in the Model
 require_once __DIR__ . '/../Models/BookingModel.php';
+require_once __DIR__ . '/../Models/BrowseModel.php';
 
 class TravellerController {
     
@@ -449,5 +450,45 @@ class TravellerController {
             'includes'      => $includes,
         ];
     }
+public function browse(): void {
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
+        header('Location: index.php?route=login');
+        exit;
+    }
+
+    $browseModel = new BrowseModel($this->pdo);
+
+    $destinations   = $browseModel->getDestinations();
+    $flights        = $browseModel->getFlights();
+    $accommodations = $browseModel->getAccommodations();
+    $attractions    = $browseModel->getAttractions();
+    $restaurants    = $browseModel->getRestaurants();
+
+    // Active tab — defaults to 'destinations', driven by ?tab= in the URL
+    $activeTab = $_GET['tab'] ?? 'destinations';
+    $validTabs = ['destinations', 'flights', 'accommodations', 'attractions', 'restaurants'];
+    if (!in_array($activeTab, $validTabs, true)) {
+        $activeTab = 'destinations';
+    }
+
+    $this->render('traveller/browse', [
+        'title'          => 'Browse · Tripistry',
+        'destinations'   => $destinations,
+        'flights'        => $flights,
+        'accommodations' => $accommodations,
+        'attractions'    => $attractions,
+        'restaurants'    => $restaurants,
+        'activeTab'      => $activeTab,
+    ]);
 }
+
+
+
+
+
+
+
+
+
+    }
 ?>

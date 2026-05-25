@@ -32,22 +32,22 @@
     <nav class="sg-nav">
       <a href="/home" class="sg-nav-logo" style="text-decoration: none;">TRIPISTRY</a>
         
-    <ul class="sg-nav-links">
-        <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
-        <?php if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] === 'traveller'): ?>
-            <li><a href="/traveller/packages">Packages</a></li>
-            <li><a href="/traveller/compare">Compare</a></li>
-            <li><a href="/traveller/destinations">Destinations</a></li>
-            <li><a href="/traveller/flights">Flights</a></li>
-            <li><a href="/traveller/accommodations">Accommodations</a></li>
-            <li><a href="/traveller/attractions">Attractions</a></li>
-            <li><a href="/traveller/restaurants">Restaurants</a></li>
-      <?php elseif ($_SESSION['user_type'] === 'agency'): ?>
-        <li><a href="/agency/dashboard">Dashboard</a></li>
-        <li><a href="/agency/groups">Group Trips</a></li>
-        <?php endif; ?>
-     
-    </ul>
+        <ul class="nb-links" style="margin: 0; padding: 0;">
+              <?php if (($_SESSION['user_type'] ?? '') === 'agency'): ?>
+                  <li><a href="index.php?route=agency/dashboard"
+                        style="color:var(--ocean); font-weight:600;">Dashboard</a></li>
+              <?php else: ?>
+                  <li><a href="index.php?route=traveller/dashboard"
+                        style="<?= str_contains($_SERVER['REQUEST_URI'] ?? '', 'dashboard') ? 'color:var(--ocean);font-weight:600;' : '' ?>">
+                      Dashboard</a></li>
+                  <li><a href="index.php?route=traveller/packages"
+                        style="<?= str_contains($_SERVER['REQUEST_URI'] ?? '', 'packages') ? 'color:var(--ocean);font-weight:600;' : '' ?>">
+                      Packages</a></li>
+                  <li><a href="index.php?route=traveller/browse"
+                        style="<?= str_contains($_SERVER['REQUEST_URI'] ?? '', 'browse') ? 'color:var(--ocean);font-weight:600;' : '' ?>">
+                      Browse</a></li>
+              <?php endif; ?>
+      </ul>
 
       <div class="sg-nav-right">
         <?php if (isset($_SESSION['user_id'])): ?>
