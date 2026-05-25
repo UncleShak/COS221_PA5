@@ -610,7 +610,16 @@ html[data-theme="dark"] .filter-panel { border: 1px solid rgba(255,255,255,0.10)
   color: var(--text-main); font-family: var(--font-body); font-size: 0.95rem;
   padding: 0.88rem 1.2rem; border-radius: var(--r-md); outline: none; width: 100%; transition: all 0.2s;
 }
+.input-field option {
+  background: var(--surface-1);
+  color: var(--text-main);
+  font-family: var(--font-body);
+}
 html[data-theme="dark"] .input-field { border: 1.5px solid rgba(255,255,255,0.12); }
+html[data-theme="dark"] .input-field option {
+  background: var(--bg-secondary);
+  color: var(--text-main);
+}
 
 .input-field:focus { border-color: var(--coral); box-shadow: 0 0 0 3px rgba(232,97,74,0.12); }
 .input-field.error { border-color: var(--danger); background: rgba(232,97,74,0.08); }

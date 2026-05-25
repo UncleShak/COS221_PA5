@@ -675,9 +675,15 @@ html[data-theme="dark"] .carousel-card-footer {
                  * ─────────────────────────────────────────────────────────
                  */
                 foreach ($topRated as $i => $pkg):
+                    if (!is_array($pkg)) {
+                        continue;
+                    }
                     $grad = $gradients[$i % count($gradients)];
-                    $imgPath = htmlspecialchars($pkg['image_filename'] ?? '');
-                    $rating  = isset($pkg['avg_rating']) ? number_format($pkg['avg_rating'], 1) : '—';
+                    $packageName = $pkg['name'] ?? $pkg['title'] ?? '';
+                    $packageDestination = $pkg['destination'] ?? 'Featured destination';
+                    $packagePrice = $pkg['price_per_person'] ?? $pkg['base_price'] ?? 0;
+                    $imgPath = htmlspecialchars($pkg['image_filename'] ?? $pkg['cover_image_url'] ?? '');
+                    $rating  = isset($pkg['avg_rating']) ? number_format((float)$pkg['avg_rating'], 1) : '—';
                 ?>
                     <?php /*
                      * TODO: update href to the individual package detail route.
@@ -686,9 +692,9 @@ html[data-theme="dark"] .carousel-card-footer {
                      */ ?>
                     <a href="/traveller/details?id=<?= (int)$pkg['id'] ?>" class="carousel-card">
                         <div class="carousel-card-img" style="background:<?= $grad ?>;">
-                            <?php if (!empty($pkg['image_filename'])): ?>
+                            <?php if (!empty($pkg['image_filename']) || !empty($pkg['cover_image_url'])): ?>
                                 <img src="<?= $imgPath ?>"
-                                     alt="<?= htmlspecialchars($pkg['name']) ?>"
+                                     alt="<?= htmlspecialchars($packageName) ?>"
                                      loading="lazy"
                                      decoding="async"
                                      onerror="this.style.display='none'">
@@ -696,11 +702,11 @@ html[data-theme="dark"] .carousel-card-footer {
                             <span class="carousel-card-badge">Rating <?= $rating ?></span>
                         </div>
                         <div class="carousel-card-body">
-                            <div class="carousel-card-dest"><?= htmlspecialchars($pkg['destination']) ?></div>
-                            <div class="carousel-card-name"><?= htmlspecialchars($pkg['name']) ?></div>
+                            <div class="carousel-card-dest"><?= htmlspecialchars($packageDestination) ?></div>
+                            <div class="carousel-card-name"><?= htmlspecialchars($packageName) ?></div>
                             <div class="carousel-card-footer">
                                 <div class="carousel-card-price">
-                                    R <?= number_format($pkg['price_per_person']) ?>
+                                    R <?= number_format((float)$packagePrice) ?>
                                     <span>/ person</span>
                                 </div>
                                 <div class="carousel-card-meta">Rating <?= $rating ?></div>
@@ -756,15 +762,21 @@ html[data-theme="dark"] .carousel-card-footer {
                  * ─────────────────────────────────────────────────────────
                  */
                 foreach ($mostPopular as $i => $pkg):
+                    if (!is_array($pkg)) {
+                        continue;
+                    }
                     $grad  = $gradients[$i % count($gradients)];
-                    $imgPath = htmlspecialchars($pkg['image_filename'] ?? '');
-                    $count   = isset($pkg['booking_count']) ? number_format($pkg['booking_count']) : '—';
+                    $packageName = $pkg['name'] ?? $pkg['title'] ?? '';
+                    $packageDestination = $pkg['destination'] ?? 'Featured destination';
+                    $packagePrice = $pkg['price_per_person'] ?? $pkg['base_price'] ?? 0;
+                    $imgPath = htmlspecialchars($pkg['image_filename'] ?? $pkg['cover_image_url'] ?? '');
+                    $count   = isset($pkg['booking_count']) ? number_format((float)$pkg['booking_count']) : '—';
                 ?>
                     <a href="/traveller/details?id=<?= (int)$pkg['id'] ?>" class="carousel-card">
                         <div class="carousel-card-img" style="background:<?= $grad ?>;">
-                            <?php if (!empty($pkg['image_filename'])): ?>
+                            <?php if (!empty($pkg['image_filename']) || !empty($pkg['cover_image_url'])): ?>
                                 <img src="<?= $imgPath ?>"
-                                     alt="<?= htmlspecialchars($pkg['name']) ?>"
+                                     alt="<?= htmlspecialchars($packageName) ?>"
                                      loading="lazy"
                                      decoding="async"
                                      onerror="this.style.display='none'">
@@ -772,11 +784,11 @@ html[data-theme="dark"] .carousel-card-footer {
                             <span class="carousel-card-badge"><?= $count ?> booked</span>
                         </div>
                         <div class="carousel-card-body">
-                            <div class="carousel-card-dest"><?= htmlspecialchars($pkg['destination']) ?></div>
-                            <div class="carousel-card-name"><?= htmlspecialchars($pkg['name']) ?></div>
+                            <div class="carousel-card-dest"><?= htmlspecialchars($packageDestination) ?></div>
+                            <div class="carousel-card-name"><?= htmlspecialchars($packageName) ?></div>
                             <div class="carousel-card-footer">
                                 <div class="carousel-card-price">
-                                    R <?= number_format($pkg['price_per_person']) ?>
+                                    R <?= number_format((float)$packagePrice) ?>
                                     <span>/ person</span>
                                 </div>
                                 <div class="carousel-card-meta"><?= $count ?> bookings</div>
