@@ -22,6 +22,7 @@
         <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
         <?php if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] === 'traveller'): ?>
             <li><a href="/traveller/packages">Packages</a></li>
+            <li><a href="/traveller/compare">Compare</a></li>
             <li><a href="/traveller/destinations">Destinations</a></li>
             <li><a href="/traveller/flights">Flights</a></li>
             <li><a href="/traveller/accommodations">Accommodations</a></li>

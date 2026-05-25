@@ -91,6 +91,17 @@ switch($route){
         $controller->checkout();
         break;
 
+    case '/traveller/compare':
+        require_once __DIR__ . '/../config/database.php';
+        $database = new Database();
+        $pdo = $database->getConnection();
+        require_once __DIR__ . '/../src/Controllers/AuthController.php';
+        AuthController::checkRole('traveller');
+        require_once __DIR__ . '/../src/Controllers/TravellerController.php';
+        $controller = new TravellerController($pdo);
+        $controller->compare();
+        break;
+
     case '/traveller/process_booking':
         require_once __DIR__ . '/../config/database.php';
         $database = new Database();

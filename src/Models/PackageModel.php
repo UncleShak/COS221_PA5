@@ -9,6 +9,7 @@ class PackageModel {
     }
     
     public function getAllPackages($limit = 20) {
+        $limit = (int)$limit;
         $sql = "SELECT p.package_id as id, 
                        p.title, 
                        p.description,
@@ -26,10 +27,10 @@ class PackageModel {
                 WHERE p.status = 'active'
                 GROUP BY p.package_id
                 ORDER BY p.created_at DESC
-                LIMIT ?";
+                LIMIT {$limit}";
         
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$limit]);
+            $stmt->execute();
         return $stmt->fetchAll();
     }
     
@@ -109,11 +110,16 @@ class PackageModel {
             $params[] = $searchTerm;
         }
 
+        // Destination filter (match packages that are linked to the selected destination name)
         if (!empty($filters['destination'])) {
-            $sql .= " AND (p.title LIKE ? OR p.description LIKE ?)";
-            $destTerm = "%{$filters['destination']}%";
-            $params[] = $destTerm;
-            $params[] = $destTerm;
+            $sql .= " AND EXISTS (SELECT 1 FROM packagedestinations pd JOIN destinations d ON pd.destination_id = d.destination_id WHERE pd.package_id = p.package_id AND d.name = ?)";
+            $params[] = $filters['destination'];
+        }
+
+        // Duration filter (exact match in days)
+        if (!empty($filters['duration'])) {
+            $sql .= " AND p.duration_days = ?";
+            $params[] = (int)$filters['duration'];
         }
         
         if (!empty($filters['min_price'])) {
@@ -128,6 +134,20 @@ class PackageModel {
         
         $sql .= " GROUP BY p.package_id";
         
+        // Rating filters need to be applied after aggregation
+        $having = [];
+        $havingParams = [];
+        if (!empty($filters['min_rating'])) {
+            $having[] = "COALESCE(AVG(r.rating),0) >= ?";
+            $havingParams[] = (float)$filters['min_rating'];
+        }
+
+        if (!empty($having)) {
+            $sql .= " HAVING " . implode(' AND ', $having);
+            // append having params to main params so execute order matches
+            foreach ($havingParams as $hp) $params[] = $hp;
+        }
+        
         switch($sort) {
             case 'price_asc':
                 $sql .= " ORDER BY p.base_price ASC";
@@ -139,6 +159,18 @@ class PackageModel {
 
             case 'rating_desc':
                 $sql .= " ORDER BY avg_rating DESC, review_count DESC";
+                break;
+
+            case 'rating_asc':
+                $sql .= " ORDER BY avg_rating ASC, review_count ASC";
+                break;
+
+            case 'duration_asc':
+                $sql .= " ORDER BY p.duration_days ASC";
+                break;
+
+            case 'duration_desc':
+                $sql .= " ORDER BY p.duration_days DESC";
                 break;
 
             default:
@@ -194,6 +226,7 @@ class PackageModel {
     }
     
     public function getTopRatedPackages($limit = 6) {
+        $limit = (int)$limit;
         $sql = "SELECT p.*, a.agency_name as agency_name,
                        COALESCE(AVG(r.rating), 0) as avg_rating,
                        COUNT(r.review_id) as review_count
@@ -204,14 +237,15 @@ class PackageModel {
                 GROUP BY p.package_id
                 HAVING avg_rating >= 4.0 OR review_count > 0
                 ORDER BY avg_rating DESC, review_count DESC
-                LIMIT ?";
+                LIMIT {$limit}";
         
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$limit]);
+            $stmt->execute();
         return $stmt->fetchAll();
     }
     
     public function getPackagesByDestination($destination, $limit = 10) {
+            $limit = (int)$limit;
         $sql = "SELECT p.*, a.agency_name as agency_name,
                        COALESCE(AVG(r.rating), 0) as avg_rating
                 FROM packages p
@@ -221,15 +255,16 @@ class PackageModel {
                   AND p.status = 'active'
                   AND p.package_id NOT IN (SELECT package_id FROM packages WHERE package_id = p.package_id LIMIT 1)
                 GROUP BY p.package_id
-                LIMIT ?";
+                LIMIT {$limit}";
         
         $stmt = $this->pdo->prepare($sql);
         $searchTerm = "%{$destination}%";
-        $stmt->execute([$searchTerm, $searchTerm, $limit]);
+            $stmt->execute([$searchTerm, $searchTerm]);
         return $stmt->fetchAll();
     }
     
     public function searchPackages($keyword, $limit = 10) {
+            $limit = (int)$limit;
         $sql = "SELECT p.*, a.agency_name as agency_name,
                        COALESCE(AVG(r.rating), 0) as avg_rating
                 FROM packages p
@@ -239,11 +274,11 @@ class PackageModel {
                   AND p.status = 'active'
                 GROUP BY p.package_id
                 ORDER BY CASE WHEN p.title LIKE ? THEN 2 ELSE 1 END DESC
-                LIMIT ?";
+                LIMIT {$limit}";
         
         $searchTerm = "%{$keyword}%";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $limit]);
+            $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
         return $stmt->fetchAll();
     }
     
@@ -259,7 +294,13 @@ class PackageModel {
         $stmt = $this->pdo->query("SELECT DISTINCT duration_days FROM packages WHERE status = 'active' ORDER BY duration_days");
         $options['durations'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        $options['destinations'] = [];
+        // Populate destinations that are linked to active packages via packagedestinations
+        try {
+            $destStmt = $this->pdo->query("SELECT DISTINCT d.name FROM packagedestinations pd JOIN destinations d ON pd.destination_id = d.destination_id JOIN packages p ON pd.package_id = p.package_id WHERE p.status = 'active' ORDER BY d.name");
+            $options['destinations'] = $destStmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (PDOException $e) {
+            $options['destinations'] = [];
+        }
 
         return $options;
     }

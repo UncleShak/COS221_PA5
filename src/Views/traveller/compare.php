@@ -1,64 +1,62 @@
 <?php
 // src/Views/traveller/compare.php
-// Compare Packages view (UI-only demo).
-// Uses ONLY StyleGuide.css predefined class names (glass-*, sg-*, pkg-card-*, badge, btn-*)
-// No DB calls here. This is a presentational scaffold meant to be wired up later.
+// Compare Packages view.
 
-// Expected URL pattern (example):
-// /traveller/compare?left=1&right=2
-$leftId  = isset($_GET['left'])  ? (int)$_GET['left']  : 1;
-$rightId = isset($_GET['right']) ? (int)$_GET['right'] : 2;
+$leftId  = isset($leftId) ? (int)$leftId : (int)($_GET['left'] ?? 1);
+$rightId = isset($rightId) ? (int)$rightId : (int)($_GET['right'] ?? 2);
+$packageOptions = $packageOptions ?? [];
 
-// Demo data placeholders (wire these up from your packages table later)
-$left = [
-  'package_id'     => $leftId,
-  'destination'    => 'Bali, Indonesia',
-  'title'          => 'Jungle Retreat',
-  'agency'         => 'Wanderlust Travel',
-  'duration_days'  => 8,
-  'price_pp'       => 18500,
-  'taxes_fees'     => 1200,
-  'rating'         => 4.9,
-  'reviews_count'  => 128,
-  'travel_month'   => 'June',
-  'highlights'     => [
-    'Ubud rainforest villa stay',
-    'Seminyak beach resort',
-    'Guided temple tour',
-    '60-minute spa treatment'
-  ],
-  'includes'       => [
-    'Return Flights (Economy)',
-    'Luxury Villa Accommodation',
-    'Airport Transfers',
-    'Daily Breakfast'
-  ],
-];
+if (empty($left) || empty($right)) {
+  $left = $left ?? [
+    'package_id'     => $leftId,
+    'destination'    => 'Bali, Indonesia',
+    'title'          => 'Jungle Retreat',
+    'agency'         => 'Wanderlust Travel',
+    'duration_days'  => 8,
+    'price_pp'       => 18500,
+    'taxes_fees'     => 1200,
+    'rating'         => 4.9,
+    'reviews_count'  => 128,
+    'travel_month'   => 'June',
+    'highlights'     => [
+      'Ubud rainforest villa stay',
+      'Seminyak beach resort',
+      'Guided temple tour',
+      '60-minute spa treatment'
+    ],
+    'includes'       => [
+      'Return Flights (Economy)',
+      'Luxury Villa Accommodation',
+      'Airport Transfers',
+      'Daily Breakfast'
+    ],
+  ];
 
-$right = [
-  'package_id'     => $rightId,
-  'destination'    => 'Tokyo, Japan',
-  'title'          => 'December Explorer',
-  'agency'         => 'MetroVoyage',
-  'duration_days'  => 7,
-  'price_pp'       => 20900,
-  'taxes_fees'     => 1500,
-  'rating'         => 4.7,
-  'reviews_count'  => 96,
-  'travel_month'   => 'December',
-  'highlights'     => [
-    'Day 3 temple visit',
-    'Street food night market',
-    'City skyline observatory',
-    'Cultural etiquette primer'
-  ],
-  'includes'       => [
-    'Return Flights (Economy)',
-    'Boutique Hotel',
-    'Airport Transfers',
-    'Metro Pass'
-  ],
-];
+  $right = $right ?? [
+    'package_id'     => $rightId,
+    'destination'    => 'Tokyo, Japan',
+    'title'          => 'December Explorer',
+    'agency'         => 'MetroVoyage',
+    'duration_days'  => 7,
+    'price_pp'       => 20900,
+    'taxes_fees'     => 1500,
+    'rating'         => 4.7,
+    'reviews_count'  => 96,
+    'travel_month'   => 'December',
+    'highlights'     => [
+      'Day 3 temple visit',
+      'Street food night market',
+      'City skyline observatory',
+      'Cultural etiquette primer'
+    ],
+    'includes'       => [
+      'Return Flights (Economy)',
+      'Boutique Hotel',
+      'Airport Transfers',
+      'Metro Pass'
+    ],
+  ];
+}
 
 function moneyZAR($amount) {
   return 'R ' . number_format((float)$amount, 0, '.', ',');
@@ -82,10 +80,6 @@ function stars($ratingOutOf5) {
   <div style="margin-bottom: 2.5rem;">
     <p class="sg-section-label">Compare</p>
     <h2 class="sg-section-title">Packages, side-by-side.</h2>
-    <p class="sg-section-sub" style="max-width: 900px;">
-      A clean comparison view that takes two <span style="font-family: var(--font-code);">package_id</span> parameters and displays key stats
-      (price, duration, rating) plus highlights. Wire these cards up to your <span style="font-family: var(--font-code);">packages</span> table later.
-    </p>
   </div>
 
   <!-- QUICK PICK (UI-ONLY) -->
@@ -94,20 +88,32 @@ function stars($ratingOutOf5) {
     <form method="GET" action="" class="input-stack" style="max-width: 900px;">
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;">
         <div class="input-group">
-          <label class="input-label">Left package_id</label>
-          <input class="input-field" type="number" name="left" min="1" value="<?= htmlspecialchars((string)$leftId) ?>">
-          <div class="input-hint">Example: 1</div>
+          <label class="input-label">Left package</label>
+          <select class="input-field" name="left">
+            <?php foreach ($packageOptions as $packageOption): ?>
+              <option value="<?= htmlspecialchars((string)$packageOption['id']) ?>" <?= ((int)$packageOption['id'] === $leftId) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($packageOption['title']) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+          <div class="input-hint">Choose the first package to compare</div>
         </div>
         <div class="input-group">
-          <label class="input-label">Right package_id</label>
-          <input class="input-field" type="number" name="right" min="1" value="<?= htmlspecialchars((string)$rightId) ?>">
-          <div class="input-hint">Example: 2</div>
+          <label class="input-label">Right package</label>
+          <select class="input-field" name="right">
+            <?php foreach ($packageOptions as $packageOption): ?>
+              <option value="<?= htmlspecialchars((string)$packageOption['id']) ?>" <?= ((int)$packageOption['id'] === $rightId) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($packageOption['title']) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+          <div class="input-hint">Choose the second package to compare</div>
         </div>
       </div>
 
       <div style="display:flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
         <button type="submit" class="btn-primary">Compare</button>
-        <a class="btn-secondary" href="/traveller/details">Back to Packages</a>
+        <a class="btn-secondary" href="/traveller/packages">Back to Packages</a>
       </div>
     </form>
   </div>
@@ -200,8 +206,8 @@ function stars($ratingOutOf5) {
       </div>
 
       <div style="display:flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
-        <a href="/traveller/details" class="btn-secondary">View Package</a>
-        <a href="/traveller/checkout" class="btn-primary">Book Left</a>
+        <a href="/traveller/details?id=<?= htmlspecialchars((string)$left['package_id']) ?>" class="btn-secondary">View Package</a>
+        <a href="/traveller/checkout?package_id=<?= htmlspecialchars((string)$left['package_id']) ?>" class="btn-primary">Book Left</a>
       </div>
     </div>
 
@@ -290,8 +296,8 @@ function stars($ratingOutOf5) {
       </div>
 
       <div style="display:flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
-        <a href="/traveller/details" class="btn-secondary">View Package</a>
-        <a href="/traveller/checkout" class="btn-primary">Book Right</a>
+        <a href="/traveller/details?id=<?= htmlspecialchars((string)$right['package_id']) ?>" class="btn-secondary">View Package</a>
+        <a href="/traveller/checkout?package_id=<?= htmlspecialchars((string)$right['package_id']) ?>" class="btn-primary">Book Right</a>
       </div>
     </div>
 
@@ -327,7 +333,7 @@ function stars($ratingOutOf5) {
 
       <div style="display:flex; gap: 1rem; flex-wrap: wrap;">
         <a class="btn-secondary" href="/traveller/dashboard">Back to Dashboard</a>
-        <a class="btn-primary" href="/traveller/checkout">Proceed to Checkout</a>
+        <a class="btn-primary" href="/traveller/checkout?package_id=<?= htmlspecialchars((string)$left['package_id']) ?>">Proceed to Checkout</a>
       </div>
     </div>
   </div>

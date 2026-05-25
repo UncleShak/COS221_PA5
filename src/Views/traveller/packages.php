@@ -1,5 +1,5 @@
 <?php
-$currentFilters = $currentFilters ?? ['search' => '', 'min_price' => '', 'max_price' => ''];
+$currentFilters = $currentFilters ?? ['search' => '', 'min_price' => '', 'max_price' => '', 'duration' => '', 'min_rating' => ''];
 $filterOptions = $filterOptions ?? [
     'destinations' => ['Bali', 'Paris', 'Tokyo', 'Rome'], 
     'durations' => [3, 5, 7, 10, 14], 
@@ -40,12 +40,35 @@ $currentPage = $currentPage ?? 1;
                     </select>
                 </div>
                 
+                <div class="filter-group" style="margin-bottom: 1rem;">
+                    <label for="duration" class="input-label">Duration (days)</label>
+                    <select name="duration" id="duration" class="input-field">
+                        <option value="">Any</option>
+                        <?php foreach ($filterOptions['durations'] as $d): ?>
+                            <option value="<?= htmlspecialchars((string)$d) ?>" <?= (isset($currentFilters['duration']) && (string)$currentFilters['duration'] === (string)$d) ? 'selected' : '' ?>><?= htmlspecialchars($d) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="filter-group" style="margin-bottom: 1rem;">
+                    <label for="min_rating" class="input-label">Minimum Rating</label>
+                    <select name="min_rating" id="min_rating" class="input-field">
+                        <option value="">Any</option>
+                        <?php for ($r = 5; $r >= 1; $r--): ?>
+                            <option value="<?= $r ?>" <?= (isset($currentFilters['min_rating']) && (string)$currentFilters['min_rating'] === (string)$r) ? 'selected' : '' ?>><?= $r ?>+ stars</option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+
                 <div class="filter-group" style="margin-bottom: 1.5rem;">
                     <label for="sort" class="input-label">Sort By</label>
                     <select name="sort" id="sort" class="input-field">
                         <option value="price_asc" <?= ($currentSort == 'price_asc') ? 'selected' : '' ?>>Price: Low to High</option>
                         <option value="price_desc" <?= ($currentSort == 'price_desc') ? 'selected' : '' ?>>Price: High to Low</option>
                         <option value="rating_desc" <?= ($currentSort == 'rating_desc') ? 'selected' : '' ?>>Rating: High to Low</option>
+                        <option value="rating_asc" <?= ($currentSort == 'rating_asc') ? 'selected' : '' ?>>Rating: Low to High</option>
+                        <option value="duration_asc" <?= ($currentSort == 'duration_asc') ? 'selected' : '' ?>>Duration: Short to Long</option>
+                        <option value="duration_desc" <?= ($currentSort == 'duration_desc') ? 'selected' : '' ?>>Duration: Long to Short</option>
                     </select>
                 </div>
                 

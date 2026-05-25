@@ -174,6 +174,8 @@ class TravellerController {
             'destination' => $_GET['destination'] ?? '',
             'min_price'   => $_GET['min_price'] ?? '',
             'max_price'   => $_GET['max_price'] ?? '',
+            'duration'    => $_GET['duration'] ?? '',
+            'min_rating'  => $_GET['min_rating'] ?? '',
         ];
         $currentSort = $_GET['sort'] ?? 'price_asc';
         $perPage     = 12;
@@ -235,6 +237,53 @@ class TravellerController {
         require_once __DIR__ . '/../Views/traveller/checkout.php';
         $content = ob_get_clean();
         require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function compare() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'traveller') {
+            header("Location: /login"); exit();
+        }
+
+        require_once __DIR__ . '/../Models/PackageModel.php';
+        $packageModel = new PackageModel($this->pdo);
+        $packageOptions = $packageModel->getAllPackages(200);
+
+        $leftId = (int)($_GET['left'] ?? 0);
+        $rightId = (int)($_GET['right'] ?? 0);
+
+        $fallbackPackages = $packageModel->getAllPackages(2);
+
+        if ($leftId <= 0 && !empty($fallbackPackages[0]['id'])) {
+            $leftId = (int)$fallbackPackages[0]['id'];
+        }
+
+        if ($rightId <= 0) {
+            if (!empty($fallbackPackages[1]['id'])) {
+                $rightId = (int)$fallbackPackages[1]['id'];
+            } elseif ($leftId > 0) {
+                $rightId = $leftId;
+            }
+        }
+
+        $leftPackage = $leftId > 0 ? $packageModel->getPackageById($leftId) : null;
+        $rightPackage = $rightId > 0 ? $packageModel->getPackageById($rightId) : null;
+
+        if (!$leftPackage || !$rightPackage) {
+            header("Location: /traveller/packages?error=compare_not_available"); exit();
+        }
+
+        $left = $this->formatComparePackage($leftPackage);
+        $right = $this->formatComparePackage($rightPackage);
+
+        $this->render('traveller/compare', [
+            'title'   => 'Compare Packages - Tripistry',
+            'left'    => $left,
+            'right'   => $right,
+            'leftId'  => $left['package_id'],
+            'rightId' => $right['package_id'],
+            'packageOptions' => $packageOptions,
+        ]);
     }
 
     public function groupHub() {
@@ -352,6 +401,53 @@ class TravellerController {
             header("Location: " . $redirect); exit();
         }
         header("Location: /traveller/dashboard"); exit();
+    }
+
+    private function formatComparePackage(array $package): array {
+        $highlights = [];
+        if (!empty($package['itinerary'])) {
+            foreach (array_slice($package['itinerary'], 0, 4) as $day) {
+                if (!empty($day['title'])) {
+                    $highlights[] = $day['title'];
+                }
+            }
+        }
+
+        if (empty($highlights) && !empty($package['description'])) {
+            $highlights[] = $package['description'];
+        }
+
+        $includes = [];
+        if (!empty($package['inclusions'])) {
+            foreach ($package['inclusions'] as $items) {
+                foreach ($items as $item) {
+                    if (!empty($item['name'])) {
+                        $includes[] = $item['name'];
+                    }
+                }
+            }
+        }
+
+        if (empty($includes)) {
+            $includes[] = 'Standard inclusions apply';
+        }
+
+        $includes = array_values(array_unique($includes));
+
+        return [
+            'package_id'    => (int)($package['id'] ?? 0),
+            'destination'   => $package['destination'] ?? 'Global',
+            'title'         => $package['title'] ?? 'Untitled package',
+            'agency'        => $package['agency_name'] ?? 'Tripistry Agency',
+            'duration_days' => (int)($package['duration_days'] ?? 0),
+            'price_pp'      => (float)($package['price'] ?? 0),
+            'taxes_fees'    => 0,
+            'rating'        => (float)($package['avg_rating'] ?? 0),
+            'reviews_count' => isset($package['reviews']) ? count($package['reviews']) : 0,
+            'travel_month'   => 'Flexible',
+            'highlights'     => $highlights,
+            'includes'      => $includes,
+        ];
     }
 }
 ?>
